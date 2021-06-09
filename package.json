@@ -1,0 +1,11 @@
+{
+  "name": "WebProgrammmingFinal2020",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/allpass122/WebProgrammmingFinal2020.git",
+  "license": "MIT",
+  "scripts": {
+ "start": "cd frontend && yarn start",
+ "server": "cd backend && yarn server"
+ }
+}
