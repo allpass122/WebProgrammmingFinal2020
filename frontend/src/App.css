@@ -36,7 +36,7 @@
     transform: rotate(360deg);
   }
 }
-
+/* Game */
 .gameName {
   font-size: 25px;
   color: black;
@@ -60,4 +60,60 @@
 }
 .grid1 {
   background-color: black;
+}
+
+/* Login.js */
+.Row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 1em;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+.Row1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 1em;
+  margin: 0;
+  position: absolute;
+  top: 60%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+.Wrapper {
+  display: flex;
+  flex-direction: column;
+}
+.modal-div {
+  display: block;
+  text-align: center;
+  width: 100%;
+  padding: 1em;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+.SignUP {
+  background-color: rgb(148, 227, 233);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80%;
+  height: 50%;
+  padding: 1em;
+  margin: 0 auto;
+  position: absolute;
+  left: 10%;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
 }

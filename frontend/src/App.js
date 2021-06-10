@@ -2,7 +2,9 @@ import "./App.css";
 import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
 import Game from "./Game";
-
+import { BrowserRouter } from 'react-router-dom'
+import { NavLink, Switch, Route } from 'react-router-dom'
+ 
 function App() {
   return (
     <div className="App">

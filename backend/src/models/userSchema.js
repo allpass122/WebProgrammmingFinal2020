@@ -6,10 +6,10 @@
 
 import mongoose from "mongoose";
 const Schema = mongoose.Schema;
-const ScoreSchema = new Schema({
+const userSchema = new Schema({
   name: String,
-  subject: String,
-  score: Number,
+  pwd: String,
+  uuid: String,
 });
-const ScoreCard = mongoose.model("ScoreCard", ScoreSchema);
-export default ScoreCard;
+const UserSchema = mongoose.model("FinalProjectUsers", userSchema);
+export default UserSchema;
