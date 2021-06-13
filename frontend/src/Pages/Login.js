@@ -55,7 +55,11 @@ const Body = () => {
       alert(`Wrong password or the user doesn't exist.`);
     } else {
       // console.log(`${name} ${uuid}`);
-      history.push(`/users/${uuid}`);
+      history.push({
+        pathname: `/users/selectPage`,
+        search: "",
+        state: { uuid: uuid, name: name, login: true },
+      });
     }
   };
 
@@ -163,7 +167,7 @@ const Body = () => {
             className={classes.button}
             variant="contained"
             color="secondary"
-            disabled={!name_ || !pwd_ || pwd_ != pwd_repeat}
+            disabled={!name_ || !pwd_ || pwd_ !== pwd_repeat}
             onClick={handleSignUp}
           >
             SignUp
