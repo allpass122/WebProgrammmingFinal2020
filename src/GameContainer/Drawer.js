@@ -1,11 +1,12 @@
 import Vec2 from './Class/Vec2';
+import constant from './constant';
 
 export function clear(ctx, pos = { x: 0, y: 0 }, size = { x: ctx.canvas.width, y: ctx.canvas.height }) {
 	ctx.clearRect(pos.x, pos.y, size.x, size.y);
 }
 
 export function drawMap(ctx, mapSize, map) {
-	const w = 32; // 暫時寫死
+	const w = constant.gridWidth; // 暫時寫死
 	const blockColor = '#E0E0E0'; // 暫時寫死
 	const startColor = '#BBFFBB'; // 暫時寫死
 	const endColor = '#FF9797'; // 暫時寫死

@@ -18,20 +18,11 @@ export default class Vec2 {
     equal(v) {
         return (this.x === v.x && this.y === v.y);
     }
-    equal(x, y) {
-        return (this.x === x && this.y === y);
-    }
     add(v) {
         return new Vec2(this.x + v.x, this.y + v.y);
     }
-    add(x, y) {
-        return new Vec2(this.x + x, this.y + y);
-    }
     sub(v) {
         return new Vec2(this.x - v.x, this.y - v.y);
-    }
-    sub(x, y) {
-        return new Vec2(this.x - x, this.y - y);
     }
     mul(c) {
         return new Vec2(this.x * c, this.y * c);

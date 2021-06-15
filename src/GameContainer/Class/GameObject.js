@@ -1,6 +1,5 @@
 import Vec2 from './Vec2';
-
-const w = 32;
+import constant from '../constant';
 
 export class cymbal {
 	constructor(pos) {
