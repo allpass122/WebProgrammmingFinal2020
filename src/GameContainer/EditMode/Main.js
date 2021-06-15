@@ -9,11 +9,11 @@ function EditGameMode(props) {
 	const [status, setStatus] = useState({
 		mousePos: new Vec2(),
 		select: false,
+		selecting: false,
 		selectPair: [new Vec2(), new Vec2()],
 		hold: false,
-		holdObject: null
+		holdObject: null,
 	});
-	const [aaa, setAAA] = useState("");
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
@@ -26,7 +26,6 @@ function EditGameMode(props) {
 		const update = () => {
 			/* 每一楨(fps = 60)進行的更新 */
 			Drawer(ctx, setting, status);
-			console.log(status.select)
 			requestId = requestAnimationFrame(update);
 		};
 		update();
@@ -48,10 +47,14 @@ function EditGameMode(props) {
 
 		for (let i = 0; i < range.x; i++) {
 			for (let j = 0; j < range.y; j++) {
-				setting.map[luPos.y + j][luPos.x + i] = newType;
-            }
+				setting.map[luPos.y + j][luPos.x + i].type = newType;
+			}
 		}
 	};
+
+	const typeButtonPairs = [
+		['none', 'None'], ['block', 'Block'], ['none start', 'Start'], ['none end', 'End'], ['none dead', 'Dead'], ['none ice', 'Ice'], ['none muddy', 'Muddy']
+	];
 
 	return (
 		<>
@@ -60,12 +63,15 @@ function EditGameMode(props) {
 			</div>
 			<div id='EditModeParameters'>
 				{(status.select) ? (
-					<>
-						<button class='typeButton' onClick={() => { changeSelectedGridsType('none'); }}>None</button>
-						<button class='typeButton' onClick={() => { changeSelectedGridsType('block'); }}>Block</button>
-						<button class='typeButton' onClick={() => { changeSelectedGridsType('none start'); }}>Start</button>
-						<button class='typeButton' onClick={() => { changeSelectedGridsType('none end'); }}>End</button>
-					</>): <div></div>
+					<div>
+						{typeButtonPairs.map(pair => <button class='typeButton' onClick={() => { changeSelectedGridsType(pair[0]); }}>{pair[1]}</button>)}
+					</div>) : <div></div>
+				}
+				{(status.hold) ? (
+					<div>
+						{Object.keys(status.holdObject.detail).map(key =>
+							<input type="text" className='parametersInput' placeholder={key} onChange={(e) => { status.holdObject.detail[key] = e.target.value }} />)}
+					</div>) : <div></div>
 				}
 			</div>
 		</>

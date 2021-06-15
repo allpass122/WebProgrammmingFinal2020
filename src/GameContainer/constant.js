@@ -6,6 +6,9 @@ const constant = {
 	startColor: '#BBFFBB',
 	endColor: '#FF9797',
 	noneColor: '#FFFFFF',
+	deadColor: '#D2A2CC',
+	iceColor: '#D9FFFF',
+	muddyColor: "#D6D6AD",
 	boundaryColor: '#0080FF',
 	auxiliaryColor: '#D2E9FF',
 };

@@ -43,4 +43,10 @@ export default class Vec2 {
     cross(v) { // 計算外積
         return this.x * v.y - this.y * v.x;
     }
+    between(v1, v2) { // 在兩點圍出的矩形空間內
+        return this.x >= Math.min(v1.x, v2.x) && this.x <= Math.max(v1.x, v2.x) && this.y >= Math.min(v1.y, v2.y) && this.y <= Math.max(v1.y, v2.y);
+    }
+    toGrid(w) {
+        return new Vec2(~~(this.x / w), ~~(this.y / w));
+    }
 }
