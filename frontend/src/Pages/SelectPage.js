@@ -11,9 +11,9 @@ function UserPage(props) {
   return (
     <>
       {checkLogin(props) ? (
-        <ErrorPage />
-      ) : (
         <ChooseMap data={props.location.state} />
+      ) : (
+        <ErrorPage />
       )}
     </>
   );

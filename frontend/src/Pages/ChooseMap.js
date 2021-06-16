@@ -165,7 +165,7 @@ export default function Album(props) {
       </main>
       {/* Footer */}
       <footer className={classes.footer}>
-        <Typography variant="h6" align="center" gutterBottom>
+        {/* <Typography variant="h6" align="center" gutterBottom>
           Footer
         </Typography>
         <Typography
@@ -175,7 +175,7 @@ export default function Album(props) {
           component="p"
         >
           Something here to give the footer a purpose!
-        </Typography>
+        </Typography> */}
         <Copyright />
       </footer>
       {/* End footer */}

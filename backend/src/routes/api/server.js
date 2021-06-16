@@ -45,7 +45,6 @@ router.post("/signup", async function (req, res) {
 });
 
 router.post("/clear", async function (req, res) {
-  console.log(`HIHIHIHI`);
   try {
     await userSchema.deleteMany({});
     console.log("Database cleared");

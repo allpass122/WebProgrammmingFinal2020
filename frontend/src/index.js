@@ -5,7 +5,7 @@ import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import Login from "./Pages/Login";
 import { NavLink, Switch, Route, BrowserRouter } from "react-router-dom";
-import UserPage from "./Pages/UserPage";
+import SelectPage from "./Pages/SelectPage";
 import PopularMap from "./Pages/PopularMap";
 
 ReactDOM.render(
@@ -13,7 +13,7 @@ ReactDOM.render(
     <BrowserRouter>
       <Switch>
         <Route exact path="/" component={Login} />
-        <Route exact path="/users/selectPage" component={UserPage} />
+        <Route exact path="/users/selectPage" component={SelectPage} />
         <Route exact path="/PopularMap" component={PopularMap} />
       </Switch>
     </BrowserRouter>
