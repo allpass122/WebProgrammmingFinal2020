@@ -8,6 +8,12 @@ import { makeStyles } from "@material-ui/core";
 import Modal from "@material-ui/core/Modal";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const instance = axios.create({
   baseURL: `http://localhost:4000/`,
@@ -35,30 +41,33 @@ const Body = () => {
 
   const [open, setOpen] = useState(false);
   const [show, setShow] = useState(false);
+  // for Snackbar Alert
+  const [msgOpen, setMsgOpen] = useState(false);
+  const [alertMsg, setAlertMsg] = useState("");
+  const [alertType, setAlertType] = useState("success"); // "error", "warning", "info", "success"
 
   const handleChange = (func) => (event) => {
     func(event.target.value.trim());
   };
 
-  const ToSignUP = () => {
-    setOpen(true);
-  };
-
   const handleLogin = async () => {
     const {
-      data: { success, uuid },
+      data: { success, uuid, mapIDs },
     } = await instance.post("/api/login", {
       name,
       pwd,
     });
     if (!success) {
-      alert(`Wrong password or the user doesn't exist.`);
+      // alert(`Wrong password or the user doesn't exist.`);
+      setAlertMsg(`Wrong password or the user doesn't exist.`);
+      setAlertType("error");
+      setMsgOpen(true);
     } else {
       // console.log(`${name} ${uuid}`);
       history.push({
         pathname: `/users/selectPage`,
         search: "",
-        state: { uuid: uuid, name: name, login: true },
+        state: { uuid: uuid, name: name, login: true, mapIDs: mapIDs },
       });
     }
   };
@@ -71,9 +80,15 @@ const Body = () => {
       pwd_,
     });
     if (!success) {
-      alert(msg);
+      setAlertMsg(msg);
+      setAlertType("error");
+      setMsgOpen(true);
+      // alert(msg);
     } else {
-      alert(`Success :` + msg);
+      // alert(`Success :` + msg);
+      setAlertMsg("This is a success message!");
+      setAlertType("success");
+      setMsgOpen(true);
     }
     setOpen(false);
   };
@@ -82,11 +97,50 @@ const Body = () => {
     const {
       data: { success },
     } = await instance.post("/api/clear", {});
-    alert(`${success}`);
+    if (success) {
+      setAlertMsg("This is a success message!");
+      setAlertType("success");
+      setMsgOpen(true);
+    } else {
+      setAlertMsg(`Delete Fail`);
+      setAlertType("error");
+      setMsgOpen(true);
+    }
+  };
+
+  const handleDelMap = async () => {
+    const {
+      data: { success },
+    } = await instance.post("/api/deleteMap", {});
+    if (success) {
+      setAlertMsg("This is a success message!");
+      setAlertType("success");
+      setMsgOpen(true);
+    } else {
+      setAlertMsg(`Delete Fail`);
+      setAlertType("error");
+      setMsgOpen(true);
+    }
   };
 
   return (
     <section className="Wrapper">
+      <Snackbar
+        open={msgOpen}
+        autoHideDuration={3000}
+        onClose={() => {
+          setMsgOpen(false);
+        }}
+      >
+        <Alert
+          onClose={() => {
+            setMsgOpen(false);
+          }}
+          severity={alertType}
+        >
+          {alertMsg}
+        </Alert>
+      </Snackbar>
       <div className="Row">
         {/* Could use a form & a library for handling form data here such as Formik, but I don't really see the point... */}
         <TextField
@@ -116,7 +170,9 @@ const Body = () => {
           className={classes.button}
           variant="outlined"
           color="secondary"
-          onClick={ToSignUP}
+          onClick={() => {
+            setOpen(true);
+          }}
         >
           Click here to SignUp
         </Button>
@@ -195,6 +251,15 @@ const Body = () => {
         onClick={handleDel}
       >
         Delete
+      </Button>
+      <Button
+        className={classes.button}
+        variant="outlined"
+        color="secondary"
+        disabled={false}
+        onClick={handleDelMap}
+      >
+        Delete Map
       </Button>
     </section>
   );

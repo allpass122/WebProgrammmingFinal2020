@@ -1,0 +1,35 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+#EditModeCanvas {
+    background: #EEEEEE;
+    float: left;
+}
+
+#EditModeParameters {
+    width: 200px;
+    height: 700px;
+    background-color: #FBFBFF;
+    float: left;
+}
+
+.typeButton {
+    display: block;
+    width: 50px;
+    height: 50px;
+}
+
+.parametersInput {
+    display: block;
+}

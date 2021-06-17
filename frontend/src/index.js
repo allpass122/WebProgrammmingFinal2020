@@ -7,6 +7,8 @@ import Login from "./Pages/Login";
 import { NavLink, Switch, Route, BrowserRouter } from "react-router-dom";
 import SelectPage from "./Pages/SelectPage";
 import PopularMap from "./Pages/PopularMap";
+import EditMode from "./Pages/EditMode";
+import PlayMode from "./Pages/PlayMode";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -15,6 +17,8 @@ ReactDOM.render(
         <Route exact path="/" component={Login} />
         <Route exact path="/users/selectPage" component={SelectPage} />
         <Route exact path="/PopularMap" component={PopularMap} />
+        <Route exact path="/EditMode" component={EditMode} />
+        <Route exact path="/PlayMode" component={PlayMode} />
       </Switch>
     </BrowserRouter>
   </React.StrictMode>,

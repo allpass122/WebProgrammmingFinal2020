@@ -21,6 +21,7 @@
     "dotenv-defaults": "^2.0.2",
     "express": "^4.17.1",
     "mongoose": "^5.12.13",
+    "object-hash": "^2.2.0",
     "uuid": "^8.3.2",
     "uuidv4": "^6.2.10"
   }

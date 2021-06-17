@@ -1,11 +1,14 @@
 // from https://github.com/mui-org/material-ui/edit/master/docs/src/pages/getting-started/templates/album/Album.js
 import React from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import { useHistory } from "react-router-dom";
 
 import AppBar from "@material-ui/core/AppBar";
 import Button from "@material-ui/core/Button";
 import CameraIcon from "@material-ui/icons/PhotoCamera";
 import SportsEsportsIcon from "@material-ui/icons/SportsEsports";
+import DeleteIcon from "@material-ui/icons/Delete";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
@@ -14,9 +17,30 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import Grid from "@material-ui/core/Grid";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Link from "@material-ui/core/Link";
+import Tooltip from "@material-ui/core/Tooltip";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Switch from "@material-ui/core/Switch";
+import { withStyles, makeStyles } from "@material-ui/core/styles";
+import { green, purple, pink } from "@material-ui/core/colors";
+import IconButton from "@material-ui/core/IconButton";
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
+const ColorButton = withStyles((theme) => ({
+  root: {
+    color: theme.palette.getContrastText(pink[100]),
+    backgroundColor: pink[100],
+    "&:hover": {
+      backgroundColor: pink[100],
+    },
+  },
+}))(Button);
 
 function Copyright() {
   return (
@@ -63,12 +87,102 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+const instance = axios.create({
+  baseURL: `http://localhost:4000/`,
+});
 
 export default function Album(props) {
   const classes = useStyles();
   const history = useHistory();
   const { uuid, name } = props.data;
+  const [mapIDs, setMapIDs] = useState(props.data.mapIDs);
+  const [mapData, setMapData] = useState({});
+  // for Snackbar Alert
+  const [msgOpen, setMsgOpen] = useState(false);
+  const [alertMsg, setAlertMsg] = useState("");
+  const [alertType, setAlertType] = useState("success"); // "error", "warning", "info", "success"
+  const [allMaps, setAllMaps] = useState([]);
+
+  const handlerDeleteSingleMap = async (id) => {
+    const {
+      data: { success, errorCode },
+    } = await instance.post("/api/deleteSingleMap", {
+      id,
+      uuid,
+    });
+    if (!success) {
+      setAlertMsg(`Delete Fail`);
+      setAlertType("error");
+      setMsgOpen(true);
+    } else {
+      setAlertMsg(`Delete success`);
+      setAlertType("success");
+      setMsgOpen(true);
+      getMapIDs();
+    }
+  };
+
+  const getMap = async (id) => {
+    const {
+      data: { success, errorCode, map },
+    } = await instance.post("/api/getMap", {
+      id,
+    });
+    if (!success) {
+      console.log(`FAIL`);
+    } else {
+      // console.log(`${id}, ${map.id}`);
+      setAllMaps((pre) => {
+        let tmp = [...pre];
+        let idx = mapIDs.findIndex((ele) => ele.id === id);
+        tmp[idx] = map;
+        return tmp;
+      });
+    }
+  };
+
+  const getAllMaps = (IDs) => {
+    // console.log(`GRTALL`);
+    for (var ID in IDs) {
+      // console.log(IDs[0]);
+      getMap(IDs[ID].id);
+    }
+  };
+
+  const getMapIDs = async () => {
+    // console.log("TT");
+    const {
+      data: { success, mapIDs },
+    } = await instance.post("/api/getUserData", {
+      uuid,
+    });
+    if (!success) {
+      // alert(`Wrong password or the user doesn't exist.`);
+    } else {
+      // console.log(`${name} ${uuid}`);
+      // console.log(mapIDs);
+      setMapIDs(mapIDs);
+      setAllMaps([]);
+      getAllMaps(mapIDs);
+      // console.log(mapIDs);
+      // console.log(allMaps);
+    }
+  };
+
+  const handlerStatistic = (key) => {
+    if (allMaps[key] === undefined) {
+      return `...`;
+    } else {
+      const { fastestPass, passTime, playTime } = allMaps[key].statistic;
+
+      return `fastestPass:${fastestPass}, passTime:${passTime}, playTime:${playTime}`;
+    }
+  };
+
+  // useEffect(() => {
+  //   getMapIDs();
+  // }, []);
+
   return (
     <React.Fragment>
       <CssBaseline />
@@ -81,7 +195,22 @@ export default function Album(props) {
         </Toolbar>
       </AppBar>
       <main>
-        {/* Hero unit */}
+        <Snackbar
+          open={msgOpen}
+          autoHideDuration={3000}
+          onClose={() => {
+            setMsgOpen(false);
+          }}
+        >
+          <Alert
+            onClose={() => {
+              setMsgOpen(false);
+            }}
+            severity={alertType}
+          >
+            {alertMsg}
+          </Alert>
+        </Snackbar>
         <div className={classes.heroContent}>
           <Container maxWidth="sm">
             <Typography
@@ -128,6 +257,34 @@ export default function Album(props) {
                     查看熱門排行地圖
                   </Button>
                 </Grid>
+                <Grid item>
+                  <Button
+                    color="secondary"
+                    variant="outlined"
+                    onClick={() => {
+                      history.push({
+                        pathname: `/EditMode`,
+                        state: {
+                          uuid: uuid,
+                          name: name,
+                          login: true,
+                          id: 0,
+                        },
+                      });
+                    }}
+                  >
+                    Edit
+                  </Button>
+                </Grid>
+                <Grid item>
+                  <Button
+                    color="primary"
+                    variant="outlined"
+                    onClick={getMapIDs}
+                  >
+                    Refresh
+                  </Button>
+                </Grid>
               </Grid>
             </div>
           </Container>
@@ -135,8 +292,8 @@ export default function Album(props) {
         <Container className={classes.cardGrid} maxWidth="md">
           {/* End hero unit */}
           <Grid container spacing={4}>
-            {cards.map((card) => (
-              <Grid item key={card} xs={12} sm={6} md={4}>
+            {mapIDs.map((ele, key) => (
+              <Grid item key={ele} xs={12} sm={6} md={4}>
                 <Card className={classes.card}>
                   <CardMedia
                     className={classes.cardMedia}
@@ -145,17 +302,68 @@ export default function Album(props) {
                   />
                   <CardContent className={classes.cardContent}>
                     <Typography gutterBottom variant="h5" component="h2">
-                      作品名字
+                      {ele.title}
                     </Typography>
-                    <Typography>敘述</Typography>
+                    <Typography>{ele.description}</Typography>
                   </CardContent>
                   <CardActions>
-                    <Button size="small" color="primary">
+                    <Button
+                      size="small"
+                      color="primary"
+                      onClick={() => {
+                        history.push({
+                          pathname: `/PlayMode`,
+                          state: { uuid: uuid, name: name, login: true },
+                        });
+                      }}
+                    >
                       Play
                     </Button>
-                    <Button size="small" color="primary">
+                    <Button
+                      size="small"
+                      color="primary"
+                      onClick={() => {
+                        history.push({
+                          pathname: `/EditMode`,
+                          state: {
+                            uuid: uuid,
+                            name: name,
+                            login: true,
+                            id: ele.id,
+                          },
+                        });
+                      }}
+                    >
                       Edit
                     </Button>
+                    {allMaps[key] === undefined ? (
+                      <p>???</p>
+                    ) : allMaps[key].publish ? (
+                      <Tooltip title={handlerStatistic(key)}>
+                        <Button size="small" color="primary" variant="text">
+                          Statistic
+                        </Button>
+                      </Tooltip>
+                    ) : (
+                      <>
+                        <ColorButton
+                          size="small"
+                          color="primary"
+                          variant="contained"
+                        >
+                          Private
+                        </ColorButton>
+                      </>
+                    )}
+                    <IconButton
+                      className={classes.margin}
+                      size="large"
+                      variant="outlined"
+                      color="secondary"
+                      onClick={() => handlerDeleteSingleMap(ele.id)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
                   </CardActions>
                 </Card>
               </Grid>

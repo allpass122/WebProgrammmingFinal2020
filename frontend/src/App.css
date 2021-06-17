@@ -117,3 +117,32 @@
   -ms-transform: translateY(-50%);
   transform: translateY(-50%);
 }
+/* EditMode.js */
+.upload {
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80%;
+  height: 50%;
+  padding: 1em;
+  margin: 0 auto;
+  position: absolute;
+  left: 10%;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+.upload_ {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80%;
+  padding: 1em;
+  margin: 0 auto;
+  position: absolute;
+  left: 10%;
+  top: 60%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
