@@ -5,7 +5,8 @@ export function clear(ctx, pos = { x: 0, y: 0 }, size = { x: ctx.canvas.width, y
 	ctx.clearRect(pos.x, pos.y, size.x, size.y);
 }
 
-export function drawMap(ctx, mapSize, map) {
+export function drawMap(ctx, map) {
+	const mapSize = constant.mapSize;
 	const w = constant.gridWidth; 
 	const blockColor = constant.blockColor;
 	const startColor = constant.startColor;
@@ -24,6 +25,7 @@ export function drawMap(ctx, mapSize, map) {
 	
 	for (let y = 0; y < mapSize.y; y++) {
 		for (let x = 0; x < mapSize.x; x++) {
+			/* 繪製格子底色 */
 			ctx.beginPath();
 			ctx.rect(x * w, y * w, w, w);
 			ctx.fillStyle = (map[y][x].type.includes('start')) ? startColor :
@@ -34,9 +36,35 @@ export function drawMap(ctx, mapSize, map) {
 							(map[y][x].type.includes('block')) ? blockColor : noneColor;
 			ctx.fill();
 			ctx.closePath();
+
+			/* 繪製橫向格線 */
+			if (y > 0) {
+				let r = relation(new Vec2(x, y - 1), new Vec2(x, y));
+				if (r !== 'b_b') {
+					ctx.beginPath();
+					ctx.moveTo(x * w, y * w);
+					ctx.lineTo((x + 1) * w, y * w);
+					ctx.strokeStyle = (r === 'n_b') ? boundaryColor : auxiliaryColor;
+					ctx.stroke();
+					ctx.closePath();
+				}
+            }
+
+			/* 繪製縱向格線 */
+			if (x > 0) {
+				let r = relation(new Vec2(x - 1, y), new Vec2(x, y));
+				if (r !== 'b_b') {
+					ctx.beginPath();
+					ctx.strokeStyle = (r === 'n_b') ? boundaryColor : auxiliaryColor;
+					ctx.moveTo(x * w, y * w);
+					ctx.lineTo(x * w, (y + 1) * w);
+					ctx.stroke();
+					ctx.closePath();
+				}
+            }
 		}
 	}
-	
+	/*
 	for (let y = 1; y < mapSize.y; y++) {
 		for (let x = 0; x < mapSize.x; x++) {
 			let r = relation(new Vec2(x, y - 1), new Vec2(x, y));
@@ -61,5 +89,5 @@ export function drawMap(ctx, mapSize, map) {
 			ctx.stroke();
 			ctx.closePath();
 		}
-	}
+	}*/
 }
