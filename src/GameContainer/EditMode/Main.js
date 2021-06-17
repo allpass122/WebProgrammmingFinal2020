@@ -3,6 +3,8 @@ import Drawer from './Drawer';
 import Controller from './Controller';
 import Vec2 from '../Class/Vec2';
 
+import {PlayMapCreater} from '../../PlayMode/PlayMapCreater'
+
 function EditGameMode(props) {
 	let canvasRef = useRef();	
 	let setting = props.setting;
@@ -14,19 +16,22 @@ function EditGameMode(props) {
 		hold: false,
 		holdObject: null,
 	});
+	let cancelController;
+	let requestId;
+
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
 		const ctx = canvas.getContext('2d');
 
-		let cancelController;
 		cancelController = Controller(canvas, status, setStatus, setting);
 
-		let requestId;
+		let renderCount = 0
 		const update = () => {
-			/* ¨C¤@·©(fps = 60)¶i¦æªº§ó·s */
+			/* ï¿½Cï¿½@ï¿½ï¿½(fps = 60)ï¿½iï¿½æªºï¿½ï¿½s */
 			Drawer(ctx, setting, status);
 			requestId = requestAnimationFrame(update);
+			if (renderCount++ % 100 === 0) console.log(renderCount)
 		};
 		update();
 
@@ -56,9 +61,31 @@ function EditGameMode(props) {
 		['none', 'None'], ['block', 'Block'], ['none start', 'Start'], ['none end', 'End'], ['none dead', 'Dead'], ['none ice', 'Ice'], ['none muddy', 'Muddy']
 	];
 
+
+	const [Playing, setPlaying] = useState(false)
+	const saveSetting = () => {
+		cancelController();
+		cancelAnimationFrame(requestId);
+		setPlaying(true)
+	}
+	const startEdit = () => {
+		setStatus(() => ({...status}) )
+		setPlaying(false)
+
+	}
+
 	return (
 		<>
-			<div>
+		{(Playing) ? 
+		<button className='typeButton' onClick={startEdit}>Edit</button>
+		: <button className='typeButton' onClick={saveSetting}>Play</button>
+		}
+		{(Playing) ? 
+		<>
+		<PlayMapCreater setting={setting}/>
+		</>
+		: 
+			<><div>
 				<canvas id='EditModeCanvas' ref={canvasRef} width={`${props.width}`} height={`${props.height}`}></canvas>
 			</div>
 			<div id='EditModeParameters'>
@@ -73,7 +100,7 @@ function EditGameMode(props) {
 							<input type="text" className='parametersInput' placeholder={key} onChange={(e) => { status.holdObject.detail[key] = e.target.value }} />)}
 					</div>) : <div></div>
 				}
-			</div>
+			</div></> }
 		</>
 	);
 }
