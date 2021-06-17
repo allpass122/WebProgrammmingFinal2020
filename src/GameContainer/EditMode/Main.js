@@ -2,17 +2,27 @@ import React, { useState , useEffect , useRef } from 'react';
 import Drawer from './Drawer';
 import Controller from './Controller';
 import Vec2 from '../Class/Vec2';
+import Layer from '../Class/Layer';
+import constant from '../constant';
 
 function EditGameMode(props) {
-	let canvasRef = useRef();	
+	let canvasRef = useRef();
 	let setting = props.setting;
+	/* 
+	 select: 目前是否有格子被選擇
+	 selecting: 目前是否正在選擇格子
+	 selectPair: 被選擇的多個格子中兩個對角的位子
+	 hold: 目前是否有物件被操控
+	 holdObject: 被操控的物件
+	 holdDetail: 被操控的物件細節列表
+	*/
 	const [status, setStatus] = useState({
-		mousePos: new Vec2(),
 		select: false,
 		selecting: false,
 		selectPair: [new Vec2(), new Vec2()],
 		hold: false,
 		holdObject: null,
+		holdDetail: {},
 	});
 
 	useEffect(() => {
@@ -36,15 +46,18 @@ function EditGameMode(props) {
 		};
 	}, [setStatus, status, setting]);
 
-	const leftUpPos = (p1, p2) => (new Vec2(Math.min(p1.x, p2.x), Math.min(p1.y, p2.y)));
-	const RightDownPos = (p1, p2) => (new Vec2(Math.max(p1.x, p2.x), Math.max(p1.y, p2.y)));
-
+	/* 改變被選擇的格子屬性 */
 	const changeSelectedGridsType = (newType) => {
 		if (!status.select) return;
-		let luPos = leftUpPos(status.selectPair[0], status.selectPair[1]);
-		let rdPos = RightDownPos(status.selectPair[0], status.selectPair[1]);
+		let luPos = Vec2.leftUp(status.selectPair[0], status.selectPair[1]);
+		let rdPos = Vec2.rightDown(status.selectPair[0], status.selectPair[1]);
 		let range = rdPos.sub(luPos).add(new Vec2(1, 1));
 
+		for (let i = 0; i < range.x; i++) {
+			for (let j = 0; j < range.y; j++) {
+				if (setting.map[luPos.y + j][luPos.x + i].layer.isOverlap(constant.typeLayerPairs[newType])) return;
+			}
+		}
 		for (let i = 0; i < range.x; i++) {
 			for (let j = 0; j < range.y; j++) {
 				setting.map[luPos.y + j][luPos.x + i].type = newType;
@@ -52,6 +65,7 @@ function EditGameMode(props) {
 		}
 	};
 
+	/* 格子屬性列表 */
 	const typeButtonPairs = [
 		['none', 'None'], ['block', 'Block'], ['none start', 'Start'], ['none end', 'End'], ['none dead', 'Dead'], ['none ice', 'Ice'], ['none muddy', 'Muddy']
 	];
@@ -64,13 +78,19 @@ function EditGameMode(props) {
 			<div id='EditModeParameters'>
 				{(status.select) ? (
 					<div>
-						{typeButtonPairs.map(pair => <button class='typeButton' onClick={() => { changeSelectedGridsType(pair[0]); }}>{pair[1]}</button>)}
+						{typeButtonPairs.map(pair => <button className='typeButton' onClick={() => { changeSelectedGridsType(pair[0]); }}>{pair[1]}</button>)}
 					</div>) : <div></div>
 				}
 				{(status.hold) ? (
 					<div>
-						{Object.keys(status.holdObject.detail).map(key =>
-							<input type="text" className='parametersInput' placeholder={key} onChange={(e) => { status.holdObject.detail[key] = e.target.value }} />)}
+						{Object.keys(status.holdDetail).map(p =>
+							<input type="text" className='parametersInput' value={status.holdObject.detail[p]} onChange={(e) => {
+								let newStatus = { ...status };
+								let newDetail = { ...status.holdObject.detail }
+								newDetail[p] = e.target.value;
+								newStatus.holdObject.detail = newDetail;
+								setStatus(newStatus);
+							}} />)}
 					</div>) : <div></div>
 				}
 			</div>

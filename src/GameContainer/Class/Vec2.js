@@ -12,8 +12,8 @@ export default class Vec2 {
         this.x = x;
         this.y = y;
     }
-    clone(v) {
-        return new Vec2(v.x, v.y);
+    clone() {
+        return new Vec2(this.x, this.y);
     }
     equal(v) {
         return (this.x === v.x && this.y === v.y);
@@ -46,7 +46,13 @@ export default class Vec2 {
     between(v1, v2) { // 在兩點圍出的矩形空間內
         return this.x >= Math.min(v1.x, v2.x) && this.x <= Math.max(v1.x, v2.x) && this.y >= Math.min(v1.y, v2.y) && this.y <= Math.max(v1.y, v2.y);
     }
-    toGrid(w) {
+    toGrid(w) { // 回傳將座標以 w 為寬度單位轉成網格座標
         return new Vec2(~~(this.x / w), ~~(this.y / w));
+    }
+    static leftUp(v1, v2) { // 回傳兩點圍成的矩形的左上座標
+        return new Vec2(Math.min(v1.x, v2.x), Math.min(v1.y, v2.y));
+    }
+    static rightDown(v1, v2) { // 回傳兩點圍成的矩形的右下座標
+        return new Vec2(Math.max(v1.x, v2.x), Math.max(v1.y, v2.y));
     }
 }
