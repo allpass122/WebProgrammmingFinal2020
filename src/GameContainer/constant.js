@@ -17,11 +17,11 @@ const constant = {
 	typeLayerPairs: { // 各類格子佔據的層數
 		'none': new Layer(),
 		'block': new Layer(0),
-		'none start': new Layer(0, 1, 2, 3),
-		'none end': new Layer(0, 1, 2, 3),
-		'none dead': new Layer(),
-		'none ice': new Layer(),
-		'none muddy': new Layer()
+		'start': new Layer(0, 1, 2, 3),
+		'end': new Layer(0, 1, 2, 3),
+		'dead': new Layer(),
+		'ice': new Layer(),
+		'muddy': new Layer()
 	},
 };
 

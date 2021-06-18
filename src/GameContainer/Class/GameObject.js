@@ -5,16 +5,18 @@ import Layer from './Layer';
 const w = constant.gridWidth;
 
 /* ¦y¨ë¤è¶ô */
-export default class spikedBlock {
-	constructor(pos) {
+export class spikedBlock {
+	constructor(pos = new Vec2(0, 0)) {
+		this.type = 'spikedBlock';
 		this.pos = pos;
 
 		this.detail = {
 			name: 'spikedBlock'
 		};
 
-		this.layer = new Layer(3);
 		this.perspective = false;
+
+		this.layer = new Layer(3);
 	}
 	clone() {
 		return Object.assign(Object.create(Object.getPrototypeOf(this)), JSON.parse(JSON.stringify(this)));
@@ -26,6 +28,22 @@ export default class spikedBlock {
 		return {
 			name: {type: 'text'}
 		};
+	}
+	enpackage() {
+		return {
+			type: this.type,
+			pos: { x: this.pos.x, y: this.pos.y },
+
+			name: this.detail.name,
+		};
+	}
+	unpackage(objectSetting) {
+		this.type = objectSetting.type;
+		this.pos = new Vec2(objectSetting.pos.x, objectSetting.pos.y);
+
+		this.detail.name = objectSetting.name;
+
+		this.perspective = true;
     }
 	draw(ctx) {
 		ctx.save();

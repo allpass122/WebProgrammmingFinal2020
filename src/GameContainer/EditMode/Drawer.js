@@ -1,7 +1,7 @@
 import * as api from '../Drawer';
 import Vec2 from '../Class/Vec2';
 import constant from '../constant';
-import spikedBlock from '../Class/GameObject';
+import * as GameObject from '../Class/GameObject';
 
 function Drawer(ctx, setting, status) {
 	let map = setting.map;
@@ -46,7 +46,7 @@ function Drawer(ctx, setting, status) {
 	/* 繪製編輯物件庫(這裡之後會重寫!) */
 	ctx.save();
 	const editObjectSpace = new Vec2(128, 128);
-	const objectList = [new spikedBlock(new Vec2(editObjectSpace.x * 0.5, editObjectSpace.y * 0.5))];
+	const objectList = [new GameObject.spikedBlock(new Vec2(editObjectSpace.x * 0.5, editObjectSpace.y * 0.5))];
 	ctx.translate(88, 560);
 	for (let i = 0; i < 8; i++) {
 		ctx.beginPath();

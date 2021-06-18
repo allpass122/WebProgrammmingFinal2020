@@ -18,9 +18,9 @@ export function drawMap(ctx, map) {
 	const boundaryColor = constant.boundaryColor;
 	const auxiliaryColor = constant.auxiliaryColor; 
 	const relation = (pos1, pos2) => {
-		if (map[pos1.y][pos1.x].type.includes('none') && map[pos2.y][pos2.x].type.includes('none')) return 'n_n';
 		if (map[pos1.y][pos1.x].type.includes('block') && map[pos2.y][pos2.x].type.includes('block')) return 'b_b';
-		return 'n_b';
+		if (map[pos1.y][pos1.x].type.includes('block') || map[pos2.y][pos2.x].type.includes('block')) return 'n_b';
+		return 'n_n';
 	};
 	
 	for (let y = 0; y < mapSize.y; y++) {
@@ -64,30 +64,4 @@ export function drawMap(ctx, map) {
             }
 		}
 	}
-	/*
-	for (let y = 1; y < mapSize.y; y++) {
-		for (let x = 0; x < mapSize.x; x++) {
-			let r = relation(new Vec2(x, y - 1), new Vec2(x, y));
-			if (r === 'b_b') continue;
-			ctx.beginPath();
-			ctx.moveTo(x * w, y * w);
-			ctx.lineTo((x + 1) * w, y * w);
-			ctx.strokeStyle = (r === 'n_b') ? boundaryColor : auxiliaryColor;
-			ctx.stroke();
-			ctx.closePath();
-		}
-	}
-
-	for (let y = 0; y < mapSize.y; y++) {
-		for (let x = 1; x < mapSize.x; x++) {
-			let r = relation(new Vec2(x - 1, y), new Vec2(x, y));
-			if (r === 'b_b') continue;
-			ctx.beginPath();
-			ctx.strokeStyle = (r === 'n_b') ? boundaryColor : auxiliaryColor;
-			ctx.moveTo(x * w, y * w);
-			ctx.lineTo(x * w, (y + 1) * w);
-			ctx.stroke();
-			ctx.closePath();
-		}
-	}*/
 }

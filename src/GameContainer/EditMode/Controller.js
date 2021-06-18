@@ -1,5 +1,5 @@
 import Vec2 from '../Class/Vec2';
-import spikedBlock from '../Class/GameObject';
+import * as GameObject from '../Class/GameObject';
 import constant from '../constant';
 
 export default function Controller(scene, status, setStatus, setting) {
@@ -79,7 +79,7 @@ export default function Controller(scene, status, setStatus, setting) {
 					switch (objectIndex) {
 						case 0:
 							newStatus.hold = true;
-							newStatus.holdObject = new spikedBlock(new Vec2(e.offsetX, e.offsetY));
+							newStatus.holdObject = new GameObject.spikedBlock(new Vec2(e.offsetX, e.offsetY));
 							newStatus.holdDetail = newStatus.holdObject.detailFunction();
 							newStatus.holdObject.setPerspective(true);
 							break;

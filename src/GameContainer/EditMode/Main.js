@@ -1,4 +1,4 @@
-import React, { useState , useEffect , useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Drawer from './Drawer';
 import Controller from './Controller';
 import Vec2 from '../Class/Vec2';
@@ -6,8 +6,8 @@ import Layer from '../Class/Layer';
 import constant from '../constant';
 
 function EditGameMode(props) {
-	let canvasRef = useRef();
-	let setting = props.setting;
+	const canvasRef = useRef();
+	const setting = props.setting;
 	/* 
 	 select: 目前是否有格子被選擇
 	 selecting: 目前是否正在選擇格子
@@ -48,6 +48,7 @@ function EditGameMode(props) {
 
 	/* 改變被選擇的格子屬性 */
 	const changeSelectedGridsType = (newType) => {
+		console.log('c');
 		if (!status.select) return;
 		let luPos = Vec2.leftUp(status.selectPair[0], status.selectPair[1]);
 		let rdPos = Vec2.rightDown(status.selectPair[0], status.selectPair[1]);
@@ -67,8 +68,12 @@ function EditGameMode(props) {
 
 	/* 格子屬性列表 */
 	const typeButtonPairs = [
-		['none', 'None'], ['block', 'Block'], ['none start', 'Start'], ['none end', 'End'], ['none dead', 'Dead'], ['none ice', 'Ice'], ['none muddy', 'Muddy']
+		['none', 'None'], ['block', 'Block'], ['start', 'Start'], ['end', 'End'], ['dead', 'Dead'], ['ice', 'Ice'], ['muddy', 'Muddy']
 	];
+
+	const save = () => {
+		console.log('><');
+	};
 
 	return (
 		<>
@@ -76,6 +81,7 @@ function EditGameMode(props) {
 				<canvas id='EditModeCanvas' ref={canvasRef} width={`${props.width}`} height={`${props.height}`}></canvas>
 			</div>
 			<div id='EditModeParameters'>
+				<button className='save' onClick={() => props.save(setting)}>save</button>
 				{(status.select) ? (
 					<div>
 						{typeButtonPairs.map(pair => <button className='typeButton' onClick={() => { changeSelectedGridsType(pair[0]); }}>{pair[1]}</button>)}
