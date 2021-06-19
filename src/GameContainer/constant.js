@@ -6,10 +6,10 @@ const constant = {
 	mapSize: new Vec2(32, 16), // 地圖的網格格局
 	gridWidth: 32, // 地圖的每格寬度
 	blockColor: '#E0E0E0', // 場外格子底色
-	startColor: '#BBFFBB', // 起點格子底色
-	endColor: '#FF9797', // 終點格子底色
+	startColor: '#DFFFDF', // 起點格子底色
+	endColor: '#FFD2D2', // 終點格子底色
 	noneColor: '#FFFFFF', // 空地格子底色
-	deadColor: '#D2A2CC', // 毒面格子底色
+	deadColor: '#EBD3E8', // 毒面格子底色
 	iceColor: '#D9FFFF', // 冰面格子底色
 	muddyColor: "#D6D6AD", // 泥面格子底色
 	boundaryColor: '#0080FF', // 邊界格線顏色
@@ -23,6 +23,7 @@ const constant = {
 		'ice': new Layer(),
 		'muddy': new Layer()
 	},
+	maxLayer: 5, // 最大佔據層數
 };
 
 export default constant;

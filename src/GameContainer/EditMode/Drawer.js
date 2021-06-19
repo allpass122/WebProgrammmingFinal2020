@@ -35,9 +35,11 @@ function Drawer(ctx, setting, status) {
 	ctx.restore();
 
 	/* 繪製物件 */
-	for (let i = 0; i < objects.length; i++) {
-		objects[i].draw(ctx);
-	}
+	for (let i = 0; i < constant.maxLayer; i++) {
+		for (let j = 0; j < objects.length; j++) {
+			if (objects[j].layer.top() === i) objects[j].draw(ctx);
+		}
+    }
 
 	if (status.hold) {
 		status.holdObject.draw(ctx);
@@ -46,7 +48,11 @@ function Drawer(ctx, setting, status) {
 	/* 繪製編輯物件庫(這裡之後會重寫!) */
 	ctx.save();
 	const editObjectSpace = new Vec2(128, 128);
-	const objectList = [new GameObject.spikedBlock(new Vec2(editObjectSpace.x * 0.5, editObjectSpace.y * 0.5))];
+	const objectList = [
+		new GameObject.spikedBlock(new Vec2(editObjectSpace.x * 0.5, editObjectSpace.y * 0.5)),
+		new GameObject.platform(new Vec2(editObjectSpace.x * 1.5, editObjectSpace.y * 0.5)),
+		new GameObject.bow(new Vec2(editObjectSpace.x * 2.5, editObjectSpace.y * 0.5)),
+	];
 	ctx.translate(88, 560);
 	for (let i = 0; i < 8; i++) {
 		ctx.beginPath();

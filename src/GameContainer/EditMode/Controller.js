@@ -45,7 +45,7 @@ export default function Controller(scene, status, setStatus, setting) {
 					let newStatus = { ...status };
 					let gridPos = mousePos.sub(mapStart).toGrid(32);
 					let topLayer = setting.map[gridPos.y][gridPos.x].layer.top();
-					if (topLayer != -1) { // 代表有物件疊在格子上(優先處理物件操控)
+					if (topLayer !== -1) { // 代表有物件疊在格子上(優先處理物件操控)
 						for (let i = 0; i < setting.objects.length; i++) {
 							if (setting.objects[i].pos.sub(mapStart).toGrid(w).equal(gridPos) && setting.objects[i].layer.top() === topLayer) {
 								newStatus.hold = true;
@@ -82,6 +82,20 @@ export default function Controller(scene, status, setStatus, setting) {
 							newStatus.holdObject = new GameObject.spikedBlock(new Vec2(e.offsetX, e.offsetY));
 							newStatus.holdDetail = newStatus.holdObject.detailFunction();
 							newStatus.holdObject.setPerspective(true);
+							break;
+						case 1:
+							newStatus.hold = true;
+							newStatus.holdObject = new GameObject.platform(new Vec2(e.offsetX, e.offsetY));
+							newStatus.holdDetail = newStatus.holdObject.detailFunction();
+							newStatus.holdObject.setPerspective(true);
+							break;
+						case 2:
+							newStatus.hold = true;
+							newStatus.holdObject = new GameObject.bow(new Vec2(e.offsetX, e.offsetY));
+							newStatus.holdDetail = newStatus.holdObject.detailFunction();
+							newStatus.holdObject.setPerspective(true);
+							break;
+						default:
 							break;
 					}
 					setStatus(newStatus);

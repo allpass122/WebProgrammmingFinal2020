@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Drawer from './Drawer';
+import Engine from './Engine';
 import Controller from './Controller';
 import Vec2 from '../Class/Vec2';
-import Layer from '../Class/Layer';
 import constant from '../constant';
 
 function EditGameMode(props) {
@@ -36,6 +36,8 @@ function EditGameMode(props) {
 		const update = () => {
 			/* 每一楨(fps = 60)進行的更新 */
 			Drawer(ctx, setting, status);
+			Engine(setting.objects);
+
 			requestId = requestAnimationFrame(update);
 		};
 		update();
@@ -48,7 +50,6 @@ function EditGameMode(props) {
 
 	/* 改變被選擇的格子屬性 */
 	const changeSelectedGridsType = (newType) => {
-		console.log('c');
 		if (!status.select) return;
 		let luPos = Vec2.leftUp(status.selectPair[0], status.selectPair[1]);
 		let rdPos = Vec2.rightDown(status.selectPair[0], status.selectPair[1]);
@@ -71,10 +72,6 @@ function EditGameMode(props) {
 		['none', 'None'], ['block', 'Block'], ['start', 'Start'], ['end', 'End'], ['dead', 'Dead'], ['ice', 'Ice'], ['muddy', 'Muddy']
 	];
 
-	const save = () => {
-		console.log('><');
-	};
-
 	return (
 		<>
 			<div>
@@ -89,14 +86,30 @@ function EditGameMode(props) {
 				}
 				{(status.hold) ? (
 					<div>
-						{Object.keys(status.holdDetail).map(p =>
-							<input type="text" className='parametersInput' value={status.holdObject.detail[p]} onChange={(e) => {
-								let newStatus = { ...status };
-								let newDetail = { ...status.holdObject.detail }
-								newDetail[p] = e.target.value;
-								newStatus.holdObject.detail = newDetail;
-								setStatus(newStatus);
-							}} />)}
+						{Object.keys(status.holdDetail).map(p => {
+							switch (status.holdDetail[p].type) {
+								case 'text':
+									return (<input type="text" className='parametersInput' value={status.holdObject.detail[p]} onChange={(e) => {
+										let newStatus = { ...status };
+										let newDetail = { ...status.holdObject.detail }
+										newDetail[p] = e.target.value;
+										newStatus.holdObject.detail = newDetail;
+										setStatus(newStatus);
+									}} />);
+									break;
+								default:
+									return (<select className='parametersSelect' value={status.holdObject.detail[p]} onChange={(e) => {
+										let newStatus = { ...status };
+										let newDetail = { ...status.holdObject.detail };
+										newDetail[p] = e.target.value;
+										newStatus.holdObject.detail = newDetail;
+										setStatus(newStatus);
+									}} >
+										{status.holdDetail[p].options.map(o => <option value={o}>{o}</option>)}
+									</select>);
+									break;
+							}
+						})}
 					</div>) : <div></div>
 				}
 			</div>

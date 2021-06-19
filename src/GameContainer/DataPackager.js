@@ -1,6 +1,6 @@
 import constant from './constant';
 import Layer from './Class/Layer';
-import { spikedBlock } from './Class/GameObject';
+import { spikedBlock, platform, bow } from './Class/GameObject';
 
 export function enpackage(setting) {
     const levelSetting = {
@@ -15,9 +15,11 @@ export function enpackage(setting) {
         }
         levelSetting.map[i] = types;
     } 
-    /* 物件打包 */
+/* 物件打包 */
+    let count = 0;
     for (let i = 0; i < setting.objects.length; i++) {
-        levelSetting.objects[i] = setting.objects[i].enpackage();
+        if (setting.objects[i].type === 'arrow') continue;
+        levelSetting.objects[count++] = setting.objects[i].enpackage();
     }
     return levelSetting;
 }
@@ -38,17 +40,26 @@ export function unpackage(levelSetting) {
     /* 物件拆包 */
     for (let i = 0; i < levelSetting.objects.length; i++) {
         switch (levelSetting.objects[i].type) {
-            case 'spikedBlcok':
+            case 'spikedBlock':
                 setting.objects[i] = new spikedBlock();
+                break;
+            case 'platform':
+                setting.objects[i] = new platform();
+                break;
+            case 'bow':
+                setting.objects[i] = new bow();
+                break;
+            default:
                 break;
         }
         setting.objects[i].unpackage(levelSetting.objects[i]);
+        setting.objects[i].place(setting.map);
     }
     return setting;
 }
 
-export function show(setting) {
+export function show(levelSetting) {
     const util = require('util');
 
-    console.log(util.inspect(setting, { showHidden: false, depth: null }));
+    console.log(util.inspect(levelSetting, { showHidden: false, depth: null }));
 }
