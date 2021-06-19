@@ -7,6 +7,7 @@ function Drawer(ctx, setting, status) {
 	let map = setting.map;
 	let objects = setting.objects;
 
+
 	/* ²MªÅµe¥¬ */
 	api.clear(ctx);
 
@@ -52,6 +53,8 @@ function Drawer(ctx, setting, status) {
 		new GameObject.spikedBlock(new Vec2(editObjectSpace.x * 0.5, editObjectSpace.y * 0.5)),
 		new GameObject.platform(new Vec2(editObjectSpace.x * 1.5, editObjectSpace.y * 0.5)),
 		new GameObject.bow(new Vec2(editObjectSpace.x * 2.5, editObjectSpace.y * 0.5)),
+		new GameObject.movingPlatform(new Vec2(editObjectSpace.x * 3.5, editObjectSpace.y * 0.5)),
+		new GameObject.mucus(new Vec2(editObjectSpace.x * 4.5, editObjectSpace.y * 0.5)),
 	];
 	ctx.translate(88, 560);
 	for (let i = 0; i < 8; i++) {

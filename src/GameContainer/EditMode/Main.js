@@ -97,7 +97,7 @@ function EditGameMode(props) {
 										setStatus(newStatus);
 									}} />);
 									break;
-								default:
+								case 'select':
 									return (<select className='parametersSelect' value={status.holdObject.detail[p]} onChange={(e) => {
 										let newStatus = { ...status };
 										let newDetail = { ...status.holdObject.detail };
@@ -107,6 +107,17 @@ function EditGameMode(props) {
 									}} >
 										{status.holdDetail[p].options.map(o => <option value={o}>{o}</option>)}
 									</select>);
+									break;
+								case 'int':
+									return (<input type="text" className='parametersInput' value={status.holdObject.detail[p]} onChange={(e) => {
+										let newStatus = { ...status };
+										let newDetail = { ...status.holdObject.detail }
+										let newValue = ~~e.target.value;
+										newDetail[p] = (newValue < status.holdDetail[p].min) ? status.holdDetail[p].min :
+													   (newValue > status.holdDetail[p].max) ? status.holdDetail[p].max : newValue;
+										newStatus.holdObject.detail = newDetail;
+										setStatus(newStatus);
+									}} />);
 									break;
 							}
 						})}
