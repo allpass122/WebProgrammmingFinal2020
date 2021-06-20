@@ -14,7 +14,8 @@ const constant = {
     CanvasWidth: "1500",
     CanvasHeight: "700",
 	translate: {x: -90,y:-80},
-	scale: {w: 1.4,h:1.4}
+	scale: {w: 1.4,h:1.4},
+	PlayerR: 10
 };
 
 export default constant;

@@ -46,7 +46,7 @@ export const PlayMapCreater = (props) => {
         
 		function update()  {
 			requestId = requestAnimationFrame(update);
-            updateState(status)
+            updateState(status, setting)
 			
             now = Date.now();
             elapsed = now - then;
@@ -84,7 +84,7 @@ export const PlayMapCreater = (props) => {
 
         <div>
             <canvas ref={canvasRef} id='PlayModeCanvas'  width={CONSTANT.CanvasWidth}  height={CONSTANT.CanvasHeight} 
-            style={{position: "absolute", left: 0, top: 50, zIndex: 0}}></canvas>
+            style={{position: "absolute", left: 0, top: 100, zIndex: 0}}></canvas>
         </div>
         </>
     )

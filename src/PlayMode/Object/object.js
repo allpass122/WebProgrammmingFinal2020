@@ -3,16 +3,12 @@ import Vec2 from "../../GameContainer/Class/Vec2";
 export default class Object {
   constructor(id, x, y, dir, velocity) {
     this.id = id;
-    // this.x = x;
-    // this.y = y;
     this.loc = new Vec2(x, y)
     this.direction = dir;
     this.velocity = velocity;
   }
 
   update(dt) {
-    // console.log('dt/1000',dt/1000)
-    // console.log('this speed', this.speed)
     this.loc = this.loc.add( this.velocity.mul(dt) )
   }
 
@@ -22,9 +18,6 @@ export default class Object {
   //   return Math.sqrt(dx * dx + dy * dy);
   // }
 
-  // setDirection(dir) {
-  //   this.direction = dir;
-  // }
 
   serializeForUpdate() {
     return {

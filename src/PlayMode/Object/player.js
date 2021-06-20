@@ -1,65 +1,89 @@
-// const ObjectClass = require('./object');
-// const Bullet = require('./bullet');
-// const Constants = require('../shared/constants');
 import ObjectClass from './object';
-import Constants from '../../shared/constants';
 import Vec2 from '../../GameContainer/Class/Vec2';
 const PUSH_FORCE = 300
+const FRICTION = 0.02
 
 export default class Player extends ObjectClass {
   constructor(id, username, x, y) {
-    super(id, x, y, Math.random() * 2 * Math.PI, new Vec2(1,1));
+    super(id, x, y, Math.random() * 2 * Math.PI, new Vec2(1, 1));
     this.username = username;
-    this.hp = Constants.PLAYER_MAX_HP;
-    this.fireCooldown = 0;
     this.score = 0;
 
-    this.friction = 0.03
+    this.friction = FRICTION
     this.m = 1
-    this.force =  new Vec2(0, 0)
-    this.acceleration =  new Vec2(0, 0)
+    this.force = new Vec2(0, 0)
+    this.acceleration = new Vec2(0, 0)
+    this.lastLoc = new Vec2(x, y)
   }
 
-  // Returns a newly created bullet, or null.
+
   update(dt) {
     // ms to s
-    dt = dt / 1000 
-
+    dt = dt / 1000
     this.updateFAV(dt)
 
-
     // Update score
-    this.score += dt * Constants.SCORE_PER_SECOND;
 
     // Make sure the player stays in bounds
-    // this.x = Math.max(0, Math.min(Constants.MAP_SIZE, this.x));
-    // this.y = Math.max(0, Math.min(Constants.MAP_SIZE, this.y));
 
-    // Fire a bullet, if needed
-    this.fireCooldown -= dt;
-    if (this.fireCooldown <= 0) {
-      this.fireCooldown += Constants.PLAYER_FIRE_COOLDOWN;
-      // return new Bullet(this.id, this.x, this.y, this.direction);
-    }
 
     return null;
   }
 
   updateFAV(dt) {
     // acceleration change  a = (F + f*v*v) / m
-    const v2 = new Vec2( this.velocity.x*Math.abs(this.velocity.x), this.velocity.y*Math.abs(this.velocity.y) )
-    this.acceleration = this.force.sub( v2.mul(this.friction)).div(this.m)
+    const v2 = new Vec2(this.velocity.x * Math.abs(this.velocity.x), this.velocity.y * Math.abs(this.velocity.y))
+    this.acceleration = this.force.sub(v2.mul(this.friction)).div(this.m)
 
     // velocity change
-    this.velocity = this.velocity.add( this.acceleration.mul(dt) )
-    console.log('vel = ', this.velocity)
+    this.velocity = this.velocity.add(this.acceleration.mul(dt))
 
     // location change
     super.update(dt);
     this.force = new Vec2(0, 0)
   }
-  moveTo(x,y) {
+
+  moveTo(x, y) {
     this.loc = new Vec2(x, y)
+  }
+
+  squareRebound(target) {
+    const vector = (new Vec2(this.loc.x - target.x, this.loc.y - target.y))
+    const Theta = Math.atan2(vector.y, vector.x)
+    // console.log(Theta)
+    // bound lower, left, upper, right in order
+    if (-3 / 4 * Math.PI < Theta && Theta < -1 / 4 * Math.PI)
+      this.rebound(new Vec2(this.loc.x, 999))
+    else if (-1 / 4 * Math.PI < Theta && Theta < 1 / 4 * Math.PI)
+      this.rebound(new Vec2(0, this.loc.y))
+    else if (1 / 4 * Math.PI < Theta && Theta < 3 / 4 * Math.PI)
+      this.rebound(new Vec2(this.loc.x, 0))
+    else if (3 / 4 * Math.PI < Theta || (-3 / 4 * Math.PI > Theta && Theta < 0))
+      this.rebound(new Vec2(999, this.loc.y))
+    else
+      console.log("why? no bound")
+  }
+
+  rebound(target) {
+    const normal = (new Vec2(this.loc.x - target.x, this.loc.y - target.y))
+    const reflectLineTheta = Math.atan2(normal.y, normal.x) + 0.5 * Math.PI
+    // const reflectLineTheta = Math.acos( normal.x / Math.sqrt( Math.pow(normal.x,2)+Math.pow(normal.y,2) )) + 0.5*Math.PI
+    const newVelocityX = Math.cos(2 * reflectLineTheta) * this.velocity.x + Math.sin(2 * reflectLineTheta) * this.velocity.y
+    const newVelocityY = Math.sin(2 * reflectLineTheta) * this.velocity.x - Math.cos(2 * reflectLineTheta) * this.velocity.y
+    this.velocity = new Vec2(newVelocityX, newVelocityY)
+  }
+
+
+  returnLastLoc(dt) {
+    this.loc = this.lastLoc
+  }
+
+  setFriction(ratio) {
+    this.friction = FRICTION * ratio
+  }
+
+  updateLastLoc() {
+    this.lastLoc = this.loc
   }
 
   push(dir) {
@@ -75,23 +99,14 @@ export default class Player extends ObjectClass {
         break
       case 'up':
         this.force = new Vec2(0, -PUSH_FORCE)
-          break 
+        break
       default:
-        console.log("move direction not handled")
-    } 
-    // if (this.force.x > FORCE_MAX ) this.force = new Vec2(FORCE_MAX, this.force.y)
+        console.log("key not handled")
+    }
   }
 
-  // takeBulletDamage() {
-  //   this.hp -= Constants.BULLET_DAMAGE;
-  // }
-
-  // onDealtDamage() {
-  //   this.score += Constants.SCORE_BULLET_HIT;
-  // }
 
   serializeForUpdate() {
-    console.log('player loc ',this.loc.x, this.loc.y)
     return {
       ...(super.serializeForUpdate()),
       direction: this.direction,
@@ -100,4 +115,3 @@ export default class Player extends ObjectClass {
   }
 }
 
-// module.exports = Player;
