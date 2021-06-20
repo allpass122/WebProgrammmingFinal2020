@@ -7,7 +7,6 @@ function Drawer(ctx, setting, status) {
 	let map = setting.map;
 	let objects = setting.objects;
 
-
 	/* ²MªÅµe¥¬ */
 	api.clear(ctx);
 
@@ -42,7 +41,7 @@ function Drawer(ctx, setting, status) {
 		}
     }
 
-	if (status.hold) {
+	if (status.holding || status.hold) {
 		status.holdObject.draw(ctx);
     }
 
