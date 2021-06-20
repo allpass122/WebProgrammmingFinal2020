@@ -1,11 +1,12 @@
 import * as api from '../Drawer';
 import Vec2 from '../Class/Vec2';
 import constant from '../constant';
-import spikedBlock from '../Class/GameObject';
+import * as GameObject from '../Class/GameObject';
 
 function Drawer(ctx, setting, status) {
 	let map = setting.map;
 	let objects = setting.objects;
+
 
 	/* 清空畫布 */
 	api.clear(ctx);
@@ -35,9 +36,11 @@ function Drawer(ctx, setting, status) {
 	ctx.restore();
 
 	/* 繪製物件 */
-	for (let i = 0; i < objects.length; i++) {
-		objects[i].draw(ctx);
-	}
+	for (let i = 0; i < constant.maxLayer; i++) {
+		for (let j = 0; j < objects.length; j++) {
+			if (objects[j].layer.top() === i) objects[j].draw(ctx);
+		}
+    }
 
 	if (status.hold) {
 		status.holdObject.draw(ctx);
@@ -46,7 +49,13 @@ function Drawer(ctx, setting, status) {
 	/* 繪製編輯物件庫(這裡之後會重寫!) */
 	ctx.save();
 	const editObjectSpace = new Vec2(128, 128);
-	const objectList = [new spikedBlock(new Vec2(editObjectSpace.x * 0.5, editObjectSpace.y * 0.5))];
+	const objectList = [
+		new GameObject.spikedBlock(new Vec2(editObjectSpace.x * 0.5, editObjectSpace.y * 0.5)),
+		new GameObject.platform(new Vec2(editObjectSpace.x * 1.5, editObjectSpace.y * 0.5)),
+		new GameObject.bow(new Vec2(editObjectSpace.x * 2.5, editObjectSpace.y * 0.5)),
+		new GameObject.movingPlatform(new Vec2(editObjectSpace.x * 3.5, editObjectSpace.y * 0.5)),
+		new GameObject.mucus(new Vec2(editObjectSpace.x * 4.5, editObjectSpace.y * 0.5)),
+	];
 	ctx.translate(88, 560);
 	for (let i = 0; i < 8; i++) {
 		ctx.beginPath();

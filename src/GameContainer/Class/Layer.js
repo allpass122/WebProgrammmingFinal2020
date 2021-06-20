@@ -3,10 +3,10 @@ const maxLayer = 5;
 export default class Layer {
     constructor(...status) { // new Layer(0, 1, 3) 創造佔據層數 0, 1, 3 的物件
         this.status = [false, false, false, false, false];
-        if (status.length != 0) this.fill(...status);
+        if (status.length !== 0) this.fill(...status);
     }
     fill(...targets) { // fill(2, 4) 把層數 2, 4 佔據 (預設為全部填滿) * 屬強制覆蓋
-        if (targets.length != 0) {
+        if (targets.length !== 0) {
             for (let i = 0; i < targets.length; i++) {
                 if (targets[i] < maxLayer && targets[i] >= 0) {
                     this.status[targets[i]] = true;
@@ -15,7 +15,7 @@ export default class Layer {
         } else this.status = [true, true, true, true, true];
     }
     clear(...targets) { // claer(0, 1, 3) 把層數 0, 1, 3 解除佔據 (預設為全部清空) * 屬強制清空
-        if (targets.length != 0) {
+        if (targets.length !== 0) {
             for (let i = 0; i < targets.length; i++) {
                 if (targets[i] < maxLayer && targets[i] >= 0) {
                     this.status[targets[i]] = false;
