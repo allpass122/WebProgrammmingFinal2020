@@ -53,6 +53,7 @@ export function unpackage(levelSetting) {
                 break;
             case 'mucus':
                 setting.objects[i] = new mucus();
+                break;
             default:
                 break;
         }

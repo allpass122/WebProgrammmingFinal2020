@@ -11,20 +11,24 @@ function EditGameMode(props) {
 	const canvasRef = useRef();
 	const setting = props.setting;
 	/* 
-	 select: ¥Ø«e¬O§_¦³®æ¤l³Q¿ï¾Ü
-	 selecting: ¥Ø«e¬O§_¥¿¦b¿ï¾Ü®æ¤l
-	 selectPair: ³Q¿ï¾Üªº¦h­Ó®æ¤l¤¤¨â­Ó¹ï¨¤ªº¦ì¤l
-	 hold: ¥Ø«e¬O§_¦³ª«¥ó³Q¾Ş±±
-	 holdObject: ³Q¾Ş±±ªºª«¥ó
-	 holdDetail: ³Q¾Ş±±ªºª«¥ó²Ó¸`¦Cªí
+	 select: ï¿½Ø«eï¿½Oï¿½_ï¿½ï¿½ï¿½ï¿½lï¿½Qï¿½ï¿½ï¿½
+	 selecting: ï¿½Ø«eï¿½Oï¿½_ï¿½ï¿½ï¿½bï¿½ï¿½Ü®ï¿½l
+	 selectPair: ï¿½Qï¿½ï¿½Üªï¿½ï¿½hï¿½Ó®ï¿½lï¿½ï¿½ï¿½ï¿½Ó¹ï¨¤ï¿½ï¿½ï¿½ï¿½l
+	 hold: ï¿½Ø«eï¿½Oï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Qï¿½Ş±ï¿½(ï¿½È½Õ¾ï¿½Ñ¼ï¿½)
+	 holding: ï¿½Ø«eï¿½Oï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½ó¥¿¦bï¿½Qï¿½Ş±ï¿½(ï¿½ï¿½ï¿½Ê¨Ã¥Bï¿½Õ¾ï¿½Ñ¼ï¿½)
+	 holdObject: ï¿½Qï¿½Ş±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	 holdDetail: ï¿½Qï¿½Ş±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¸`ï¿½Cï¿½ï¿½
+	 ctrl: ctrlï¿½ï¿½Oï¿½_ï¿½Qï¿½ï¿½ï¿½U
 	*/
 	const [status, setStatus] = useState({
 		select: false,
 		selecting: false,
 		selectPair: [new Vec2(), new Vec2()],
 		hold: false,
+		holding: false,
 		holdObject: null,
 		holdDetail: {},
+		ctrl: false,
 	});
 	let cancelController;
 	let requestId;
@@ -39,8 +43,8 @@ function EditGameMode(props) {
 		let renderCount = 0
 		const update = () => {
 			/* ï¿½Cï¿½@ï¿½ï¿½(fps = 60)ï¿½iï¿½æªºï¿½ï¿½s */
-			Drawer(ctx, setting, status);
 			Engine(setting.objects);
+			Drawer(ctx, setting, status);
 
 			requestId = requestAnimationFrame(update);
 			if (renderCount++ % 100 === 0) console.log(renderCount)
@@ -53,7 +57,7 @@ function EditGameMode(props) {
 		};
 	}, [setStatus, status, setting]);
 
-	/* §ïÅÜ³Q¿ï¾Üªº®æ¤lÄİ©Ê */
+	/* ï¿½ï¿½ï¿½Ü³Qï¿½ï¿½Üªï¿½ï¿½ï¿½lï¿½İ©ï¿½ */
 	const changeSelectedGridsType = (newType) => {
 		if (!status.select) return;
 		let luPos = Vec2.leftUp(status.selectPair[0], status.selectPair[1]);
@@ -72,7 +76,7 @@ function EditGameMode(props) {
 		}
 	};
 
-	/* ®æ¤lÄİ©Ê¦Cªí */
+	/* ï¿½ï¿½lï¿½İ©Ê¦Cï¿½ï¿½ */
 	const typeButtonPairs = [
 		['none', 'None'], ['block', 'Block'], ['start', 'Start'], ['end', 'End'], ['dead', 'Dead'], ['ice', 'Ice'], ['muddy', 'Muddy']
 	];
@@ -111,41 +115,54 @@ function EditGameMode(props) {
 						{typeButtonPairs.map(pair => <button className='typeButton' onClick={() => { changeSelectedGridsType(pair[0]); }}>{pair[1]}</button>)}
 					</div>) : <div></div>
 				}
-				{(status.hold) ? (
+				{(status.holding || status.hold) ? (
 					<div>
 						{Object.keys(status.holdDetail).map(p => {
 							switch (status.holdDetail[p].type) {
 								case 'text':
-									return (<input type="text" className='parametersInput' value={status.holdObject.detail[p]} onChange={(e) => {
+									return (<input key={p} type="text" className='parametersInput' value={status.holdObject.detail[p]} onChange={(e) => {
 										let newStatus = { ...status };
 										let newDetail = { ...status.holdObject.detail }
 										newDetail[p] = e.target.value;
 										newStatus.holdObject.detail = newDetail;
 										setStatus(newStatus);
 									}} />);
-									break;
 								case 'select':
-									return (<select className='parametersSelect' value={status.holdObject.detail[p]} onChange={(e) => {
+									return (<select key={p} className='parametersSelect' value={status.holdObject.detail[p]} onChange={(e) => {
 										let newStatus = { ...status };
 										let newDetail = { ...status.holdObject.detail };
 										newDetail[p] = e.target.value;
 										newStatus.holdObject.detail = newDetail;
 										setStatus(newStatus);
 									}} >
-										{status.holdDetail[p].options.map(o => <option value={o}>{o}</option>)}
+										{status.holdDetail[p].options.map(o => <option key={o} value={o}>{o}</option>)}
 									</select>);
-									break;
 								case 'int':
-									return (<input type="text" className='parametersInput' value={status.holdObject.detail[p]} onChange={(e) => {
-										let newStatus = { ...status };
-										let newDetail = { ...status.holdObject.detail }
-										let newValue = ~~e.target.value;
-										newDetail[p] = (newValue < status.holdDetail[p].min) ? status.holdDetail[p].min :
-													   (newValue > status.holdDetail[p].max) ? status.holdDetail[p].max : newValue;
-										newStatus.holdObject.detail = newDetail;
-										setStatus(newStatus);
+									return (<input key={p} type="text" className='parametersInput' placeholder={status.holdObject.detail[p]} onKeyUp={(e) => {
+										if (e.key === 'Enter') {
+											e.preventDefault();
+											let newStatus = { ...status };
+											let newDetail = { ...status.holdObject.detail }
+											let newValue = ~~e.target.value;
+											newDetail[p] = (newValue < status.holdDetail[p].min) ? status.holdDetail[p].min :
+														   (newValue > status.holdDetail[p].max) ? status.holdDetail[p].max : newValue;
+											e.target.value = newDetail[p];
+											newStatus.holdObject.detail = newDetail;
+											setStatus(newStatus);
+										}
 									}} />);
-									break;
+								case 'check':
+									return (<div key={`div_${p}`}>
+										<input key={`input_${p}`} type="checkbox" className='parametersCheck' checked={status.holdObject.detail[p]} onChange={(e) => {
+											let newStatus = { ...status };
+											let newDetail = { ...status.holdObject.detail }
+											newDetail[p] = e.target.checked;
+											newStatus.holdObject.detail = newDetail;
+											setStatus(newStatus);
+										}} /> <label key={`label_${p}`}>{p}</label>
+									</div>);
+								default:
+									return (<div></div>);
 							}
 						})}
 					</div>) : <div></div>

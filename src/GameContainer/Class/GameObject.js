@@ -4,6 +4,24 @@ import Layer from './Layer';
 
 const uuidv4 = require("uuid/v4");
 const w = constant.gridWidth;
+const isCollision = (obj1, obj2) => {
+    if (obj1.type === 'sphere' && obj2.type === 'sphere') {
+        return obj1.pos.sub(obj2.pos).length() <= (obj1.r + obj2.r);
+    }
+    if ((obj1.type === 'sphere' && obj2.type === 'cube') || (obj2.type === 'sphere' && obj1.type === 'cube')) {
+        const sObj = (obj1.type === 'sphere') ? obj1 : obj2;
+        const cObj = (obj1.type === 'cube') ? obj1 : obj2;
+        if (sObj.pos.between(cObj.pos.sub(cObj.size.mul(0.5)).sub(new Vec2(sObj.r, 0)), cObj.pos.add(cObj.size.mul(0.5)).add(new Vec2(sObj.r, 0)))) return true;
+        if (sObj.pos.between(cObj.pos.sub(cObj.size.mul(0.5)).sub(new Vec2(0, sObj.r)), cObj.pos.add(cObj.size.mul(0.5)).add(new Vec2(0, sObj.r)))) return true;
+        const pointList = ([[-0.5, -0.5], [0.5, -0.5], [0.5, 0.5], [-0.5, 0.5]]).map(p => cObj.pos.add(new Vec2(p[0] * cObj.size.x, p[1] * cObj.size.y)));
+        return Math.min(pointList.map(p => p.sub(sObj.pos))) <= sObj.r;
+    }
+    if (obj1.type === 'cube' && obj2.type === 'cube') {
+        return (Math.abs(obj1.pos.x - obj2.pos.x) <= (obj1.size.x / 2 + obj2.size.x / 2)) && (Math.abs(obj1.pos.y - obj2.pos.y) <= (obj1.size.y / 2 + obj2.size.y / 2));
+    }
+    return false;
+};
+
 
 /* 尖刺方塊 */
 export class spikedBlock {
@@ -14,7 +32,11 @@ export class spikedBlock {
         this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
 
         this.detail = {
-            name: 'spikedBlock'
+            name: 'spikedBlock',
+            upSpike: true,
+            downSpike: true,
+            leftSpike: true,
+            rightSpike: true,
         };
 
         this.loadable = false;
@@ -33,7 +55,11 @@ export class spikedBlock {
     }
     detailFunction() {
         return {
-            name: { type: 'text' }
+            name: { type: 'text' },
+            upSpike: { type: 'check' },
+            downSpike: { type: 'check' },
+            leftSpike: { type: 'check' },
+            rightSpike: { type: 'check' },
         };
     }
     enpackage() {
@@ -44,6 +70,10 @@ export class spikedBlock {
             pos: { x: originPos.x, y: originPos.y },
 
             name: this.detail.name,
+            upSpike: this.detail.upSpike,
+            downSpike: this.detail.downSpike,
+            leftSpike: this.detail.leftSpike,
+            rightSpike: this.detail.rightSpike,
         };
     }
     unpackage(objectSetting) {
@@ -53,8 +83,25 @@ export class spikedBlock {
         this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
 
         this.detail.name = objectSetting.name;
+        this.detail.upSpike = objectSetting.upSpike;
+        this.detail.downSpike = objectSetting.downSpike;
+        this.detail.leftSpike = objectSetting.leftSpike;
+        this.detail.rightSpike = objectSetting.rightSpike;
 
         this.perspective = true;
+    }
+    collision(target) {
+        switch (target.type) {
+            case 'sphere':
+                if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(w, w) }, target)) return 'block';
+                if (isCollision({ type: 'cube', pos: this.pos.add(new Vec2(-0.625 * w, 0)), size: new Vec2(0.25 * w, 0.75 * w) }, target) ||
+                    isCollision({ type: 'cube', pos: this.pos.add(new Vec2(0.625 * w, 0)), size: new Vec2(0.25 * w, 0.75 * w) }, target) ||
+                    isCollision({ type: 'cube', pos: this.pos.add(new Vec2(0, -0.625 * w)), size: new Vec2(0.25 * w, 0.75 * w) }, target) ||
+                    isCollision({ type: 'cube', pos: this.pos.add(new Vec2(0, 0.625 * w)), size: new Vec2(0.25 * w, 0.75 * w) }, target)) return 'spike';
+                return 'none';
+            default:
+                return 'none';
+        }
     }
     draw(ctx) {
         ctx.save();
@@ -62,11 +109,15 @@ export class spikedBlock {
         ctx.globalAlpha = (this.perspective) ? 0.4 : 1;
 
         ctx.beginPath();
-        ctx.moveTo((-0.5) * w, (-0.5) * w);
-        for (let i = 1; i <= 8; i++) ctx.lineTo((-0.5 + 0.125 * i) * w, (-0.5 - 0.25 * (i % 2)) * w);
-        for (let i = 1; i <= 8; i++) ctx.lineTo((0.5 + 0.25 * (i % 2)) * w, (-0.5 + 0.125 * i) * w);
-        for (let i = 1; i <= 8; i++) ctx.lineTo((0.5 - 0.125 * i) * w, (0.5 + 0.25 * (i % 2)) * w);
-        for (let i = 1; i <= 8; i++) ctx.lineTo((-0.5 - 0.25 * (i % 2)) * w, (0.5 - 0.125 * i) * w);
+        ctx.moveTo(-0.5 * w, -0.5 * w);
+        if (this.detail.upSpike) for (let i = 1; i <= 8; i++) ctx.lineTo((-0.5 + 0.125 * i) * w, (-0.5 - 0.25 * (i % 2)) * w);
+        ctx.lineTo(0.5 * w, -0.5 * w);
+        if (this.detail.rightSpike) for (let i = 1; i <= 8; i++) ctx.lineTo((0.5 + 0.25 * (i % 2)) * w, (-0.5 + 0.125 * i) * w);
+        ctx.lineTo(0.5 * w, 0.5 * w);
+        if (this.detail.downSpike) for (let i = 1; i <= 8; i++) ctx.lineTo((0.5 - 0.125 * i) * w, (0.5 + 0.25 * (i % 2)) * w);
+        ctx.lineTo(-0.5 * w, 0.5 * w);
+        if (this.detail.leftSpike) for (let i = 1; i <= 8; i++) ctx.lineTo((-0.5 - 0.25 * (i % 2)) * w, (0.5 - 0.125 * i) * w);
+        ctx.lineTo(-0.5 * w, -0.5 * w);
         ctx.fillStyle = '#7B7B7B';
         ctx.fill();
         ctx.strokeStyle = 'black';
@@ -87,24 +138,24 @@ export class spikedBlock {
         this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
         let gridPos = this.gridPos;
         if ((constant.typeLayerPairs[map[gridPos.y][gridPos.x].type].isOverlap(this.layer)) ||
-            (gridPos.x - 1 >= 0 && constant.typeLayerPairs[map[gridPos.y][gridPos.x - 1].type].isOverlap(this.layer)) ||
-            (gridPos.y - 1 >= 0 && constant.typeLayerPairs[map[gridPos.y - 1][gridPos.x].type].isOverlap(this.layer)) ||
-            (gridPos.x + 1 < constant.mapSize.x && constant.typeLayerPairs[map[gridPos.y][gridPos.x + 1].type].isOverlap(this.layer)) ||
-            (gridPos.y + 1 < constant.mapSize.y && constant.typeLayerPairs[map[gridPos.y + 1][gridPos.x].type].isOverlap(this.layer))) {
+            (this.detail.leftSpike && gridPos.x - 1 >= 0 && constant.typeLayerPairs[map[gridPos.y][gridPos.x - 1].type].isOverlap(this.layer)) ||
+            (this.detail.upSpike && gridPos.y - 1 >= 0 && constant.typeLayerPairs[map[gridPos.y - 1][gridPos.x].type].isOverlap(this.layer)) ||
+            (this.detail.rightSpike && gridPos.x + 1 < constant.mapSize.x && constant.typeLayerPairs[map[gridPos.y][gridPos.x + 1].type].isOverlap(this.layer)) ||
+            (this.detail.downSpike && gridPos.y + 1 < constant.mapSize.y && constant.typeLayerPairs[map[gridPos.y + 1][gridPos.x].type].isOverlap(this.layer))) {
             return false;
         }
         if ((map[gridPos.y][gridPos.x].layer.isOverlap(this.layer)) ||
-            (gridPos.x - 1 >= 0 && map[gridPos.y][gridPos.x - 1].layer.isOverlap(this.layer)) ||
-            (gridPos.y - 1 >= 0 && map[gridPos.y - 1][gridPos.x].layer.isOverlap(this.layer)) ||
-            (gridPos.x + 1 < constant.mapSize.x && map[gridPos.y][gridPos.x + 1].layer.isOverlap(this.layer)) ||
-            (gridPos.y + 1 < constant.mapSize.y && map[gridPos.y + 1][gridPos.x].layer.isOverlap(this.layer))) {
+            (this.detail.leftSpike && gridPos.x - 1 >= 0 && map[gridPos.y][gridPos.x - 1].layer.isOverlap(this.layer)) ||
+            (this.detail.upSpike && gridPos.y - 1 >= 0 && map[gridPos.y - 1][gridPos.x].layer.isOverlap(this.layer)) ||
+            (this.detail.rightSpike && gridPos.x + 1 < constant.mapSize.x && map[gridPos.y][gridPos.x + 1].layer.isOverlap(this.layer)) ||
+            (this.detail.downSpike && gridPos.y + 1 < constant.mapSize.y && map[gridPos.y + 1][gridPos.x].layer.isOverlap(this.layer))) {
             return false;
         }
         map[gridPos.y][gridPos.x].layer.add(this.layer);
-        if (gridPos.x - 1 >= 0) map[gridPos.y][gridPos.x - 1].layer.add(this.layer);
-        if (gridPos.y - 1 >= 0) map[gridPos.y - 1][gridPos.x].layer.add(this.layer);
-        if (gridPos.x + 1 < constant.mapSize.x) map[gridPos.y][gridPos.x + 1].layer.add(this.layer);
-        if (gridPos.y + 1 < constant.mapSize.y) map[gridPos.y + 1][gridPos.x].layer.add(this.layer);
+        if (this.detail.leftSpike && gridPos.x - 1 >= 0) map[gridPos.y][gridPos.x - 1].layer.add(this.layer);
+        if (this.detail.upSpike && gridPos.y - 1 >= 0) map[gridPos.y - 1][gridPos.x].layer.add(this.layer);
+        if (this.detail.rightSpike && gridPos.x + 1 < constant.mapSize.x) map[gridPos.y][gridPos.x + 1].layer.add(this.layer);
+        if (this.detail.downSpike && gridPos.y + 1 < constant.mapSize.y) map[gridPos.y + 1][gridPos.x].layer.add(this.layer);
         if (map[gridPos.y][gridPos.x].layer.status[2]) {
             for (let i = 0; i < objects.length; i++) {
                 if (objects[i].gridPos.equal(gridPos) && objects[i].layer.top() === 2) {
@@ -123,13 +174,13 @@ export class spikedBlock {
     remove(map, objects = null) {
         let gridPos = this.gridPos;
         map[gridPos.y][gridPos.x].layer.sub(this.layer);
-        if (gridPos.x - 1 >= 0) map[gridPos.y][gridPos.x - 1].layer.sub(this.layer);
-        if (gridPos.y - 1 >= 0) map[gridPos.y - 1][gridPos.x].layer.sub(this.layer);
-        if (gridPos.x + 1 < constant.mapSize.x) map[gridPos.y][gridPos.x + 1].layer.sub(this.layer);
-        if (gridPos.y + 1 < constant.mapSize.y) map[gridPos.y + 1][gridPos.x].layer.sub(this.layer);
+        if (this.detail.leftSpike && gridPos.x - 1 >= 0) map[gridPos.y][gridPos.x - 1].layer.sub(this.layer);
+        if (this.detail.upSpike && gridPos.y - 1 >= 0) map[gridPos.y - 1][gridPos.x].layer.sub(this.layer);
+        if (this.detail.rightSpike && gridPos.x + 1 < constant.mapSize.x) map[gridPos.y][gridPos.x + 1].layer.sub(this.layer);
+        if (this.detail.downSpike && gridPos.y + 1 < constant.mapSize.y) map[gridPos.y + 1][gridPos.x].layer.sub(this.layer);
         if (map[gridPos.y][gridPos.x].layer.status[2]) {
             for (let i = 0; i < objects.length; i++) {
-                if (objects[i].gridPos.toGrid(w).equal(gridPos) && objects[i].layer.top() === 2) {
+                if (objects[i].gridPos.equal(gridPos) && objects[i].layer.top() === 2) {
                     if (objects[i].loadable) objects[i].loadObject = null;
                     break;
                 }
@@ -250,9 +301,10 @@ export class movingPlatform {
         };
 
         this.loadable = true;
-        this.loadObject =  null;
+        this.loadObject = null;
 
-        this.life = 0;
+        this.lastRecord = Date.now();
+        this.active = false;
         this.perspective = false;
 
         this.layer = new Layer(1);
@@ -270,7 +322,7 @@ export class movingPlatform {
             name: { type: 'text' },
             direction: { type: 'select', options: ['up', 'down', 'left', 'right'] },
             distance: { type: 'int', min: 0, max: 31 },
-            speed: { type: 'select', options: ['super slow', 'slow', 'normal', 'fast', 'super fast']}
+            speed: { type: 'select', options: ['super slow', 'slow', 'normal', 'fast', 'super fast'] }
         };
     }
     enpackage() {
@@ -299,26 +351,28 @@ export class movingPlatform {
 
         this.perspective = true;
     }
-    update(frames = 1) {
-        this.life += frames;
+    update(objects = null) {
         const parameters = {
-            'super slow': 240, 'slow': 120, 'normal': 60, 'fast': 30, 'super fast': 15,
+            'super slow': 4000, 'slow': 2000, 'normal': 1000, 'fast': 500, 'super fast': 200,
         };
-        const dir = this.detail.direction;
-        const dirVec = (dir === 'up') ? new Vec2(0, -1) : (dir === 'down') ? new Vec2(0, 1) : (dir === 'left') ? new Vec2(-1, 0) : new Vec2(1, 0);
-        if (this.loadObject) {
-            if (~~(this.life / parameters[this.detail.speed] / this.detail.distance) % 2 === 0) {
-                this.loadObject.object.pos = this.pos.add(dirVec.mul(this.detail.distance * w * ((this.life / parameters[this.detail.speed] / this.detail.distance) % 1)));
-            } else {
-                this.loadObject.object.pos = this.pos.add(dirVec.mul(this.detail.distance * w * (1 - (this.life / parameters[this.detail.speed] / this.detail.distance) % 1)));
-            }
+        const dirVec = Vec2.direction(this.detail.direction).mul(this.detail.distance * w);
+        const originPos = this.gridPos.mul(w).add(constant.mapStart).add(new Vec2(0.5 * w, 0.5 * w));
+        if (~~((Date.now() - this.lastRecord) / parameters[this.detail.speed] / this.detail.distance) % 2 === 0) {
+            this.pos = originPos.add(dirVec.mul(((Date.now() - this.lastRecord) / parameters[this.detail.speed] / this.detail.distance) % 1));
+        } else {
+            this.pos = originPos.add(dirVec.mul(1 - ((Date.now() - this.lastRecord) / parameters[this.detail.speed] / this.detail.distance) % 1));
         }
+        if (this.loadObject) this.loadObject.object.pos = this.pos;
         return { type: 'none' };
     }
     draw(ctx) {
         ctx.save();
-        ctx.translate(this.pos.x, this.pos.y);
+        const originPos = this.gridPos.mul(w).add(constant.mapStart).add(new Vec2(0.5 * w, 0.5 * w));
+        if (this.active) ctx.translate(originPos.x, originPos.y);
+        else ctx.translate(this.pos.x, this.pos.y);
         ctx.globalAlpha = (this.perspective) ? 0.8 : 1;
+
+        ctx.save();
         let dir = this.detail.direction;
         ctx.rotate((dir === 'up') ? 0 : (dir === 'down') ? Math.PI : (dir === 'left') ? 1.5 * Math.PI : 0.5 * Math.PI);
 
@@ -344,13 +398,11 @@ export class movingPlatform {
         ctx.closePath();
         ctx.restore();
 
-        const parameters = {
-            'super slow': 240, 'slow': 120, 'normal': 60, 'fast': 30, 'super fast': 15,
-        };
-        if (~~(this.life / parameters[this.detail.speed] / this.detail.distance) % 2 === 0) {
-            ctx.translate(0, - this.detail.distance * w * ((this.life / parameters[this.detail.speed] / this.detail.distance) % 1));
-        } else {
-            ctx.translate(0, - this.detail.distance * w * (1 - (this.life / parameters[this.detail.speed] / this.detail.distance) % 1));
+        ctx.restore();
+
+        if (this.active) {
+            const relativePos = this.pos.sub(originPos);
+            ctx.translate(relativePos.x, relativePos.y);
         }
 
         ctx.beginPath();
@@ -376,10 +428,12 @@ export class movingPlatform {
         ctx.strokeStyle = '#f4f788';
         ctx.stroke();
         ctx.closePath();
-        
+
         ctx.restore();
     }
     place(map, objects) {
+        this.active = true;
+        this.lastRecord = Date.now();
         this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
         let gridPos = this.gridPos;
         if (constant.typeLayerPairs[map[gridPos.y][gridPos.x].type].isOverlap(this.layer)) return false;
@@ -399,6 +453,7 @@ export class movingPlatform {
         return true;
     }
     remove(map, objects = null) {
+        this.active = false;
         let gridPos = this.gridPos;
         map[gridPos.y][gridPos.x].layer.sub(this.layer);
     }
@@ -420,7 +475,8 @@ export class bow {
 
         this.loadable = false;
 
-        this.life = 0;
+        this.lastFire = Date.now();
+        this.active = false;
         this.perspective = false;
 
         this.layer = new Layer(3);
@@ -464,14 +520,13 @@ export class bow {
 
         this.perspective = true;
     }
-    update(frames = 1) {
+    update(objects = null) {
         const parameters = {
-            slow: 300, normal: 180, fast: 60
+            slow: 5000, normal: 3000, fast: 1000
         }
-        this.life += frames;
-        if (this.life !== 0 && this.life % parameters[this.detail.RoF] === 0) {
-            let dir = this.detail.direction;
-            let dirVec = (dir === 'up') ? new Vec2(0, -0.5 * w) : (dir === 'down') ? new Vec2(0, 0.5 * w) : (dir === 'left') ? new Vec2(-0.5 * w, 0) : new Vec2(0.5 * w, 0);
+        if (Date.now() > this.lastFire + parameters[this.detail.RoF]) {
+            this.lastFire = Date.now();
+            let dirVec = Vec2.direction(this.detail.direction).mul(0.5 * w);
             const result = {
                 type: 'produce',
                 object: new arrow(this.pos.add(dirVec)),
@@ -488,9 +543,9 @@ export class bow {
         ctx.rotate((dir === 'up') ? 0 : (dir === 'down') ? Math.PI : (dir === 'left') ? 1.5 * Math.PI : 0.5 * Math.PI);
 
         const parameters = {
-            slow: 300, normal: 180, fast: 60
+            slow: 5000, normal: 3000, fast: 1000
         }
-        let lifeCycle = (this.life / parameters[this.detail.RoF]) % 1;
+        let lifeCycle = (this.active) ? (Date.now() - this.lastFire) / parameters[this.detail.RoF] : 0;
         lifeCycle = (lifeCycle > 0.5) ? (lifeCycle - 0.5) / 0.5 : 0;
         const drawPoint = (new Vec2(0, 0.05)).add((new Vec2(0, 0.35)).mul(lifeCycle));
 
@@ -520,6 +575,8 @@ export class bow {
         ctx.restore();
     }
     place(map, objects = null) {
+        this.active = true;
+        this.lastFire = Date.now();
         this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
         let gridPos = this.gridPos;
         if (constant.typeLayerPairs[map[gridPos.y][gridPos.x].type].isOverlap(this.layer)) return false;
@@ -541,6 +598,7 @@ export class bow {
         return true;
     }
     remove(map, objects = null) {
+        this.active = false;
         let gridPos = this.gridPos;
         map[gridPos.y][gridPos.x].layer.sub(this.layer);
         if (map[gridPos.y][gridPos.x].layer.status[2]) {
@@ -572,8 +630,7 @@ export class arrow {
         this.perspective = false;
 
         this.speed = 3;
-        this.life = 0;
-        this.maxlife = 600;
+        this.lastRecord = Date.now();
         this.layer = new Layer(3);
     }
     clone() {
@@ -584,14 +641,24 @@ export class arrow {
     setPerspective(perspective) {
         this.perspective = perspective;
     }
-    update(frames = 1) {
-        this.life += frames;
-        if (this.life >= this.maxlife || !this.pos.between(constant.mapStart, constant.mapStart.add(constant.mapSize.mul(w)))) return { type: 'destory' };
-        let dir = this.detail.direction;
-        let speedWidth = this.speed * w;
-        let dirVec = (dir === 'up') ? new Vec2(0, -speedWidth) : (dir === 'down') ? new Vec2(0, speedWidth) : (dir === 'left') ? new Vec2(-speedWidth, 0) : new Vec2(speedWidth, 0);
-        this.pos = this.pos.add(dirVec.mul(frames / 60));
+    update(objects) {
+        if (!this.pos.between(constant.mapStart, constant.mapStart.add(constant.mapSize.mul(w)))) return { type: 'destory' };
+        for (let i = 0; i < objects.length; i++) {
+            if (objects[i].collision && objects[i].collision({ type: 'sphere', pos: this.pos, r: 0.1 }) === 'block') return { type: 'destory' };
+        }
+        let dirVec = Vec2.direction(this.detail.direction).mul(this.speed * w);
+        this.pos = this.pos.add(dirVec.mul((Date.now() - this.lastRecord) / 1000));
+        this.lastRecord = Date.now();
         return { type: 'none' };
+    }
+    collision(target) {
+        switch (target.type) {
+            case 'sphere':
+                if (isCollision({ type: 'sphere', pos: this.pos, r: 0.1 }, target)) return 'arrow';
+                return 'none';
+            default:
+                return 'none';
+        }
     }
     draw(ctx) {
         ctx.save();
@@ -765,6 +832,7 @@ export class mucus {
     }
 }
 
+/* 參考物件 */
 /*
 export class ObjectName {
 	constructor(pos = new Vec2(0, 0)) {

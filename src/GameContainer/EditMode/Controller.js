@@ -9,13 +9,13 @@ export default function Controller(scene, status, setStatus, setting) {
 
 	const mouseMoveHandler = (e) => {
 		const mousePos = new Vec2(e.offsetX, e.offsetY);
-		if (!status.hold && status.selecting && mousePos.between(mapStart, mapEnd)) {
+		if (!status.holding && status.selecting && mousePos.between(mapStart, mapEnd)) {
 			/* 當使用者沒有操控物件時並且正在選擇格子的時候，在地圖空間內即時更新選擇範圍 */
 			let newStatus = { ...status };
 			let selectGridPos = mousePos.sub(mapStart).toGrid(w);
 			newStatus.selectPair[1] = selectGridPos;
 			setStatus(newStatus);
-		} else if (status.hold) {
+		} else if (status.holding) {
 			/* 當使用者正在操控物件時，更新物件位子到滑鼠位子 */
 			let newStatus = { ...status };
 			if (mousePos.between(mapStart, mapEnd)) {
@@ -31,46 +31,48 @@ export default function Controller(scene, status, setStatus, setting) {
 		if (e.button === 0) {
 			if (mousePos.between(mapStart, mapEnd)) {
 				/* 在地圖內按下滑鼠左鍵 */
-				if (status.hold) {
+				if (status.holding) {
 					/* 嘗試把物件放在地圖上 */
 					let newStatus = { ...status };
-					newStatus.hold = false;
+					newStatus.holding = status.ctrl;
 					if (status.holdObject.place(setting.map, setting.objects)) {
 						setting.objects.push(status.holdObject);
 					}
-					newStatus.holdObject = null;
+					newStatus.holdObject = (status.ctrl) ? status.holdObject.clone() : null;
 					setStatus(newStatus);
 				} else {
 					/* 如果沒有在操控物件則開始選擇格子或是選取在地圖上的物件 */
 					let newStatus = { ...status };
-					let gridPos = mousePos.sub(mapStart).toGrid(32);
+					let gridPos = mousePos.sub(mapStart).toGrid(w);
 					let topLayer = setting.map[gridPos.y][gridPos.x].layer.top();
 					if (topLayer !== -1) { // 代表有物件疊在格子上(優先處理物件操控)
 						for (let i = 0; i < setting.objects.length; i++) {
 							if (setting.objects[i].gridPos.equal(gridPos) && setting.objects[i].layer.top() === topLayer) {
-								newStatus.hold = true;
+								newStatus.holding = true;
+								newStatus.hold = false;
 								newStatus.select = false;
 								newStatus.selecting = false;
-								setting.objects[i].remove(setting.map, setting.objects);
-								setting.objects[i].pos = mousePos.clone();
-								newStatus.holdObject = setting.objects[i];
+								if (!status.ctrl) setting.objects[i].remove(setting.map, setting.objects);
+								newStatus.holdObject = (status.ctrl) ? setting.objects[i].clone() : setting.objects[i];
+								newStatus.holdObject.pos = mousePos.clone();
 								newStatus.holdDetail = setting.objects[i].detailFunction();
-								setting.objects.splice(i, 1);
+								if (!status.ctrl) setting.objects.splice(i, 1);
 								break;
-                            }
-                        }
+							}
+						}
 					} else {
 						newStatus.select = true;
 						newStatus.selecting = true;
 						newStatus.selectPair = [gridPos, gridPos];
 					}
 					setStatus(newStatus);
-                }
+				}
 			} else {
 				/* 左鍵點到地圖外則將一切狀態解除(點到物件編輯庫例外) */
 				let newStatus = { ...status };
 				newStatus.select = false;
 				newStatus.selecting = false;
+				newStatus.holding = false;
 				newStatus.hold = false;
 				newStatus.holdObject = null;
 				setStatus(newStatus);
@@ -79,31 +81,31 @@ export default function Controller(scene, status, setStatus, setting) {
 					let objectIndex = ~~((e.offsetX - 88) / 128);
 					switch (objectIndex) {
 						case 0:
-							newStatus.hold = true;
+							newStatus.holding = true;
 							newStatus.holdObject = new GameObject.spikedBlock(new Vec2(e.offsetX, e.offsetY));
 							newStatus.holdDetail = newStatus.holdObject.detailFunction();
 							newStatus.holdObject.setPerspective(true);
 							break;
 						case 1:
-							newStatus.hold = true;
+							newStatus.holding = true;
 							newStatus.holdObject = new GameObject.platform(new Vec2(e.offsetX, e.offsetY));
 							newStatus.holdDetail = newStatus.holdObject.detailFunction();
 							newStatus.holdObject.setPerspective(true);
 							break;
 						case 2:
-							newStatus.hold = true;
+							newStatus.holding = true;
 							newStatus.holdObject = new GameObject.bow(new Vec2(e.offsetX, e.offsetY));
 							newStatus.holdDetail = newStatus.holdObject.detailFunction();
 							newStatus.holdObject.setPerspective(true);
 							break;
 						case 3:
-							newStatus.hold = true;
+							newStatus.holding = true;
 							newStatus.holdObject = new GameObject.movingPlatform(new Vec2(e.offsetX, e.offsetY));
 							newStatus.holdDetail = newStatus.holdObject.detailFunction();
 							newStatus.holdObject.setPerspective(true);
 							break;
 						case 4:
-							newStatus.hold = true;
+							newStatus.holding = true;
 							newStatus.holdObject = new GameObject.mucus(new Vec2(e.offsetX, e.offsetY));
 							newStatus.holdDetail = newStatus.holdObject.detailFunction();
 							newStatus.holdObject.setPerspective(true);
@@ -112,9 +114,9 @@ export default function Controller(scene, status, setStatus, setting) {
 							break;
 					}
 					setStatus(newStatus);
-                }
-            }
-        }
+				}
+			}
+		}
 	}
 
 	const mouseUpHandler = (e) => {
@@ -135,13 +137,35 @@ export default function Controller(scene, status, setStatus, setting) {
 		}
 	}
 
+	const keyDownHandler = (e) => {
+		if (e.keyCode === 17) {
+			status.ctrl = true;
+        }
+	};
+
+	const keyUpHandler = (e) => {
+		if (e.keyCode === 17) {
+			status.ctrl = false;
+		}
+	};
+
+	const stopContextMenu = (e) => {
+		e.preventDefault();
+	};
+
 	scene.addEventListener('mousemove', mouseMoveHandler);
 	scene.addEventListener('mousedown', mouseDownHandler);
 	scene.addEventListener('mouseup', mouseUpHandler);
+	window.addEventListener('keydown', keyDownHandler);
+	window.addEventListener('keyup', keyUpHandler);
+	scene.addEventListener('contextmenu', stopContextMenu);
 
 	return () => {
 		scene.removeEventListener('mousemove', mouseMoveHandler);
 		scene.removeEventListener('mousedown', mouseDownHandler);
 		scene.removeEventListener('mouseup', mouseUpHandler);
+		window.removeEventListener('keydown', keyDownHandler);
+		window.removeEventListener('keyup', keyUpHandler);
+		scene.removeEventListener('contextmenu', stopContextMenu);
 	};
 };
