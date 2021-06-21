@@ -6,7 +6,7 @@ import Vec2 from "../GameContainer/Class/Vec2";
 import { useHistory } from "react-router-dom";
 import ErrorPage from "./ErrorPage";
 // import util from "util";
-import init from "../GameContainer/Setting/example_1";
+import init from "../GameContainer/Setting/example_0";
 import { enpackage, unpackage, show } from "../GameContainer/DataPackager";
 
 import { makeStyles } from "@material-ui/core/styles";
@@ -229,7 +229,7 @@ function Edit(props) {
       </Modal>
       <EditMode
         width="1200px"
-        height="700px"
+        height="600px"
         // setting={setting}
         setting={unpackage(setting)}
         save={save}

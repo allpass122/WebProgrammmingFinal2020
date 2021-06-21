@@ -47,23 +47,26 @@ function Drawer(ctx, setting, status) {
 
 	/* 繪製編輯物件庫(這裡之後會重寫!) */
 	ctx.save();
-	const editObjectSpace = new Vec2(128, 128);
+	const editObjectSpace = new Vec2(64, 64);
 	const objectList = [
 		new GameObject.spikedBlock(new Vec2(editObjectSpace.x * 0.5, editObjectSpace.y * 0.5)),
 		new GameObject.platform(new Vec2(editObjectSpace.x * 1.5, editObjectSpace.y * 0.5)),
 		new GameObject.bow(new Vec2(editObjectSpace.x * 2.5, editObjectSpace.y * 0.5)),
-		new GameObject.movingPlatform(new Vec2(editObjectSpace.x * 3.5, editObjectSpace.y * 0.5)),
+		new GameObject.movingPlatform(new Vec2(editObjectSpace.x * 3.5, editObjectSpace.y * 0.5 + 10)),
 		new GameObject.mucus(new Vec2(editObjectSpace.x * 4.5, editObjectSpace.y * 0.5)),
+		new GameObject.cymbal(new Vec2(editObjectSpace.x * 5.5, editObjectSpace.y * 0.5)),
 	];
-	ctx.translate(88, 560);
+	ctx.translate(88, 520);
 	for (let i = 0; i < 8; i++) {
-		ctx.beginPath();
-		ctx.rect(0 + editObjectSpace.x * i, 0, editObjectSpace.x, editObjectSpace.y);
-		ctx.strokeStyle = constant.auxiliaryColor;
-		ctx.stroke();
-		ctx.closePath();
+		if (objectList[i]) {
+			ctx.beginPath();
+			ctx.rect(0 + editObjectSpace.x * i, 0, editObjectSpace.x, editObjectSpace.y);
+			ctx.strokeStyle = constant.auxiliaryColor;
+			ctx.stroke();
+			ctx.closePath();
 
-		if (objectList[i]) objectList[i].draw(ctx);
+			objectList[i].draw(ctx);
+		}
     }
 	ctx.restore();
 }

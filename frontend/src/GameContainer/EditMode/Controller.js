@@ -11,18 +11,14 @@ export default function Controller(scene, status, setStatus, setting) {
 		const mousePos = new Vec2(e.offsetX, e.offsetY);
 		if (!status.holding && status.selecting && mousePos.between(mapStart, mapEnd)) {
 			/* 當使用者沒有操控物件時並且正在選擇格子的時候，在地圖空間內即時更新選擇範圍 */
-			let newStatus = { ...status };
 			let selectGridPos = mousePos.sub(mapStart).toGrid(w);
-			newStatus.selectPair[1] = selectGridPos;
-			setStatus(newStatus);
+			status.selectPair[1] = selectGridPos;
 		} else if (status.holding) {
 			/* 當使用者正在操控物件時，更新物件位子到滑鼠位子 */
-			let newStatus = { ...status };
 			if (mousePos.between(mapStart, mapEnd)) {
 				/* 物件在地圖內時必須即時校正位子 */
-				newStatus.holdObject.pos = mousePos.sub(mapStart).toGrid(w).mul(w).add(mapStart.add(new Vec2(0.5 * w, 0.5 * w)));
-			} else newStatus.holdObject.pos = mousePos.clone();
-			setStatus(newStatus);
+				status.holdObject.pos = mousePos.sub(mapStart).toGrid(w).mul(w).add(mapStart.add(new Vec2(0.5 * w, 0.5 * w)));
+			} else status.holdObject.pos = mousePos.clone();
 		}
 	};
 
@@ -34,11 +30,11 @@ export default function Controller(scene, status, setStatus, setting) {
 				if (status.holding) {
 					/* 嘗試把物件放在地圖上 */
 					let newStatus = { ...status };
-					newStatus.holding = status.ctrl;
+					newStatus.holding = e.ctrlKey;
 					if (status.holdObject.place(setting.map, setting.objects)) {
 						setting.objects.push(status.holdObject);
 					}
-					newStatus.holdObject = (status.ctrl) ? status.holdObject.clone() : null;
+					newStatus.holdObject = (e.ctrlKey) ? status.holdObject.clone() : null;
 					setStatus(newStatus);
 				} else {
 					/* 如果沒有在操控物件則開始選擇格子或是選取在地圖上的物件 */
@@ -52,11 +48,11 @@ export default function Controller(scene, status, setStatus, setting) {
 								newStatus.hold = false;
 								newStatus.select = false;
 								newStatus.selecting = false;
-								if (!status.ctrl) setting.objects[i].remove(setting.map, setting.objects);
-								newStatus.holdObject = (status.ctrl) ? setting.objects[i].clone() : setting.objects[i];
+								if (!e.ctrlKey) setting.objects[i].remove(setting.map, setting.objects);
+								newStatus.holdObject = (e.ctrlKey) ? setting.objects[i].clone() : setting.objects[i];
 								newStatus.holdObject.pos = mousePos.clone();
 								newStatus.holdDetail = setting.objects[i].detailFunction();
-								if (!status.ctrl) setting.objects.splice(i, 1);
+								if (!e.ctrlKey) setting.objects.splice(i, 1);
 								break;
 							}
 						}
@@ -76,9 +72,9 @@ export default function Controller(scene, status, setStatus, setting) {
 				newStatus.hold = false;
 				newStatus.holdObject = null;
 				setStatus(newStatus);
-				if (mousePos.between(new Vec2(88, 560), new Vec2(1112, 688))) {
+				if (mousePos.between(new Vec2(88, 520), new Vec2(1112, 584))) {
 					/* 在物件編輯庫內點擊則獲得一個新物件進行操控 */
-					let objectIndex = ~~((e.offsetX - 88) / 128);
+					let objectIndex = ~~((e.offsetX - 88) / 64);
 					switch (objectIndex) {
 						case 0:
 							newStatus.holding = true;
@@ -110,6 +106,12 @@ export default function Controller(scene, status, setStatus, setting) {
 							newStatus.holdDetail = newStatus.holdObject.detailFunction();
 							newStatus.holdObject.setPerspective(true);
 							break;
+						case 5:
+							newStatus.holding = true;
+							newStatus.holdObject = new GameObject.cymbal(new Vec2(e.offsetX, e.offsetY));
+							newStatus.holdDetail = newStatus.holdObject.detailFunction();
+							newStatus.holdObject.setPerspective(true);
+							break;
 						default:
 							break;
 					}
@@ -137,18 +139,6 @@ export default function Controller(scene, status, setStatus, setting) {
 		}
 	}
 
-	const keyDownHandler = (e) => {
-		if (e.keyCode === 17) {
-			status.ctrl = true;
-        }
-	};
-
-	const keyUpHandler = (e) => {
-		if (e.keyCode === 17) {
-			status.ctrl = false;
-		}
-	};
-
 	const stopContextMenu = (e) => {
 		e.preventDefault();
 	};
@@ -156,16 +146,12 @@ export default function Controller(scene, status, setStatus, setting) {
 	scene.addEventListener('mousemove', mouseMoveHandler);
 	scene.addEventListener('mousedown', mouseDownHandler);
 	scene.addEventListener('mouseup', mouseUpHandler);
-	window.addEventListener('keydown', keyDownHandler);
-	window.addEventListener('keyup', keyUpHandler);
 	scene.addEventListener('contextmenu', stopContextMenu);
 
 	return () => {
 		scene.removeEventListener('mousemove', mouseMoveHandler);
 		scene.removeEventListener('mousedown', mouseDownHandler);
 		scene.removeEventListener('mouseup', mouseUpHandler);
-		window.removeEventListener('keydown', keyDownHandler);
-		window.removeEventListener('keyup', keyUpHandler);
 		scene.removeEventListener('contextmenu', stopContextMenu);
 	};
 };

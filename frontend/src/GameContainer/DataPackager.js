@@ -1,6 +1,6 @@
 import constant from './constant';
 import Layer from './Class/Layer';
-import { spikedBlock, platform, bow, movingPlatform, mucus } from './Class/GameObject';
+import { spikedBlock, platform, bow, movingPlatform, mucus, cymbal } from './Class/GameObject';
 
 export function enpackage(setting) {
     const levelSetting = {
@@ -53,6 +53,9 @@ export function unpackage(levelSetting) {
                 break;
             case 'mucus':
                 setting.objects[i] = new mucus();
+                break;
+            case 'cymbal':
+                setting.objects[i] = new cymbal();
                 break;
             default:
                 break;
