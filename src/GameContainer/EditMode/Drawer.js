@@ -54,16 +54,19 @@ function Drawer(ctx, setting, status) {
 		new GameObject.bow(new Vec2(editObjectSpace.x * 2.5, editObjectSpace.y * 0.5)),
 		new GameObject.movingPlatform(new Vec2(editObjectSpace.x * 3.5, editObjectSpace.y * 0.5)),
 		new GameObject.mucus(new Vec2(editObjectSpace.x * 4.5, editObjectSpace.y * 0.5)),
+		new GameObject.cymbal(new Vec2(editObjectSpace.x * 5.5, editObjectSpace.y * 0.5)),
 	];
 	ctx.translate(88, 560);
 	for (let i = 0; i < 8; i++) {
-		ctx.beginPath();
-		ctx.rect(0 + editObjectSpace.x * i, 0, editObjectSpace.x, editObjectSpace.y);
-		ctx.strokeStyle = constant.auxiliaryColor;
-		ctx.stroke();
-		ctx.closePath();
+		if (objectList[i]) {
+			ctx.beginPath();
+			ctx.rect(0 + editObjectSpace.x * i, 0, editObjectSpace.x, editObjectSpace.y);
+			ctx.strokeStyle = constant.auxiliaryColor;
+			ctx.stroke();
+			ctx.closePath();
 
-		if (objectList[i]) objectList[i].draw(ctx);
+			objectList[i].draw(ctx);
+		}
     }
 	ctx.restore();
 }

@@ -34,11 +34,11 @@ export default function Controller(scene, status, setStatus, setting) {
 				if (status.holding) {
 					/* 嘗試把物件放在地圖上 */
 					let newStatus = { ...status };
-					newStatus.holding = status.ctrl;
+					newStatus.holding = e.ctrlKey;
 					if (status.holdObject.place(setting.map, setting.objects)) {
 						setting.objects.push(status.holdObject);
 					}
-					newStatus.holdObject = (status.ctrl) ? status.holdObject.clone() : null;
+					newStatus.holdObject = (e.ctrlKey) ? status.holdObject.clone() : null;
 					setStatus(newStatus);
 				} else {
 					/* 如果沒有在操控物件則開始選擇格子或是選取在地圖上的物件 */
@@ -52,11 +52,11 @@ export default function Controller(scene, status, setStatus, setting) {
 								newStatus.hold = false;
 								newStatus.select = false;
 								newStatus.selecting = false;
-								if (!status.ctrl) setting.objects[i].remove(setting.map, setting.objects);
-								newStatus.holdObject = (status.ctrl) ? setting.objects[i].clone() : setting.objects[i];
+								if (!e.ctrlKey) setting.objects[i].remove(setting.map, setting.objects);
+								newStatus.holdObject = (e.ctrlKey) ? setting.objects[i].clone() : setting.objects[i];
 								newStatus.holdObject.pos = mousePos.clone();
 								newStatus.holdDetail = setting.objects[i].detailFunction();
-								if (!status.ctrl) setting.objects.splice(i, 1);
+								if (!e.ctrlKey) setting.objects.splice(i, 1);
 								break;
 							}
 						}
@@ -110,6 +110,12 @@ export default function Controller(scene, status, setStatus, setting) {
 							newStatus.holdDetail = newStatus.holdObject.detailFunction();
 							newStatus.holdObject.setPerspective(true);
 							break;
+						case 5:
+							newStatus.holding = true;
+							newStatus.holdObject = new GameObject.cymbal(new Vec2(e.offsetX, e.offsetY));
+							newStatus.holdDetail = newStatus.holdObject.detailFunction();
+							newStatus.holdObject.setPerspective(true);
+							break;
 						default:
 							break;
 					}
@@ -137,18 +143,6 @@ export default function Controller(scene, status, setStatus, setting) {
 		}
 	}
 
-	const keyDownHandler = (e) => {
-		if (e.keyCode === 17) {
-			status.ctrl = true;
-        }
-	};
-
-	const keyUpHandler = (e) => {
-		if (e.keyCode === 17) {
-			status.ctrl = false;
-		}
-	};
-
 	const stopContextMenu = (e) => {
 		e.preventDefault();
 	};
@@ -156,16 +150,12 @@ export default function Controller(scene, status, setStatus, setting) {
 	scene.addEventListener('mousemove', mouseMoveHandler);
 	scene.addEventListener('mousedown', mouseDownHandler);
 	scene.addEventListener('mouseup', mouseUpHandler);
-	window.addEventListener('keydown', keyDownHandler);
-	window.addEventListener('keyup', keyUpHandler);
 	scene.addEventListener('contextmenu', stopContextMenu);
 
 	return () => {
 		scene.removeEventListener('mousemove', mouseMoveHandler);
 		scene.removeEventListener('mousedown', mouseDownHandler);
 		scene.removeEventListener('mouseup', mouseUpHandler);
-		window.removeEventListener('keydown', keyDownHandler);
-		window.removeEventListener('keyup', keyUpHandler);
 		scene.removeEventListener('contextmenu', stopContextMenu);
 	};
 };

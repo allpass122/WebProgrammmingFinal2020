@@ -16,7 +16,6 @@ function EditGameMode(props) {
 	 holding: 目前是否有物件正在被操控(移動並且調整參數)
 	 holdObject: 被操控的物件
 	 holdDetail: 被操控的物件細節列表
-	 ctrl: ctrl鍵是否被按下
 	*/
 	const [status, setStatus] = useState({
 		select: false,
@@ -26,7 +25,6 @@ function EditGameMode(props) {
 		holding: false,
 		holdObject: null,
 		holdDetail: {},
-		ctrl: false,
 	});
 
 	useEffect(() => {
