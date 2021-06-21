@@ -6,8 +6,8 @@ import Vec2 from "../GameContainer/Class/Vec2";
 import { useHistory } from "react-router-dom";
 import ErrorPage from "./ErrorPage";
 // import util from "util";
-import init from "./GameInitial";
-// import { enpackage, unpackage, show } from "../GameContainer/DataPackager";
+import init from "../GameContainer/Setting/example_1";
+import { enpackage, unpackage, show } from "../GameContainer/DataPackager";
 
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
@@ -118,9 +118,9 @@ function Edit(props) {
     }
   };
 
-  const save = (ele) => {
-    console.log(ele);
-    setSetting(ele);
+  const save = (setting) => {
+    setSetting(enpackage(setting));
+    // show(enpackage(setting));
   };
 
   if (id !== 0 && idGetMap === false) {
@@ -230,8 +230,8 @@ function Edit(props) {
       <EditMode
         width="1200px"
         height="700px"
-        setting={setting}
-        // setting={unpackage(setting)}
+        // setting={setting}
+        setting={unpackage(setting)}
         save={save}
       />
     </div>

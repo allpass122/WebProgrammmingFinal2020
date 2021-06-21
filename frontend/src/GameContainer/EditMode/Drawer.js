@@ -1,10 +1,9 @@
 import * as api from '../Drawer';
 import Vec2 from '../Class/Vec2';
 import constant from '../constant';
-import spikedBlock from '../Class/GameObject';
+import * as GameObject from '../Class/GameObject';
 
 function Drawer(ctx, setting, status) {
-	let mapSize = setting.mapSize;
 	let map = setting.map;
 	let objects = setting.objects;
 
@@ -13,17 +12,14 @@ function Drawer(ctx, setting, status) {
 
 	/* 繪製地圖 */
 	ctx.save();
-	ctx.translate(88, 44); // 暫時寫死
+	ctx.translate(constant.mapStart.x, constant.mapStart.y); 
 	const w = constant.gridWidth;
-	api.drawMap(ctx, mapSize, map);
+	api.drawMap(ctx, map);
 
 	/* 繪製選擇格 */
-	const leftUpPos = (p1, p2) => (new Vec2(Math.min(p1.x, p2.x), Math.min(p1.y, p2.y)));
-	const RightDownPos = (p1, p2) => (new Vec2(Math.max(p1.x, p2.x), Math.max(p1.y, p2.y)));
-
 	if (status.select) {
-		let luPos = leftUpPos(status.selectPair[0], status.selectPair[1]);
-		let rdPos = RightDownPos(status.selectPair[0], status.selectPair[1]);
+		let luPos = Vec2.leftUp(status.selectPair[0], status.selectPair[1]);
+		let rdPos = Vec2.rightDown(status.selectPair[0], status.selectPair[1]);
 		let range = rdPos.sub(luPos).add(new Vec2(1, 1));
 
 		ctx.save();
@@ -39,21 +35,26 @@ function Drawer(ctx, setting, status) {
 	ctx.restore();
 
 	/* 繪製物件 */
-	for (let i = 0; i < objects.length; i++) {
-		objects[i].draw(ctx);
-	}
-
-	if (status.hold) {
-		if (status.holdObject.pos.between(new Vec2(88, 44), new Vec2(1112, 556))) {
-			status.holdObject.pos = status.holdObject.pos.sub(new Vec2(88, 44)).toGrid(w).mul(w).add(new Vec2(88 + 0.5 * w, 44 + 0.5 * w));
+	for (let i = 0; i < constant.maxLayer; i++) {
+		for (let j = 0; j < objects.length; j++) {
+			if (objects[j].layer.top() === i) objects[j].draw(ctx);
 		}
+    }
+
+	if (status.holding || status.hold) {
 		status.holdObject.draw(ctx);
     }
 
-	/* 繪製編輯物件庫 */
+	/* 繪製編輯物件庫(這裡之後會重寫!) */
 	ctx.save();
 	const editObjectSpace = new Vec2(128, 128);
-	const objectList = [new spikedBlock(new Vec2(editObjectSpace.x * 0.5, editObjectSpace.y * 0.5))];
+	const objectList = [
+		new GameObject.spikedBlock(new Vec2(editObjectSpace.x * 0.5, editObjectSpace.y * 0.5)),
+		new GameObject.platform(new Vec2(editObjectSpace.x * 1.5, editObjectSpace.y * 0.5)),
+		new GameObject.bow(new Vec2(editObjectSpace.x * 2.5, editObjectSpace.y * 0.5)),
+		new GameObject.movingPlatform(new Vec2(editObjectSpace.x * 3.5, editObjectSpace.y * 0.5)),
+		new GameObject.mucus(new Vec2(editObjectSpace.x * 4.5, editObjectSpace.y * 0.5)),
+	];
 	ctx.translate(88, 560);
 	for (let i = 0; i < 8; i++) {
 		ctx.beginPath();
