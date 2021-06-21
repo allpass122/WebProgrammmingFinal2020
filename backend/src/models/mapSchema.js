@@ -9,6 +9,7 @@ const mapSchema = new Schema({
   author: String,
   statistic: {
     fastestPass: Number,
+    fastestMan: String,
     passTime: Number,
     playTime: Number,
   },

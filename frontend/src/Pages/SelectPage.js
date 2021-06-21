@@ -1,4 +1,4 @@
-import ChooseMap from "./ChooseMap";
+import UserPage from "./UserPage";
 import ErrorPage from "./ErrorPage";
 
 function checkLogin(props) {
@@ -7,15 +7,15 @@ function checkLogin(props) {
   return true;
 }
 
-function UserPage(props) {
+function UserPage0(props) {
   return (
     <>
       {checkLogin(props) ? (
-        <ChooseMap data={props.location.state} />
+        <UserPage data={props.location.state} />
       ) : (
         <ErrorPage />
       )}
     </>
   );
 }
-export default UserPage;
+export default UserPage0;

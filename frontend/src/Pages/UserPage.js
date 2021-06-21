@@ -27,6 +27,11 @@ import Switch from "@material-ui/core/Switch";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import { green, purple, pink } from "@material-ui/core/colors";
 import IconButton from "@material-ui/core/IconButton";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -96,14 +101,19 @@ export default function Album(props) {
   const history = useHistory();
   const { uuid, name } = props.data;
   const [mapIDs, setMapIDs] = useState(props.data.mapIDs);
-  const [mapData, setMapData] = useState({});
+  // const [mapData, setMapData] = useState({});
   // for Snackbar Alert
   const [msgOpen, setMsgOpen] = useState(false);
   const [alertMsg, setAlertMsg] = useState("");
   const [alertType, setAlertType] = useState("success"); // "error", "warning", "info", "success"
   const [allMaps, setAllMaps] = useState([]);
+  // delete dialog
+  const [deleteID, setDeleteID] = useState("");
+  const [openDialog, setOpenDialog] = useState(false);
+  // get data before render
+  const [isBusy, setBusy] = useState(true);
 
-  const handlerDeleteSingleMap = async (id) => {
+  const DeleteSingleMap = async (id) => {
     const {
       data: { success, errorCode },
     } = await instance.post("/api/deleteSingleMap", {
@@ -121,7 +131,14 @@ export default function Album(props) {
       getMapIDs();
     }
   };
-
+  const handlerDeleteSingleMap1 = () => {
+    DeleteSingleMap(deleteID);
+    setOpenDialog(false);
+  };
+  const handlerDeleteSingleMap = (id) => {
+    setDeleteID(id);
+    setOpenDialog(true);
+  };
   const getMap = async (id) => {
     const {
       data: { success, errorCode, map },
@@ -167,21 +184,25 @@ export default function Album(props) {
       // console.log(mapIDs);
       // console.log(allMaps);
     }
+    setBusy(false);
   };
 
   const handlerStatistic = (key) => {
     if (allMaps[key] === undefined) {
       return `...`;
     } else {
-      const { fastestPass, passTime, playTime } = allMaps[key].statistic;
+      const { fastestPass, fastestMan, passTime, playTime } =
+        allMaps[key].statistic;
 
-      return `fastestPass:${fastestPass}, passTime:${passTime}, playTime:${playTime}`;
+      return `fastestPass:${fastestPass}, fastestMan:${fastestMan}, passTime:${passTime}, playTime:${playTime}`;
     }
   };
 
-  // useEffect(() => {
-  //   getMapIDs();
-  // }, []);
+  useEffect(() => {
+    console.log(`busy?${isBusy}`);
+    setBusy(true);
+    getMapIDs();
+  }, []);
 
   return (
     <React.Fragment>
@@ -273,7 +294,7 @@ export default function Album(props) {
                       });
                     }}
                   >
-                    Edit
+                    New Map
                   </Button>
                 </Grid>
                 <Grid item>
@@ -289,6 +310,33 @@ export default function Album(props) {
             </div>
           </Container>
         </div>
+        <Dialog
+          open={openDialog}
+          onClose={() => {
+            setOpenDialog(false);
+          }}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              刪除地圖？（無法復原）
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => {
+                setOpenDialog(false);
+              }}
+              color="primary"
+            >
+              取消
+            </Button>
+            <Button onClick={handlerDeleteSingleMap1} color="primary" autoFocus>
+              確認
+            </Button>
+          </DialogActions>
+        </Dialog>
         <Container className={classes.cardGrid} maxWidth="md">
           {/* End hero unit */}
           <Grid container spacing={4}>
@@ -360,7 +408,9 @@ export default function Album(props) {
                       size="large"
                       variant="outlined"
                       color="secondary"
-                      onClick={() => handlerDeleteSingleMap(ele.id)}
+                      onClick={() => {
+                        handlerDeleteSingleMap(ele.id);
+                      }}
                     >
                       <DeleteIcon />
                     </IconButton>
@@ -384,7 +434,7 @@ export default function Album(props) {
         >
           Something here to give the footer a purpose!
         </Typography> */}
-        <Copyright />
+        {/* <Copyright /> */}
       </footer>
       {/* End footer */}
     </React.Fragment>

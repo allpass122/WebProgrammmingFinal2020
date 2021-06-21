@@ -13,7 +13,7 @@ router.post("/login", async function (req, res) {
   const existing = await userSchema
     .find(queryParam)
     .exec(function (error, result) {
-      console.log(`res:${result} and ${typeof result}`);
+      // console.log(`res:${result} and ${typeof result}`);
       if (!result.length) {
         res.send({ success: false });
       } else {
@@ -29,12 +29,12 @@ router.post("/login", async function (req, res) {
 router.post("/signup", async function (req, res) {
   const { name_, pwd_ } = req.body;
   console.log(`receive ${name_} ${pwd_}`);
-  const existing = await userSchema.findOne({ name: name_, pwd: pwd_ });
-  const newUser = new userSchema({ name: name_, pwd: pwd_, uuid: uuidv4() });
+  const existing = await userSchema.findOne({ name: name_ });
   if (existing) {
     console.log(`User ${name_} exist!\n`);
     res.send({ success: false, msg: `User ${name_} exist!\n` });
   } else {
+    const newUser = new userSchema({ name: name_, pwd: pwd_, uuid: uuidv4() });
     await newUser.save();
     console.log(`Created user ${name_}`);
     res.send({ success: true, msg: `Success!` });
@@ -63,12 +63,12 @@ function Hasmap(arr, id) {
   return false;
 }
 router.post("/upload", async function (req, res) {
-  const { uuid, setting, title, description, name, publish } = req.body;
+  const { uuid, settingPack, title, description, name, publish } = req.body;
   console.log(`UPLOAD`);
-  console.log(setting);
+  console.log(settingPack);
 
   // use setting and public to decide a unique hash id
-  let id = hash({ setting: setting, publish: publish });
+  let id = hash({ setting: settingPack, publish: publish });
   const existing = await userSchema
     .find({ uuid: uuid })
     .exec(function (error, result) {
@@ -105,13 +105,14 @@ router.post("/upload", async function (req, res) {
 
   const newMap = new mapSchema({
     id: id,
-    content: setting,
+    content: settingPack,
     title: title,
     description: description,
     publish: publish,
     author: name,
     statistic: {
       fastestPass: 999.9,
+      fastestMan: "None",
       passTime: 0,
       playTime: 0,
     },
@@ -148,10 +149,6 @@ router.post("/getMap", async function (req, res) {
   const existing = await mapSchema
     .find({ id: id })
     .exec(function (error, result) {
-      // console.log(`getMap`);
-      // console.log(id);
-      // console.log(result[0]);
-      // console.log(`res:${result} and ${typeof result}`);
       if (!result.length) {
         res.send({ success: false, errorCode: 1 });
       } else {
@@ -196,5 +193,24 @@ router.post("/deleteSingleMap", async function (req, res) {
     console.log(`Delete Fail: ${e}`);
     res.send({ success: false });
   }
+});
+/* Popular Page */
+router.post("/getAllMapsByOrder", async function (req, res) {
+  const existing = await mapSchema
+    .find({ publish: true })
+    .sort({ _id: 1 })
+    .exec(function (error, result) {
+      // console.log("~~~~~~~~~~~~~~");
+      // console.log(result);
+      if (!result.length) {
+        res.send({ success: false, errorCode: 1 });
+      } else {
+        res.send({
+          success: true,
+          errorCode: 0,
+          maps: result,
+        });
+      }
+    });
 });
 export default router;

@@ -7,6 +7,7 @@ import { useHistory } from "react-router-dom";
 import ErrorPage from "./ErrorPage";
 // import util from "util";
 import init from "./GameInitial";
+// import { enpackage, unpackage, show } from "../GameContainer/DataPackager";
 
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
@@ -60,11 +61,13 @@ function Edit(props) {
   const { name, uuid, login, id } = props.data;
 
   const handleUpload = async () => {
+    let settingPack = setting;
+    // let settingPack = enpackage(setting);
     const {
       data: { success, errorCode },
     } = await instance.post("/api/upload", {
       uuid,
-      setting,
+      settingPack,
       title,
       description,
       name,
@@ -224,7 +227,13 @@ function Edit(props) {
           </div>
         </>
       </Modal>
-      <EditMode width="1200px" height="700px" setting={setting} save={save} />
+      <EditMode
+        width="1200px"
+        height="700px"
+        setting={setting}
+        // setting={unpackage(setting)}
+        save={save}
+      />
     </div>
   );
 }
