@@ -94,10 +94,11 @@ export class spikedBlock {
         switch (target.type) {
             case 'sphere':
                 if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(w, w) }, target)) return 'block';
-                if (isCollision({ type: 'cube', pos: this.pos.add(new Vec2(-0.625 * w, 0)), size: new Vec2(0.25 * w, 0.75 * w) }, target) ||
-                    isCollision({ type: 'cube', pos: this.pos.add(new Vec2(0.625 * w, 0)), size: new Vec2(0.25 * w, 0.75 * w) }, target) ||
-                    isCollision({ type: 'cube', pos: this.pos.add(new Vec2(0, -0.625 * w)), size: new Vec2(0.25 * w, 0.75 * w) }, target) ||
-                    isCollision({ type: 'cube', pos: this.pos.add(new Vec2(0, 0.625 * w)), size: new Vec2(0.25 * w, 0.75 * w) }, target)) return 'spike';
+                if ((this.detail.leftSpike && isCollision({ type: 'cube', pos: this.pos.add(new Vec2(-0.625 * w, 0)), size: new Vec2(0.25 * w, 0.75 * w) }, target)) ||
+                    (this.detail.rightSpike && isCollision({ type: 'cube', pos: this.pos.add(new Vec2(0.625 * w, 0)), size: new Vec2(0.25 * w, 0.75 * w) }, target)) ||
+                    (this.detail.upSpike && isCollision({ type: 'cube', pos: this.pos.add(new Vec2(0, -0.625 * w)), size: new Vec2(0.25 * w, 0.75 * w) }, target)) ||
+                    (this.detail.downSpike && isCollision({ type: 'cube', pos: this.pos.add(new Vec2(0, 0.625 * w)), size: new Vec2(0.25 * w, 0.75 * w) }, target)))
+                    return 'spike';
                 return 'none';
             default:
                 return 'none';
@@ -240,6 +241,15 @@ export class platform {
 
         this.perspective = true;
     }
+    collision(target) {
+        switch (target.type) {
+            case 'sphere':
+                if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.7 * w, 0.7 * w) }, target)) return 'platform';
+                return 'none';
+            default:
+                return 'none';
+        }
+    }
     draw(ctx) {
         ctx.save();
         ctx.translate(this.pos.x, this.pos.y);
@@ -364,6 +374,15 @@ export class movingPlatform {
         }
         if (this.loadObject) this.loadObject.object.pos = this.pos;
         return { type: 'none' };
+    }
+    collision(target) {
+        switch (target.type) {
+            case 'sphere':
+                if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.7 * w, 0.7 * w) }, target)) return 'movingPlatform';
+                return 'none';
+            default:
+                return 'none';
+        }
     }
     draw(ctx) {
         ctx.save();
@@ -644,7 +663,11 @@ export class arrow {
     update(objects) {
         if (!this.pos.between(constant.mapStart, constant.mapStart.add(constant.mapSize.mul(w)))) return { type: 'destory' };
         for (let i = 0; i < objects.length; i++) {
-            if (objects[i].collision && objects[i].collision({ type: 'sphere', pos: this.pos, r: 0.1 }) === 'block') return { type: 'destory' };
+            if (objects[i].id !== this.id && objects[i].collision) {
+                let result = objects[i].collision({ type: 'sphere', pos: this.pos, r: 0.1 });
+                console.log(result);
+                if (result === 'block') return { type: 'destory' };
+            }
         }
         let dirVec = Vec2.direction(this.detail.direction).mul(this.speed * w);
         this.pos = this.pos.add(dirVec.mul((Date.now() - this.lastRecord) / 1000));
@@ -757,9 +780,18 @@ export class mucus {
 
         this.perspective = true;
     }
-    update(frames = 1) {
+    update(objects = null) {
         if (this.loadObject) this.loadObject.object.pos = this.pos.clone();
         return { type: 'none' };
+    }
+    collision(target) {
+        switch (target.type) {
+            case 'sphere':
+                if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.7 * w, 0.7 * w) }, target)) return 'mucus';
+                return 'none';
+            default:
+                return 'none';
+        }
     }
     draw(ctx) {
         ctx.save();
@@ -832,6 +864,239 @@ export class mucus {
     }
 }
 
+/* 音鈸 */
+export class cymbal {
+    constructor(pos = new Vec2(0, 0)) {
+        this.type = 'cymbal';
+        this.id = uuidv4();
+        this.pos = pos;
+        this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
+
+        this.detail = {
+            name: 'cymbal',
+            RoF: 'normal',
+            range: 'normal',
+        };
+
+        this.loadable = false;
+
+        this.lastFire = Date.now();
+        this.active = false;
+        this.perspective = false;
+
+        this.layer = new Layer(3);
+    }
+    clone() {
+        const cloneObject = new cymbal();
+        cloneObject.unpackage(this.enpackage());
+        return cloneObject;
+    }
+    setPerspective(perspective) {
+        this.perspective = perspective;
+    }
+    detailFunction() {
+        return {
+            name: { type: 'text' },
+            RoF: { type: 'select', options: ['slow', 'normal', 'fast'] },
+            range: { type: 'select', options: ['small', 'normal', 'large'] },
+        };
+    }
+    enpackage() {
+        const originPos = this.gridPos.mul(w).add(constant.mapStart).add(new Vec2(0.5 * w, 0.5 * w));
+        return {
+            type: this.type,
+            id: this.id,
+            pos: { x: originPos.x, y: originPos.y },
+
+            name: this.detail.name,
+            direction: this.detail.direction,
+            RoF: this.detail.RoF,
+            range: this.detail.range,
+        };
+    }
+    unpackage(objectSetting) {
+        this.type = objectSetting.type;
+        this.id = objectSetting.id;
+        this.pos = new Vec2(objectSetting.pos.x, objectSetting.pos.y);
+        this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
+
+        this.detail.name = objectSetting.name;
+        this.detail.direction = objectSetting.direction;
+        this.detail.RoF = objectSetting.RoF;
+        this.detail.range = objectSetting.range;
+
+        this.perspective = true;
+    }
+    update(objects = null) {
+        const parameters = {
+            slow: 10000, normal: 6000, fast: 3000
+        }
+        if (Date.now() > this.lastFire + parameters[this.detail.RoF]) {
+            this.lastFire = Date.now();
+            const result = {
+                type: 'produce',
+                object: new cymbalWave(this.pos),
+            };
+            result.object.r = 0.4 * w;
+            result.object.detail.range = this.detail.range;
+            return result;
+        } else return { type: 'none' };
+    }
+    collision(target) {
+        switch (target.type) {
+            case 'sphere':
+                if (isCollision({ type: 'sphere', pos: this.pos, r: 0.48 * w }, target)) return 'cymbal';
+                return 'none';
+            default:
+                return 'none';
+        }
+    }
+    draw(ctx) {
+        ctx.save();
+        ctx.translate(this.pos.x, this.pos.y);
+        ctx.globalAlpha = (this.perspective) ? 0.8 : 1;
+
+        const parameters = {
+            slow: 12000, normal: 8000, fast: 4000
+        }
+        let lifeCycle = (this.active) ? (Date.now() - this.lastFire) / parameters[this.detail.RoF] : 0;
+        let pivot = 0.96 + parameters[this.detail.RoF] * 0.0000025;
+        let r = (lifeCycle < pivot) ? 0.05 + 0.4 * lifeCycle / pivot : 0.05 + 0.4 * (1 - lifeCycle) / (1 - pivot);
+
+        ctx.beginPath();
+        ctx.arc(0, 0, 0.48 * w, 0, 2 * Math.PI);
+        var grd = ctx.createRadialGradient(0, 0, 0, 0, 0, 0.48 * w);
+        grd.addColorStop(0, 'white');
+        grd.addColorStop(1, '#D6D6AD');
+        ctx.fillStyle = grd;
+        ctx.fill();
+        ctx.strokeStyle = '#E1E100';
+        ctx.stroke();
+        ctx.closePath();
+
+        ctx.beginPath();
+        ctx.arc(0, 0, r * w, 0, 2 * Math.PI);
+        ctx.lineWidth = 1.2;
+        ctx.strokeStyle = 'white';
+        ctx.stroke();
+        ctx.closePath();
+
+        ctx.beginPath();
+        ctx.arc(0, 0, 0.05 * w, 0, 2 * Math.PI);
+        ctx.fillStyle = '#FFAF60';
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.restore();
+    }
+    place(map, objects = null) {
+        this.active = true;
+        this.lastFire = Date.now();
+        this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
+        let gridPos = this.gridPos;
+        if (constant.typeLayerPairs[map[gridPos.y][gridPos.x].type].isOverlap(this.layer)) return false;
+        if (map[gridPos.y][gridPos.x].layer.isOverlap(this.layer)) return false;
+        map[gridPos.y][gridPos.x].layer.add(this.layer);
+        if (map[gridPos.y][gridPos.x].layer.status[2]) {
+            for (let i = 0; i < objects.length; i++) {
+                if (objects[i].gridPos.equal(gridPos) && objects[i].layer.top() === 2) {
+                    if (objects[i].loadable) {
+                        objects[i].loadObject = {
+                            id: this.id,
+                            object: this,
+                        };
+                    }
+                    break;
+                }
+            }
+        }
+        return true;
+    }
+    remove(map, objects = null) {
+        this.active = false;
+        let gridPos = this.gridPos;
+        map[gridPos.y][gridPos.x].layer.sub(this.layer);
+        if (map[gridPos.y][gridPos.x].layer.status[2]) {
+            for (let i = 0; i < objects.length; i++) {
+                if (objects[i].gridPos.equal(gridPos) && objects[i].layer.top() === 2) {
+                    if (objects[i].loadable) objects[i].loadObject = null;
+                    break;
+                }
+            }
+        }
+    }
+}
+
+/* 音波 */
+export class cymbalWave {
+    constructor(pos = new Vec2(0, 0)) {
+        this.type = 'cymbalWave';
+        this.id = uuidv4();
+        this.pos = pos;
+        this.gridPos = new Vec2(-1, -1);
+
+        this.detail = {
+            name: 'cymbalWave',
+            range: 'normal',
+        };
+
+        this.loadable = false;
+
+        this.perspective = false;
+
+        this.r = 0;
+        this.lastRecord = Date.now();
+        this.layer = new Layer(3);
+    }
+    clone() {
+        const cloneObject = new arrow();
+        cloneObject.unpackage(this.enpackage());
+        return cloneObject;
+    }
+    setPerspective(perspective) {
+        this.perspective = perspective;
+    }
+    update(objects) {
+        const parameters = {
+            small: 2.5, normal: 3.5, large: 4.5
+        }
+        if (this.r > w * parameters[this.detail.range]) return { type: 'destory' };
+        this.r = 0.4 * w + w * (Date.now() - this.lastRecord) / 1000; 
+        return { type: 'none' };
+    }
+    collision(target) {
+        switch (target.type) {
+            case 'sphere':
+                if (isCollision({ type: 'sphere', pos: this.pos, r: this.r }, target)) return 'cymbalWave';
+                return 'none';
+            default:
+                return 'none';
+        }
+    }
+    draw(ctx) {
+        ctx.save();
+        ctx.translate(this.pos.x, this.pos.y);
+
+        const parameters = {
+            small: 2.5, normal: 3.5, large: 4.5
+        }
+        ctx.globalAlpha = 0.25 * Math.max((1.1 - Math.pow(this.r / (w * parameters[this.detail.range]), 16)), 0);
+
+        ctx.beginPath();
+        ctx.arc(0, 0, this.r, 0, 2 * Math.PI);
+        var grd = ctx.createRadialGradient(0, 0, 0, 0, 0, this.r);
+        grd.addColorStop(0, 'white');
+        grd.addColorStop(0.4, 'white');
+        grd.addColorStop(0.95, '#FFFF37');
+        grd.addColorStop(1, '#E1E100');
+        ctx.fillStyle = grd;
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.restore();
+    }
+}
+
 /* 參考物件 */
 /*
 export class ObjectName {
@@ -839,6 +1104,7 @@ export class ObjectName {
 		this.type = 'ObjectName';
         this.id = uuidv4();
 		this.pos = pos;
+        this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
 
 		this.detail = {
 			name: 'ObjectName'

@@ -1,6 +1,5 @@
 import Vec2 from "../GameContainer/Class/Vec2";
 import constant from "../GameContainer/constant"
-import Player from "./Object/player";
 import CONSTANT from "./PlayModeConstant";
 
 const w = constant.gridWidth;
@@ -27,13 +26,14 @@ export function initState(status, setting) {
   status.lastUpdateTime = Date.now()
 }
 
-export function updateState(status, setting) {
+export function updateState(status, setting, setStatus) {
   const { mapSize, map, objects } = setting
 
   const dt = Date.now() - status.lastUpdateTime
 
   status.me.update(dt)
   checkLocation(status, map)
+  checkLive(status, objects, setStatus)
 
   status.lastUpdateTime = Date.now()
 }
@@ -45,9 +45,8 @@ function checkLocation(status, map) {
   const UpperBound = constant.mapStart.y + 0.5 * w
   const LowerBound = constant.mapStart.y + constant.mapSize.y * w - 0.5 * w
 
-    // canvas 4 sides rebound
+  // canvas 4 sides rebound
   if (x < LeftBound || x > RightBound || y < UpperBound || y > LowerBound) {
-    // status.me.moveTo(LeftBound +0.1*w, y)
     status.me.returnLastLoc()
     if (x < LeftBound)
       status.me.rebound(new Vec2(LeftBound - w, y))
@@ -59,54 +58,44 @@ function checkLocation(status, map) {
       status.me.rebound(new Vec2(x, 999))
   }
 
-  console.log('check block ')
-
+  // block 4 sides rebound
   blockArea.some(block => {
-    // block 4 sides rebound
-    if (x + CONSTANT.PlayerR > constant.mapStart.x + (block.x) * w 
+    if (x + CONSTANT.PlayerR > constant.mapStart.x + (block.x) * w
       && x - CONSTANT.PlayerR < constant.mapStart.x + (block.x + 1) * w
-      && y + CONSTANT.PlayerR > constant.mapStart.y + (block.y) * w 
+      && y + CONSTANT.PlayerR > constant.mapStart.y + (block.y) * w
       && y - CONSTANT.PlayerR < constant.mapStart.y + (block.y + 1) * w) {
       status.me.returnLastLoc()
-      console.log('pump into block ', block)
-      status.me.squareRebound( new Vec2( constant.mapStart.x+(block.x+0.5)*w, constant.mapStart.y+(block.y+0.5)*w ) )
-//       // right rebound
-//       if (x + CONSTANT.PlayerR > constant.mapStart.x + (block.x) * w){
-//         status.me.rebound(new Vec2( 999, y))
-//         console.log('right rebon')
-
-//       }
-//       // left rebound
-//       else if (x - CONSTANT.PlayerR < constant.mapStart.x + (block.x + 1) * w){
-//         status.me.rebound(new Vec2( 0, y))
-//         console.log('left rebon')
-
-//       }
-//       // lower rebound
-//       else if (y + CONSTANT.PlayerR > constant.mapStart.y + (block.y) * w){
-//         status.me.rebound(new Vec2(x, 999) )
-// console.log('lower rebon')
-//       }
-//       // upper rebound
-//       else if (y - CONSTANT.PlayerR < constant.mapStart.y + (block.y + 1) * w){
-// console.log('lower rebon')
-// status.me.rebound(new Vec2(x, 0))
-
-//       }
-    return true
+      status.me.squareRebound(new Vec2(constant.mapStart.x + (block.x + 0.5) * w, constant.mapStart.y + (block.y + 0.5) * w))
+      // return true break Array.some()
+      return true
     }
   })
+
+  // check floor type
   let mapX = Math.floor((x - constant.mapStart.x) / w)
   let mapY = Math.floor((y - constant.mapStart.y) / w)
-
   const floorType = map[mapY][mapX].type
-  // console.log(floorType)
   if (floorType.includes('none'))
     status.me.setFriction(1)
   else if (floorType.includes('muddy'))
-    status.me.setFriction(10)
+    status.me.setFriction(15)
   else if (floorType.includes('ice'))
     status.me.setFriction(0.1)
 
   status.me.updateLastLoc()
 }
+
+// check Live: Code from EditMode/Engine
+function checkLive(status, objects, setStatus) {
+  let {me, gameState} = status
+  for (let i = 0; i < objects.length; i++) {
+      if (objects[i].collision) {
+          const result = objects[i].collision({ type: 'sphere', pos: me.loc, r: CONSTANT.PlayerR });
+          console.log(result)
+          if ( result === 'block')
+            status.me.squareRebound(objects[i].pos )
+          else if ( result != 'none') setStatus( () => ({...status, gameState: CONSTANT.GameOver})) 
+      }
+  }
+}
+

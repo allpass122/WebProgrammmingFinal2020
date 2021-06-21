@@ -23,17 +23,13 @@ function Drawer(ctx, setting, status) {
 	ctx.restore();
 
 	/* ø�s���� */
-	for (let i = 0; i < objects.length; i++) {
-		objects[i].draw(ctx);
+	for (let i = 0; i < constant.maxLayer; i++) {
+		for (let j = 0; j < objects.length; j++) {
+			if (objects[j].layer.top() === i) objects[j].draw(ctx);
+		}
 	}
 
-	if (status.hold) {
-		status.holdObject.draw(ctx);
-    }
-
 	drawPlayer(ctx, me, me)
-	ctx.restore();
-
 }
 
 // Renders a player at the given coordinates
@@ -46,7 +42,7 @@ function drawPlayer(context, me, player) {
 	context.translate(x, y);
 	context.fillStyle = CONSTANT.PlayerColor;
 	context.beginPath();
-	context.arc(0, 0, 8, 0, 2 * Math.PI);
+	context.arc(0, 0, CONSTANT.PlayerR, 0, 2 * Math.PI);
 	context.fill();
 	context.restore();
   }

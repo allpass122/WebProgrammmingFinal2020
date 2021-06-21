@@ -18,7 +18,6 @@ function EditGameMode(props) {
 	 holding: �ثe�O�_�����󥿦b�Q�ޱ�(���ʨåB�վ�Ѽ�)
 	 holdObject: �Q�ޱ�������
 	 holdDetail: �Q�ޱ�������Ӹ`�C��
-	 ctrl: ctrl��O�_�Q���U
 	*/
 	const [status, setStatus] = useState({
 		select: false,
@@ -28,7 +27,6 @@ function EditGameMode(props) {
 		holding: false,
 		holdObject: null,
 		holdDetail: {},
-		ctrl: false,
 	});
 	let cancelController;
 	let requestId;

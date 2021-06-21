@@ -1,8 +1,10 @@
 import React, { useRef, useEffect, useState} from 'react';
 import DrawMap from './Drawer';
+import Engine from '../GameContainer/EditMode/Engine'; 
 import Vec2 from '../GameContainer/Class/Vec2';
 import Controller from './Controller';
 import {initState, updateState} from './state'
+
 
 // import {initState, processGameUpdate} from './state'
 import CONSTANT from './PlayModeConstant'
@@ -24,7 +26,8 @@ export const PlayMapCreater = (props) => {
 		holdObject: null,
         me: new Player(1,'name', 0, 0), 
         startTime: Date.now(),
-        lastUpdateTime: Date.now()
+        lastUpdateTime: Date.now(),
+        gameState: 'playing'
 	});
 
 	let cancelController;
@@ -32,6 +35,8 @@ export const PlayMapCreater = (props) => {
     let requestId2;
 
 	useEffect(() => {
+        if (status.gameState == CONSTANT.GameOver) console.log(status.gameState)
+
 		const canvas = canvasRef.current;
 		const ctx = canvas.getContext('2d');
 
@@ -39,6 +44,8 @@ export const PlayMapCreater = (props) => {
         let fps, fpsInterval, startTime, now, then, elapsed;
 
 		let renderCount = 0
+        ctx.restore()
+        ctx.save()
         ctx.translate(CONSTANT.translate.x, CONSTANT.translate.y);    
         ctx.scale(CONSTANT.scale.w,CONSTANT.scale.h);
         initState(status, setting) 
@@ -46,13 +53,14 @@ export const PlayMapCreater = (props) => {
         
 		function update()  {
 			requestId = requestAnimationFrame(update);
-            updateState(status, setting)
+            updateState(status, setting, setStatus)
 			
             now = Date.now();
             elapsed = now - then;
             if (elapsed > fpsInterval) {
                 if (renderCount++ % 100 === 0) console.log(renderCount)
                 then = now - (elapsed % fpsInterval);
+    			Engine(setting.objects);
                 DrawMap(ctx, setting, status);
             }
 		};
@@ -64,7 +72,7 @@ export const PlayMapCreater = (props) => {
             startTime = then;
             update();
         }
-        startAnimating(10)
+        startAnimating(30)
         // initState()
         // processGameUpdate()
 
