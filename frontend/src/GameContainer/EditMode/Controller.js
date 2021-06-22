@@ -34,7 +34,7 @@ export default function Controller(scene, status, setStatus, setting, reset) {
 					if (status.holdObject.place(setting.map, setting.objects)) {
 						setting.objects.push(status.holdObject);
 					}
-					newStatus.holdObject = (e.ctrlKey) ? status.holdObject.clone() : null;
+					newStatus.holdObject = (e.ctrlKey && newStatus.holdObject.type !== 'portal') ? status.holdObject.clone() : null;
 					setStatus(newStatus);
 				} else {
 					/* 如果沒有在操控物件則開始選擇格子或是選取在地圖上的物件 */
@@ -49,7 +49,7 @@ export default function Controller(scene, status, setStatus, setting, reset) {
 								newStatus.select = false;
 								newStatus.selecting = false;
 								if (!e.ctrlKey) setting.objects[i].remove(setting.map, setting.objects);
-								newStatus.holdObject = (e.ctrlKey) ? setting.objects[i].clone() : setting.objects[i];
+								newStatus.holdObject = (e.ctrlKey && setting.objects[i].type !== 'portal') ? setting.objects[i].clone() : setting.objects[i];
 								newStatus.holdObject.pos = mousePos.sub(mapStart).toGrid(w).mul(w).add(mapStart.add(new Vec2(0.5 * w, 0.5 * w)));
 								newStatus.holdDetail = setting.objects[i].detailFunction();
 								if (!e.ctrlKey) setting.objects.splice(i, 1);

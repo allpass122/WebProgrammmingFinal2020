@@ -1405,6 +1405,8 @@ export class portal {
             gridPos: { x: this.gridPos.x, y: this.gridPos.y },
 
             name: this.detail.name,
+
+            index: this.index,
         };
     }
     unpackage(objectSetting) {
@@ -1414,6 +1416,9 @@ export class portal {
         this.pos = this.gridPos.mul(w).add(constant.mapStart).add(new Vec2(0.5 * w, 0.5 * w));
 
         this.detail.name = objectSetting.name;
+
+        this.index = objectSetting.index;
+        if (this.index >= 0) this.open = true;
 
         this.perspective = true;
     }
@@ -1436,17 +1441,18 @@ export class portal {
         }
     }
     teleport(objects) {
+        this.open = false;
+        this.cooldown = true;
+        this.lastClose = Date.now();
         for (let i = 0; i < objects.length; i++) {
             if (objects[i].type === 'portal' && objects[i].index === this.index && objects[i].id !== this.id) {
                 objects[i].open = false;
-                this.open = false;
                 objects[i].cooldown = true;
-                this.cooldown = true;
                 objects[i].lastClose = Date.now();
-                this.lastClose = Date.now();
                 return objects[i].pos.clone();
             }
         }
+        return this.pos.clone();
     }
     draw(ctx) {
         ctx.save();
@@ -1483,7 +1489,7 @@ export class portal {
 
         ctx.beginPath();
         ctx.rect(-0.32 * w, -0.32 * w, 0.64 * w, 0.64 * w);
-        let color = (this.open || this.cooldown) ? portalColor[this.index] : 'white';
+        let color = ((this.open || this.cooldown) && (this.index >= 0)) ? portalColor[this.index] : 'white';
         let grd = ctx.createRadialGradient(0, 0, 0, 0, 0, 0.4 * w);
         grd.addColorStop(0, color);
         grd.addColorStop(0.15, '#3C3C3C');
@@ -1501,35 +1507,35 @@ export class portal {
         ctx.restore();
     }
     place(map, objects = null) {
-        let usedIndex = [0, 0, 0, 0, 0, 0, 0, 0];
-        for (let i = 0; i < objects.length; i++) {
-            if (objects[i].type === 'portal') {
-                usedIndex[objects[i].index] += 1;
-            }
-        }
-        for (let i = 0; i < usedIndex.length; i++) {
-            if (usedIndex[i] === 1) {
-                this.index = i;
-                this.open = true;
-                for (let j = 0; j < objects.length; j++) {
-                    if (objects[j].type === 'portal' && objects[j].index === i) {
-                        objects[j].open = true;
-                    }
-                }
-                break;
-            }
-        }
         if (this.index === -1) {
+            let usedIndex = [0, 0, 0, 0, 0, 0, 0, 0];
+            for (let i = 0; i < objects.length; i++) {
+                if (objects[i].type === 'portal') {
+                    usedIndex[objects[i].index] += 1;
+                }
+            }
             for (let i = 0; i < usedIndex.length; i++) {
-                if (usedIndex[i] === 0) {
+                if (usedIndex[i] === 1) {
                     this.index = i;
+                    this.open = true;
+                    for (let j = 0; j < objects.length; j++) {
+                        if (objects[j].type === 'portal' && objects[j].index === i) {
+                            objects[j].open = true;
+                        }
+                    }
                     break;
                 }
             }
+            if (this.index === -1) {
+                for (let i = 0; i < usedIndex.length; i++) {
+                    if (usedIndex[i] === 0) {
+                        this.index = i;
+                        break;
+                    }
+                }
+            }
         }
-        if (this.index === -1) {
-            return false;
-        }
+        if (this.index === -1) return false;
         this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
         let gridPos = this.gridPos;
         if (constant.typeLayerPairs[map[gridPos.y][gridPos.x].type].isOverlap(this.layer)) return false;
@@ -1551,6 +1557,17 @@ export class portal {
         return true;
     }
     remove(map, objects = null) {
+        for (let i = 0; i < objects.length; i++) {
+            if (objects[i].type === 'portal' && objects[i].index === this.index && objects[i].id != this.id) {
+                objects[i].cooldown = false;
+                objects[i].open = false;
+                this.index = -1;
+                break;
+            }
+        }
+        this.index = -1;
+        this.open = false;
+        this.cooldown = false;
         let gridPos = this.gridPos;
         map[gridPos.y][gridPos.x].layer.sub(this.layer);
         if (map[gridPos.y][gridPos.x].layer.status[2]) {
