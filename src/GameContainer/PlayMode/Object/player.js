@@ -1,5 +1,5 @@
 import ObjectClass from './object';
-import Vec2 from '../../GameContainer/Class/Vec2';
+import Vec2 from '../../Class/Vec2';
 const PUSH_FORCE = 300
 const FRICTION = 0.02
 

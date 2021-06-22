@@ -1,10 +1,8 @@
-import {clear, drawMap} from '../GameContainer/Drawer'
-import Vec2 from '../GameContainer/Class/Vec2';
-import constant from '../GameContainer/constant';
+import {clear, drawMap} from '../Drawer'
+import constant from '../constant';
 import CONSTANT from './PlayModeConstant';
 
-// import { getCurrentState } from './state';
-
+import { getAsset } from './assets';
 
 function Drawer(ctx, setting, status) {
 	let map = setting.map;
@@ -17,7 +15,6 @@ function Drawer(ctx, setting, status) {
 	/* ø�s�a�� */
 	ctx.save();
 	ctx.translate(constant.mapStart.x, constant.mapStart.y); 
-	const w = constant.gridWidth;
 	drawMap(ctx, map);
 
 	ctx.restore();
@@ -35,15 +32,23 @@ function Drawer(ctx, setting, status) {
 // Renders a player at the given coordinates
 function drawPlayer(context, me, player) {
 	const { x, y } = player;
-	const canvasX = CONSTANT.CanvasWidth / 2 + x - me.x;
-	const canvasY = CONSTANT.CanvasHeight / 2 + y - me.y;
+	// const canvasX = CONSTANT.CanvasWidth / 2 + x - me.x;
+	// const canvasY = CONSTANT.CanvasHeight / 2 + y - me.y;
   
 	context.save();
 	context.translate(x, y);
-	context.fillStyle = CONSTANT.PlayerColor;
-	context.beginPath();
-	context.arc(0, 0, CONSTANT.PlayerR, 0, 2 * Math.PI);
-	context.fill();
+	context.drawImage(
+		getAsset('seal.svg'),
+		-CONSTANT.PlayerR,
+		-CONSTANT.PlayerR,
+		CONSTANT.PlayerR * 2,
+		CONSTANT.PlayerR * 2,
+	  );
+
+	// context.fillStyle = CONSTANT.PlayerColor;
+	// context.beginPath();
+	// context.arc(0, 0, CONSTANT.PlayerR, 0, 2 * Math.PI);
+	// context.fill();
 	context.restore();
   }
 

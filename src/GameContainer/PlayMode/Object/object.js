@@ -1,4 +1,4 @@
-import Vec2 from "../../GameContainer/Class/Vec2";
+import Vec2 from "../../Class/Vec2";
 
 export default class Object {
   constructor(id, x, y, dir, velocity) {

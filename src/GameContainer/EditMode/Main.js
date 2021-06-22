@@ -5,7 +5,7 @@ import Controller from './Controller';
 import Vec2 from '../Class/Vec2';
 import constant from '../constant';
 
-import {PlayMapCreater} from '../../PlayMode/PlayMapCreater'
+import {PlayMapCreater} from '../PlayMode/PlayMapCreater'
 
 function EditGameMode(props) {
 	const canvasRef = useRef();

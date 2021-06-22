@@ -11,11 +11,11 @@ const constant = {
 	boundaryColor: '#0080FF',
 	auxiliaryColor: '#D2E9FF',
 	PlayerColor: '#000000',
-    CanvasWidth: "1500",
-    CanvasHeight: "700",
+    CanvasWidth: "1300",
+    CanvasHeight: "600",
 	translate: {x: -90,y:-80},
 	scale: {w: 1.2,h:1.2},
-	PlayerR: 5,
+	PlayerR: 12,
 	GameOver: 'gameover'
 };
 

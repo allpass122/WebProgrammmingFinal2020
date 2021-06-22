@@ -1,12 +1,12 @@
-import Vec2 from "../GameContainer/Class/Vec2";
-import constant from "../GameContainer/constant"
+import Vec2 from "../Class/Vec2";
+import constant from "../constant"
 import CONSTANT from "./PlayModeConstant";
 
 const w = constant.gridWidth;
 let blockArea = []
 
 export function initState(status, setting) {
-  const { mapSize, map, objects } = setting
+  const { map } = setting
 
   // random player start area
   const startArea = []
@@ -20,14 +20,13 @@ export function initState(status, setting) {
   map.forEach((line, y) => (line.forEach((square, x) => {
     if (square.type.includes('block')) blockArea.push({ x, y })
   })))
-  console.log(blockArea.length)
 
   status.startTime = Date.now()
   status.lastUpdateTime = Date.now()
 }
 
 export function updateState(status, setting, setStatus) {
-  const { mapSize, map, objects } = setting
+  const { map, objects } = setting
 
   const dt = Date.now() - status.lastUpdateTime
 
@@ -71,9 +70,11 @@ function checkLocation(status, map) {
     }
   })
 
+  // console.log('x,y', x, y)
   // check floor type
   let mapX = Math.floor((x - constant.mapStart.x) / w)
   let mapY = Math.floor((y - constant.mapStart.y) / w)
+  if ( (mapX < 0 || mapX > constant.mapSize.x) || (mapY < 0 || mapY > constant.mapSize.y) ) return
   const floorType = map[mapY][mapX].type
   if (floorType.includes('none'))
     status.me.setFriction(1)
@@ -85,16 +86,16 @@ function checkLocation(status, map) {
   status.me.updateLastLoc()
 }
 
+
 // check Live: Code from EditMode/Engine
 function checkLive(status, objects, setStatus) {
   let {me, gameState} = status
   for (let i = 0; i < objects.length; i++) {
       if (objects[i].collision) {
           const result = objects[i].collision({ type: 'sphere', pos: me.loc, r: CONSTANT.PlayerR });
-          console.log(result)
           if ( result === 'block')
             status.me.squareRebound(objects[i].pos )
-          else if ( result != 'none') setStatus( () => ({...status, gameState: CONSTANT.GameOver})) 
+          else if ( result !== 'none') setStatus( () => ({...status, gameState: CONSTANT.GameOver, endTime: Date.now()})) 
       }
   }
 }
