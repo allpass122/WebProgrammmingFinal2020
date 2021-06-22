@@ -198,7 +198,7 @@ router.post("/deleteSingleMap", async function (req, res) {
 router.post("/getAllMapsByOrder", async function (req, res) {
   const existing = await mapSchema
     .find({ publish: true })
-    .sort({ _id: 1 })
+    .sort({ _id: -1 })
     .exec(function (error, result) {
       // console.log("~~~~~~~~~~~~~~");
       // console.log(result);

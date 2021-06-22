@@ -294,7 +294,7 @@ export default function Album(props) {
                       });
                     }}
                   >
-                    New Map
+                    新地圖
                   </Button>
                 </Grid>
                 <Grid item>
@@ -303,7 +303,7 @@ export default function Album(props) {
                     variant="outlined"
                     onClick={getMapIDs}
                   >
-                    Refresh
+                    重新整理
                   </Button>
                 </Grid>
               </Grid>

@@ -1,6 +1,6 @@
 import React from "react";
 import axios from "axios";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import EditMode from "../GameContainer/EditMode/Main";
 import Vec2 from "../GameContainer/Class/Vec2";
 import { useHistory } from "react-router-dom";
@@ -57,6 +57,7 @@ function Edit(props) {
   const [setting, setSetting] = useState(init);
   const [idGetMap, setidGetMap] = useState(false);
   const [publish, setPublish] = useState(false);
+  const childRef = useRef();
 
   const { name, uuid, login, id } = props.data;
 
@@ -170,6 +171,14 @@ function Edit(props) {
         >
           <CloudUploadIcon />
         </IconButton>
+        <IconButton
+          size="large"
+          variant="contained"
+          color="secondary"
+          onClick={() => childRef.current.returnSetting()}
+        >
+          <SaveIcon />
+        </IconButton>
       </div>
       <Modal
         open={open}
@@ -230,7 +239,7 @@ function Edit(props) {
       <EditMode
         width="1200px"
         height="600px"
-        // setting={setting}
+        ref={childRef}
         setting={unpackage(setting)}
         save={save}
       />
