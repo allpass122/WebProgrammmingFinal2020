@@ -31,13 +31,13 @@ export function updateState(status, setting, setStatus) {
   const dt = Date.now() - status.lastUpdateTime
 
   status.me.update(dt)
-  checkLocation(status, map)
+  checkLocation(status, map, setStatus)
   checkLive(status, objects, setStatus)
 
   status.lastUpdateTime = Date.now()
 }
 
-function checkLocation(status, map) {
+function checkLocation(status, map, setStatus) {
   let { x, y } = status.me.serializeForUpdate()
   const LeftBound = constant.mapStart.x + 0.5 * w
   const RightBound = constant.mapStart.x + constant.mapSize.x * w - 0.5 * w
@@ -76,12 +76,17 @@ function checkLocation(status, map) {
   let mapY = Math.floor((y - constant.mapStart.y) / w)
   if ( (mapX < 0 || mapX > constant.mapSize.x) || (mapY < 0 || mapY > constant.mapSize.y) ) return
   const floorType = map[mapY][mapX].type
-  if (floorType.includes('none'))
+  if (floorType.includes('none') || floorType.includes('start') || floorType.includes('end'))
     status.me.setFriction(1)
   else if (floorType.includes('muddy'))
     status.me.setFriction(15)
   else if (floorType.includes('ice'))
     status.me.setFriction(0.1)
+  else if (floorType.includes('dead'))
+    setStatus( () => ({...status, gameState: CONSTANT.GameOver, endTime: Date.now()})) 
+  
+  if (floorType.includes('end'))
+    setStatus( () => ({...status, gameState: CONSTANT.WIN, endTime: Date.now()})) 
 
   status.me.updateLastLoc()
 }

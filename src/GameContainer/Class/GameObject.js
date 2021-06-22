@@ -23,7 +23,7 @@ const isCollision = (obj1, obj2) => {
 };
 
 
-/* ¦y¨ë¤è¶ô */
+/* ï¿½yï¿½ï¿½ï¿½ï¿½ */
 export class spikedBlock {
     constructor(pos = new Vec2(0, 0)) {
         this.type = 'spikedBlock';
@@ -190,7 +190,7 @@ export class spikedBlock {
     }
 }
 
-/* ¥­¥x */
+/* ï¿½ï¿½ï¿½x */
 export class platform {
     constructor(pos = new Vec2(0, 0)) {
         this.type = 'platform';
@@ -295,7 +295,7 @@ export class platform {
     }
 }
 
-/* ²¾°Ê¥­¥x */
+/* ï¿½ï¿½ï¿½Ê¥ï¿½ï¿½x */
 export class movingPlatform {
     constructor(pos = new Vec2(0, 0)) {
         this.type = 'movingPlatform';
@@ -478,7 +478,7 @@ export class movingPlatform {
     }
 }
 
-/* ¤} */
+/* ï¿½} */
 export class bow {
     constructor(pos = new Vec2(0, 0)) {
         this.type = 'bow';
@@ -631,7 +631,7 @@ export class bow {
     }
 }
 
-/* ½b */
+/* ï¿½b */
 export class arrow {
     constructor(pos = new Vec2(0, 0)) {
         this.type = 'arrow';
@@ -665,7 +665,6 @@ export class arrow {
         for (let i = 0; i < objects.length; i++) {
             if (objects[i].id !== this.id && objects[i].collision) {
                 let result = objects[i].collision({ type: 'sphere', pos: this.pos, r: 0.1 });
-                console.log(result);
                 if (result === 'block') return { type: 'destory' };
             }
         }
@@ -728,7 +727,7 @@ export class arrow {
     }
 }
 
-/* ÂH²G */
+/* ï¿½Hï¿½G */
 export class mucus {
     constructor(pos = new Vec2(0, 0)) {
         this.type = 'mucus';
@@ -864,7 +863,7 @@ export class mucus {
     }
 }
 
-/* ­µ¹Y */
+/* ï¿½ï¿½ï¿½Y */
 export class cymbal {
     constructor(pos = new Vec2(0, 0)) {
         this.type = 'cymbal';
@@ -1027,7 +1026,7 @@ export class cymbal {
     }
 }
 
-/* ­µªi */
+/* ï¿½ï¿½ï¿½i */
 export class cymbalWave {
     constructor(pos = new Vec2(0, 0)) {
         this.type = 'cymbalWave';
@@ -1097,7 +1096,7 @@ export class cymbalWave {
     }
 }
 
-/* °Ñ¦Òª«¥ó */
+/* ï¿½Ñ¦Òªï¿½ï¿½ï¿½ */
 /*
 export class ObjectName {
 	constructor(pos = new Vec2(0, 0)) {

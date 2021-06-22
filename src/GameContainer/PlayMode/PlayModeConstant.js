@@ -16,7 +16,9 @@ const constant = {
 	translate: {x: -90,y:-80},
 	scale: {w: 1.2,h:1.2},
 	PlayerR: 12,
-	GameOver: 'gameover'
+	GameOver: 'GAME OVER',
+	WIN: 'WIN'
+
 };
 
 export default constant;

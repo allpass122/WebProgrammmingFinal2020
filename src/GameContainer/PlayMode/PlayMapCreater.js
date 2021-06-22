@@ -17,12 +17,6 @@ export const PlayMapCreater = (props) => {
     let canvasRef = useRef();
 
     const [status, setStatus] = useState({
-        mousePos: new Vec2(),
-        select: false,
-        selecting: false,
-        selectPair: [new Vec2(), new Vec2()],
-        hold: false,
-        holdObject: null,
         me: new Player(1, 'name', 0, 0),
         startTime: Date.now(),
         endTime: Date.now(),
@@ -30,7 +24,7 @@ export const PlayMapCreater = (props) => {
     });
 
     useEffect(() => {
-        if (status.gameState === CONSTANT.GameOver) {
+        if (status.gameState === CONSTANT.GameOver  || status.gameState === CONSTANT.WIN) {
             console.log('Time', Date.now() - status.startTime)
             openForm()
         }
@@ -50,19 +44,17 @@ export const PlayMapCreater = (props) => {
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
 
-        let cancelController;
-        let requestId;
-
-        cancelController = Controller(canvas, status, setStatus, setting);
-        let fps, fpsInterval, startTime, now, then, elapsed;
-
-        let renderCount = 0
         ctx.restore()
         ctx.save()
         ctx.translate(CONSTANT.translate.x, CONSTANT.translate.y);
         ctx.scale(CONSTANT.scale.w, CONSTANT.scale.h);
         initState(status, setting)
 
+        let cancelController;
+        let requestId;
+
+        cancelController = Controller(canvas, status, setStatus, setting);
+        let fps, fpsInterval, startTime, now, then, elapsed;
 
         function update() {
             requestId = requestAnimationFrame(update);
@@ -71,13 +63,11 @@ export const PlayMapCreater = (props) => {
             now = Date.now();
             elapsed = now - then;
             if (elapsed > fpsInterval) {
-                if (renderCount++ % 100 === 0) console.log(renderCount)
                 then = now - (elapsed % fpsInterval);
                 Engine(setting.objects);
                 DrawMap(ctx, setting, status);
             }
         };
-
         // initialize the timer variables and start the animation
         function startAnimating(fps) {
             fpsInterval = 1000 / fps;
@@ -97,10 +87,8 @@ export const PlayMapCreater = (props) => {
     }, [setStatus, status, setting]);
 
     function toTimeFormate(ms) {
-        ms = 98555
         return `${Math.floor(ms / 1000 / 60).toString().padStart(2, "0")} : ${Math.floor(ms / 1000 % 60).toString().padStart(2, "0")}`
     }
-
 
     return (
         <>
@@ -110,11 +98,14 @@ export const PlayMapCreater = (props) => {
             </div>
 
             <div className="form-popup" id="gameForm">
-                <label ><span>GameOver</span><span>{toTimeFormate(status.endTime - status.startTime)}</span></label>
-                <button className='typeButton' onClick={closeForm}>Try Again</button>
+                <label >
+                    <span>{status.gameState}</span>
+                    <span>{toTimeFormate(status.endTime - status.startTime)}</span>
+                </label>
+                <button className='gameButton' onClick={closeForm}>Try Again</button>
             </div>
-            <button className='typeButton' onClick={closeForm}>CLOSE</button>
-            <button className='typeButton' onClick={openForm}>OPEN</button>
+            {/* <button className='typeButton' onClick={closeForm}>CLOSE</button>
+            <button className='typeButton' onClick={openForm}>OPEN</button> */}
         </>
     )
 
