@@ -88,6 +88,10 @@ const Play = (props) => {
   };
 
   const challenge = (time, pass) => {
+    if (mode !== "challenge") {
+      console.log(`practice no record`);
+      return;
+    }
     console.log(`receive challenge ${time}`);
     let mapLocal = { ...mapp };
     mapLocal.statistic.playTime += 1;
