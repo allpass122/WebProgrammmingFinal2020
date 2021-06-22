@@ -47,6 +47,11 @@ export default class Vec2 {
         if (v.length() === 0) return 0;
         return this.dot(v) / v.length() / v.length();
     }
+    radian() { // 回傳弧度角
+        if (this.x === 0) return (this.y > 0) ? 0.5 * Math.PI : 1.5 * Math.PI;
+        if (this.x > 0) return (this.y > 0) ? Math.atan(this.y / this.x) : 2 * Math.PI + Math.atan(this.y / this.x);
+        return Math.PI + Math.atan(this.y / this.x);
+    }
     between(v1, v2) { // 在兩點圍出的矩形空間內
         return this.x >= Math.min(v1.x, v2.x) && this.x <= Math.max(v1.x, v2.x) && this.y >= Math.min(v1.y, v2.y) && this.y <= Math.max(v1.y, v2.y);
     }

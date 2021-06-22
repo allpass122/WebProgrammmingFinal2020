@@ -65,3 +65,90 @@ export function drawMap(ctx, map) {
 		}
 	}
 }
+
+export function drawPlayKey(ctx, size = 1) {
+	ctx.save();
+	ctx.scale(size, size);
+
+	ctx.beginPath();
+	ctx.moveTo(-0.3, 0);
+	ctx.arcTo(-0.3, -0.5, 0.5, 0, 0.1);
+	ctx.arcTo(0.5, 0, -0.3, 0.5, 0.1);
+	ctx.arcTo(-0.3, 0.5, -0.3, 0, 0.1);
+	ctx.lineTo(-0.3, 0);
+	ctx.fillStyle = 'green';
+	ctx.fill();
+	ctx.closePath();
+
+	ctx.restore();
+}
+
+export function drawStopKey(ctx, size = 1) {
+	ctx.save();
+	ctx.scale(size, size);
+	ctx.fillStyle = 'red';
+
+	ctx.beginPath();
+	ctx.moveTo(-0.35, 0);
+	ctx.arcTo(-0.35, -0.5, -0.15, -0.5, 0.1);
+	ctx.arcTo(-0.15, -0.5, -0.15, 0.5, 0.1);
+	ctx.arcTo(-0.15, 0.5, -0.35, 0.5, 0.1);
+	ctx.arcTo(-0.35, 0.5, -0.35, 0, 0.1);
+	ctx.lineTo(-0.35, 0);
+	ctx.fill();
+	ctx.closePath();
+
+	ctx.beginPath();
+	ctx.moveTo(0.35, 0);
+	ctx.arcTo(0.35, -0.5, 0.15, -0.5, 0.1);
+	ctx.arcTo(0.15, -0.5, 0.15, 0.5, 0.1);
+	ctx.arcTo(0.15, 0.5, 0.35, 0.5, 0.1);
+	ctx.arcTo(0.35, 0.5, 0.35, 0, 0.1);
+	ctx.lineTo(0.35, 0);
+	ctx.fill();
+	ctx.closePath();
+
+	ctx.restore();
+}
+
+export function drawTrashCan(ctx, size = 1) {
+	ctx.save();
+	ctx.scale(size, size);
+	ctx.lineWidth = 0.03;
+	ctx.strokeStyle = 'gray';
+
+	for (let i = 0; i < 3; i++) {
+		ctx.beginPath();
+		ctx.moveTo(-0.2 + 0.2 * i, 0);
+		ctx.lineTo(-0.2 + 0.2 * i, 0.4);
+		ctx.stroke();
+		ctx.closePath();
+	}
+
+	ctx.beginPath();
+	ctx.moveTo(-0.4, -0.2);
+	ctx.arcTo(-0.4, 0.6, 0.4, 0.6, 0.1);
+	ctx.arcTo(0.4, 0.6, 0.4, -0.2, 0.1);
+	ctx.lineTo(0.4, -0.2);
+	ctx.stroke();
+	ctx.closePath();
+
+	ctx.beginPath();
+	ctx.moveTo(-0.5, -0.4);
+	ctx.lineTo(0.5, -0.4);
+	ctx.lineTo(0.5, -0.2);
+	ctx.lineTo(-0.5, -0.2);
+	ctx.lineTo(-0.5, -0.4);
+	ctx.stroke();
+	ctx.closePath();
+
+	ctx.beginPath();
+	ctx.moveTo(-0.2, -0.4);
+	ctx.lineTo(-0.2, -0.6);
+	ctx.lineTo(0.2, -0.6);
+	ctx.lineTo(0.2, -0.4);
+	ctx.stroke();
+	ctx.closePath();
+
+	ctx.restore();
+}
