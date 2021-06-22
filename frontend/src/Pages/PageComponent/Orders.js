@@ -1,4 +1,5 @@
 import React from "react";
+import { useHistory } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Link from "@material-ui/core/Link";
 import { makeStyles } from "@material-ui/core/styles";
@@ -24,7 +25,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Orders(props) {
+  const history = useHistory();
   const classes = useStyles();
+  const { name, uuid, login } = props.info;
+
   // console.log(props.data);
   return (
     <React.Fragment>
@@ -51,7 +55,16 @@ export default function Orders(props) {
                 variant="outlined"
                 color="secondary"
                 onClick={() => {
-                  console.log("Hi");
+                  history.push({
+                    pathname: `/PlayMode`,
+                    state: {
+                      uuid: uuid,
+                      name: name,
+                      login: true,
+                      id: map.id,
+                      mode: "challenge",
+                    },
+                  });
                 }}
               >
                 <SportsEsportsIcon />

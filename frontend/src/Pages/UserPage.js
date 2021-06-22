@@ -3,6 +3,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
+import { enpackage, unpackage, show } from "../GameContainer/DataPackager";
 
 import AppBar from "@material-ui/core/AppBar";
 import Button from "@material-ui/core/Button";
@@ -361,7 +362,13 @@ export default function Album(props) {
                       onClick={() => {
                         history.push({
                           pathname: `/PlayMode`,
-                          state: { uuid: uuid, name: name, login: true },
+                          state: {
+                            uuid: uuid,
+                            name: name,
+                            login: true,
+                            id: ele.id,
+                            mode: "test",
+                          },
                         });
                       }}
                     >

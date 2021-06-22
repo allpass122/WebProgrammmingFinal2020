@@ -119,14 +119,14 @@ function Edit(props) {
     }
   };
 
+  if (id !== 0 && idGetMap === false) {
+    getMap();
+  }
+
   const save = (setting) => {
     setSetting(enpackage(setting));
     // show(enpackage(setting));
   };
-
-  if (id !== 0 && idGetMap === false) {
-    getMap();
-  }
 
   // console.log(util.inspect(setting, {showHidden: false, depth: null}))
 
