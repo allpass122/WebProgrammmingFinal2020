@@ -1,11 +1,11 @@
 import ObjectClass from './object';
 import Vec2 from '../../Class/Vec2';
-const PUSH_FORCE = 300
-const FRICTION = 0.02
+const PUSH_FORCE = 500
+const FRICTION = 0.1
 
 export default class Player extends ObjectClass {
   constructor(id, username, x, y) {
-    super(id, x, y, Math.random() * 2 * Math.PI, new Vec2(1, 1));
+    super(id, x, y, Math.random() * 2 * Math.PI, new Vec2(0, 0));
     this.username = username;
     this.score = 0;
 
@@ -14,6 +14,8 @@ export default class Player extends ObjectClass {
     this.force = new Vec2(0, 0)
     this.acceleration = new Vec2(0, 0)
     this.lastLoc = new Vec2(x, y)
+    this.lastPlatformID = "-1" 
+    this.lastPlatformPos = new Vec2(0, 0)
   }
 
 
@@ -47,6 +49,29 @@ export default class Player extends ObjectClass {
     this.loc = new Vec2(x, y)
   }
 
+  moveOnPlatform(id, platformPos) {
+    id = id.toString()
+    // meet a platform or change a platform
+    if(this.lastPlatformID === "-1" || this.lastPlatformID !== id ){
+      this.lastPlatformID = id
+      this.lastPlatformPos = platformPos
+    }
+    if(this.lastPlatformID === id){
+      this.loc = this.loc.add( platformPos.sub(this.lastPlatformPos) )
+      this.lastPlatformPos = platformPos
+    }
+  }
+
+  leavePlatform() {
+    this.lastPlatformID = "-1"
+  }
+
+  onPlatform() {
+    if (this.lastPlatformID === "-1")
+      return false
+    else return true
+  }
+
   squareRebound(target) {
     const vector = (new Vec2(this.loc.x - target.x, this.loc.y - target.y))
     const Theta = Math.atan2(vector.y, vector.x)
@@ -65,9 +90,9 @@ export default class Player extends ObjectClass {
   }
 
   rebound(target) {
+    // console.log('rebound', target)
     const normal = (new Vec2(this.loc.x - target.x, this.loc.y - target.y))
     const reflectLineTheta = Math.atan2(normal.y, normal.x) + 0.5 * Math.PI
-    // const reflectLineTheta = Math.acos( normal.x / Math.sqrt( Math.pow(normal.x,2)+Math.pow(normal.y,2) )) + 0.5*Math.PI
     const newVelocityX = Math.cos(2 * reflectLineTheta) * this.velocity.x + Math.sin(2 * reflectLineTheta) * this.velocity.y
     const newVelocityY = Math.sin(2 * reflectLineTheta) * this.velocity.x - Math.cos(2 * reflectLineTheta) * this.velocity.y
     this.velocity = new Vec2(newVelocityX, newVelocityY)

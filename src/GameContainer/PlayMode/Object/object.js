@@ -12,13 +12,6 @@ export default class Object {
     this.loc = this.loc.add( this.velocity.mul(dt) )
   }
 
-  // distanceTo(object) {
-  //   const dx = this.x - object.x;
-  //   const dy = this.y - object.y;
-  //   return Math.sqrt(dx * dx + dy * dy);
-  // }
-
-
   serializeForUpdate() {
     return {
       id: this.id,
@@ -28,5 +21,3 @@ export default class Object {
     };
   }
 }
-
-// module.exports = Object;

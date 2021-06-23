@@ -38,14 +38,12 @@ function EditGameMode(props) {
 
 		cancelController = Controller(canvas, status, setStatus, setting);
 
-		let renderCount = 0
 		const update = () => {
 			/* �C�@��(fps = 60)�i�檺��s */
 			Engine(setting.objects);
 			Drawer(ctx, setting, status);
 
 			requestId = requestAnimationFrame(update);
-			if (renderCount++ % 100 === 0) console.log(renderCount)
 		};
 		update();
 

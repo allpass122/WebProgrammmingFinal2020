@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import DrawMap from './Drawer';
 import Engine from '../EditMode/Engine';
-import Vec2 from '../Class/Vec2';
 import Controller from './Controller';
 import { initState, updateState } from './state'
 
@@ -94,7 +93,7 @@ export const PlayMapCreater = (props) => {
         <>
             <div>
                 <canvas ref={canvasRef} id='PlayModeCanvas' width={CONSTANT.CanvasWidth} height={CONSTANT.CanvasHeight}
-                    style={{ position: "absolute", left: 0, top: 150, zIndex: 0 }}></canvas>
+                    style={{ position: "absolute", left: 50, top: 50, zIndex: 0 }}></canvas>
             </div>
 
             <div className="form-popup" id="gameForm">
