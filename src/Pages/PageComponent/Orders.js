@@ -36,8 +36,8 @@ export default function Orders(props) {
             <TableCell>Author</TableCell>
             <TableCell>Title</TableCell>
             <TableCell>Description</TableCell>
-            <TableCell>PlayTime</TableCell>
-            <TableCell>PassTime</TableCell>
+            <TableCell>Number of Plays</TableCell>
+            <TableCell>Number of Passes</TableCell>
             <TableCell>Fastest</TableCell>
             <TableCell align="right">Record holder</TableCell>
           </TableRow>

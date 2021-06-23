@@ -1,0 +1,148 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* Game */
+.gameName {
+  font-size: 25px;
+  color: black;
+}
+
+.Game {
+  width: 100%;
+  text-align: center;
+}
+.Table {
+  margin: 0 auto;
+}
+.Grid {
+  height: 5vw;
+  width: 5vw;
+  margin: 2px;
+  text-align: center;
+}
+.grid0 {
+  background-color: rgb(200, 194, 194);
+}
+.grid1 {
+  background-color: black;
+}
+
+/* Login.js */
+.Row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 1em;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+.Row1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 1em;
+  margin: 0;
+  position: absolute;
+  top: 60%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+.Wrapper {
+  display: flex;
+  flex-direction: column;
+}
+.modal-div {
+  display: block;
+  text-align: center;
+  width: 100%;
+  padding: 1em;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+.SignUP {
+  background-color: rgb(148, 227, 233);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80%;
+  height: 50%;
+  padding: 1em;
+  margin: 0 auto;
+  position: absolute;
+  left: 10%;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+/* EditMode.js */
+.upload {
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80%;
+  height: 50%;
+  padding: 1em;
+  margin: 0 auto;
+  position: absolute;
+  left: 10%;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+.upload_ {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80%;
+  padding: 1em;
+  margin: 0 auto;
+  position: absolute;
+  left: 10%;
+  top: 60%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}

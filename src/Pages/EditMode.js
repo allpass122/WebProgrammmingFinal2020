@@ -1,12 +1,12 @@
 import React from "react";
 import axios from "axios";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import EditMode from "../GameContainer/EditMode/Main";
 import Vec2 from "../GameContainer/Class/Vec2";
 import { useHistory } from "react-router-dom";
 import ErrorPage from "./ErrorPage";
 // import util from "util";
-import init from "../GameContainer/Setting/example_1";
+import init from "../GameContainer/Setting/example_0";
 import { enpackage, unpackage, show } from "../GameContainer/DataPackager";
 
 import { makeStyles } from "@material-ui/core/styles";
@@ -57,6 +57,7 @@ function Edit(props) {
   const [setting, setSetting] = useState(init);
   const [idGetMap, setidGetMap] = useState(false);
   const [publish, setPublish] = useState(false);
+  const childRef = useRef();
 
   const { name, uuid, login, id } = props.data;
 
@@ -170,6 +171,14 @@ function Edit(props) {
         >
           <CloudUploadIcon />
         </IconButton>
+        <IconButton
+          size="large"
+          variant="contained"
+          color="secondary"
+          onClick={() => childRef.current.returnSetting()}
+        >
+          <SaveIcon />
+        </IconButton>
       </div>
       <Modal
         open={open}
@@ -229,8 +238,8 @@ function Edit(props) {
       </Modal>
       <EditMode
         width="1200px"
-        height="700px"
-        // setting={setting}
+        height="600px"
+        ref={childRef}
         setting={unpackage(setting)}
         save={save}
       />

@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+=======
+node_modules/
+# frontend
+frontend/node_modules
+>>>>>>> remotes/origin/ko870903_temp
 
 # dependencies
 /node_modules

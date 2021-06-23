@@ -1,0 +1,3 @@
+1. Merge game into Web
+2. Add mapSchema
+3. Can upload map and has own maps now
