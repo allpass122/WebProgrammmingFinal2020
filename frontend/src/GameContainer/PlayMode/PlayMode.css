@@ -1,6 +1,5 @@
-body {
-    text-align: center;
-}
+#PlayModeCanvas{ border: 5px solid rgba(161, 158, 158, 0.685); }
+
 .form-popup {
   top: 50%;
   left: 50%;

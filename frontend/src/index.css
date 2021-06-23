@@ -11,25 +11,3 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
-
-#EditModeCanvas {
-    background: #EEEEEE;
-    float: left;
-}
-
-#EditModeParameters {
-    width: 200px;
-    height: 700px;
-    background-color: #FBFBFF;
-    float: left;
-}
-
-.typeButton {
-    display: block;
-    width: 50px;
-    height: 50px;
-}
-
-.parametersInput {
-    display: block;
-}

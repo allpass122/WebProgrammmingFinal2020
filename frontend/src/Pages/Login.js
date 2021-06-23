@@ -164,7 +164,7 @@ const Body = () => {
           disabled={!name || !pwd}
           onClick={handleLogin}
         >
-          Login
+          登入
         </Button>
         <Button
           className={classes.button}
@@ -174,7 +174,7 @@ const Body = () => {
             setOpen(true);
           }}
         >
-          Click here to SignUp
+          註冊
         </Button>
       </div>
 
@@ -187,7 +187,7 @@ const Body = () => {
               name="planttext password"
             />
           }
-          label="PlantText Password"
+          label="顯示密碼"
         />
       </div>
       <Modal
@@ -226,7 +226,7 @@ const Body = () => {
             disabled={!name_ || !pwd_ || pwd_ !== pwd_repeat}
             onClick={handleSignUp}
           >
-            SignUp
+            註冊
           </Button>
           <div className="Row1">
             <FormControlLabel
@@ -237,7 +237,7 @@ const Body = () => {
                   name="planttext password"
                 />
               }
-              label="PlantText Password"
+              label="顯示密碼"
             />
           </div>
         </div>
