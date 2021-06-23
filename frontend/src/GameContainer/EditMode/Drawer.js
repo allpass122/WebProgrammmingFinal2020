@@ -67,6 +67,8 @@ function Drawer(ctx, setting, status) {
 		new GameObject.portal(new Vec2(editObjectSpace.x * 9.5, editObjectSpace.y * 0.5)),
 		new GameObject.trapPlatform(new Vec2(editObjectSpace.x * 10.5, editObjectSpace.y * 0.5)),
 		new GameObject.missileBase(new Vec2(editObjectSpace.x * 11.5, editObjectSpace.y * 0.5)),
+		new GameObject.lockedWall(new Vec2(editObjectSpace.x * 12.5, editObjectSpace.y * 0.5)),
+		new GameObject.unlocker(new Vec2(editObjectSpace.x * 13.5, editObjectSpace.y * 0.5)),
 	];
 	ctx.translate(88, 520);
 	for (let i = 0; i < 16; i++) {

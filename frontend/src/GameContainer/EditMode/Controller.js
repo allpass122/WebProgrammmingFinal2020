@@ -6,6 +6,7 @@ export default function Controller(scene, status, setStatus, setting, reset) {
 	const mapStart = constant.mapStart;
 	const mapEnd = constant.mapStart.add(constant.mapSize.mul(constant.gridWidth));
 	const w = constant.gridWidth;
+	const copyable = (e, object) => (e.ctrlKey && object.type !== 'portal' && object.type !== 'lockedWall' && object.type !== 'unlocker');
 
 	const mouseMoveHandler = (e) => {
 		const mousePos = new Vec2(e.offsetX, e.offsetY);
@@ -30,11 +31,11 @@ export default function Controller(scene, status, setStatus, setting, reset) {
 				if (status.holding) {
 					/* 嘗試把物件放在地圖上 */
 					let newStatus = { ...status };
-					newStatus.holding = e.ctrlKey;
+					newStatus.holding = copyable(e, status.holdObject);
 					if (status.holdObject.place(setting.map, setting.objects)) {
 						setting.objects.push(status.holdObject);
 					}
-					newStatus.holdObject = (e.ctrlKey && newStatus.holdObject.type !== 'portal') ? status.holdObject.clone() : null;
+					newStatus.holdObject = (copyable(e, status.holdObject)) ? status.holdObject.clone() : null;
 					setStatus(newStatus);
 				} else {
 					/* 如果沒有在操控物件則開始選擇格子或是選取在地圖上的物件 */
@@ -48,11 +49,12 @@ export default function Controller(scene, status, setStatus, setting, reset) {
 								newStatus.hold = false;
 								newStatus.select = false;
 								newStatus.selecting = false;
-								if (!e.ctrlKey) setting.objects[i].remove(setting.map, setting.objects);
-								newStatus.holdObject = (e.ctrlKey && setting.objects[i].type !== 'portal') ? setting.objects[i].clone() : setting.objects[i];
+								if (!copyable(e, setting.objects[i])) setting.objects[i].remove(setting.map, setting.objects);
+								newStatus.holdObject = (copyable(e, setting.objects[i])) ? setting.objects[i].clone() : setting.objects[i];
 								newStatus.holdObject.pos = mousePos.sub(mapStart).toGrid(w).mul(w).add(mapStart.add(new Vec2(0.5 * w, 0.5 * w)));
 								newStatus.holdDetail = setting.objects[i].detailFunction();
-								if (!e.ctrlKey) setting.objects.splice(i, 1);
+								console.log(newStatus.holdDetail);
+								if (!copyable(e, setting.objects[i])) setting.objects.splice(i, 1);
 								break;
 							}
 						}
@@ -143,6 +145,18 @@ export default function Controller(scene, status, setStatus, setting, reset) {
 						case 11:
 							newStatus.holding = true;
 							newStatus.holdObject = new GameObject.missileBase(new Vec2(e.offsetX, e.offsetY));
+							newStatus.holdDetail = newStatus.holdObject.detailFunction();
+							newStatus.holdObject.setPerspective(true);
+							break;
+						case 12:
+							newStatus.holding = true;
+							newStatus.holdObject = new GameObject.lockedWall(new Vec2(e.offsetX, e.offsetY));
+							newStatus.holdDetail = newStatus.holdObject.detailFunction();
+							newStatus.holdObject.setPerspective(true);
+							break;
+						case 13:
+							newStatus.holding = true;
+							newStatus.holdObject = new GameObject.unlocker(new Vec2(e.offsetX, e.offsetY));
 							newStatus.holdDetail = newStatus.holdObject.detailFunction();
 							newStatus.holdObject.setPerspective(true);
 							break;

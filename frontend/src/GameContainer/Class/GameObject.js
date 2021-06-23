@@ -21,7 +21,7 @@ const isCollision = (obj1, obj2) => {
     }
     return false;
 };
-
+const colorList = ['#FF0000', '#FFA042', '#F9F900', '#02DF82', '#6A6AFF', '#D0D0D0', '#E800E8', '#984B4B'];
 
 /* ¦y¨ë¤è¶ô */
 export class spikedBlock {
@@ -663,8 +663,9 @@ export class arrow {
                 if (result === 'ice') this.speed *= 1.05;
                 // else if (result === 'conveyor') this.detail.direction = objects[i].detail.direction;
                 else if (result === 'portal') this.pos = objects[i].teleport(objects);
-                else if (result === 'missileRay') objects[i].fire(this);
-                else if (result === 'block') return { type: 'destory' };
+                // else if (result === 'missileRay') objects[i].fire(this);
+                else if (result === 'unlocker') objects[i].unlock(objects);
+                else if (result === 'block' || result === 'lockedWall') return { type: 'destory' };
             }
         }
         let dirVec = Vec2.direction(this.detail.direction).mul(this.speed * w);
@@ -1359,7 +1360,6 @@ export class conveyor {
 }
 
 /* ¶Ç°eªù */
-const portalColor = ['#FF0000', '#FFA042', '#F9F900', '#02DF82', '#6A6AFF', '#D0D0D0', '#E800E8', '#984B4B'];
 export class portal {
     constructor(pos = new Vec2(0, 0)) {
         this.type = 'portal';
@@ -1406,7 +1406,7 @@ export class portal {
 
             name: this.detail.name,
 
-            index: this.index,
+            index: (this.open)? this.index: -1,
         };
     }
     unpackage(objectSetting) {
@@ -1489,7 +1489,7 @@ export class portal {
 
         ctx.beginPath();
         ctx.rect(-0.32 * w, -0.32 * w, 0.64 * w, 0.64 * w);
-        let color = ((this.open || this.cooldown) && (this.index >= 0)) ? portalColor[this.index] : 'white';
+        let color = ((this.open || this.cooldown) && (this.index >= 0)) ? colorList[this.index] : 'white';
         let grd = ctx.createRadialGradient(0, 0, 0, 0, 0, 0.4 * w);
         grd.addColorStop(0, color);
         grd.addColorStop(0.15, '#3C3C3C');
@@ -1507,6 +1507,11 @@ export class portal {
         ctx.restore();
     }
     place(map, objects = null) {
+        this.cooldown = false;
+        this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
+        let gridPos = this.gridPos;
+        if (constant.typeLayerPairs[map[gridPos.y][gridPos.x].type].isOverlap(this.layer)) return false;
+        if (map[gridPos.y][gridPos.x].layer.isOverlap(this.layer)) return false;
         if (this.index === -1) {
             let usedIndex = [0, 0, 0, 0, 0, 0, 0, 0];
             for (let i = 0; i < objects.length; i++) {
@@ -1530,16 +1535,13 @@ export class portal {
                 for (let i = 0; i < usedIndex.length; i++) {
                     if (usedIndex[i] === 0) {
                         this.index = i;
+                        this.open = false;
                         break;
                     }
                 }
             }
         }
         if (this.index === -1) return false;
-        this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
-        let gridPos = this.gridPos;
-        if (constant.typeLayerPairs[map[gridPos.y][gridPos.x].type].isOverlap(this.layer)) return false;
-        if (map[gridPos.y][gridPos.x].layer.isOverlap(this.layer)) return false;
         map[gridPos.y][gridPos.x].layer.add(this.layer);
         if (map[gridPos.y][gridPos.x].layer.status[2]) {
             for (let i = 0; i < objects.length; i++) {
@@ -1561,7 +1563,6 @@ export class portal {
             if (objects[i].type === 'portal' && objects[i].index === this.index && objects[i].id != this.id) {
                 objects[i].cooldown = false;
                 objects[i].open = false;
-                this.index = -1;
                 break;
             }
         }
@@ -1909,7 +1910,7 @@ export class missileBase {
         if (this.active) {
             grd = ctx.createRadialGradient(0, 0, 0, 0, 0, this.r * w);
             grd.addColorStop(0, 'white');
-            grd.addColorStop(0.8, '#FF5151');
+            grd.addColorStop(0.6, '#FF5151');
             grd.addColorStop(1, '#FF0000');
             if (!this.find) {
                 ctx.beginPath();
@@ -1923,7 +1924,7 @@ export class missileBase {
                 ctx.fill();
                 ctx.closePath();
             } else {
-                ctx.globalAlpha *= 0.8 * ((this.findCycle * 6) % 1);
+                ctx.globalAlpha *= 0.4 * ((this.findCycle * 6) % 1);
                 ctx.beginPath();
                 ctx.arc(0, 0, this.r * w, 0, 2 * Math.PI);
                 ctx.fillStyle = grd;
@@ -2091,5 +2092,288 @@ export class missile {
         ctx.closePath();
 
         ctx.restore();
+    }
+}
+
+/* ÂêÀð */
+export class lockedWall {
+    constructor(pos = new Vec2(0, 0)) {
+        this.type = 'lockedWall';
+        this.id = uuidv4();
+        this.pos = pos;
+        this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
+
+        this.detail = {
+            name: 'lockedWall',
+            direction: 'horizontal',
+        };
+
+        this.loadable = false;
+
+        this.perspective = false;
+
+        this.locked = true;
+        this.index = -1;
+
+        this.layer = new Layer(2, 3);
+    }
+    clone() {
+        const cloneObject = new lockedWall();
+        cloneObject.unpackage(this.enpackage());
+        return cloneObject;
+    }
+    setPerspective(perspective) {
+        this.perspective = perspective;
+    }
+    detailFunction() {
+        return {
+            name: { type: 'text' },
+            direction: { type: 'select', options: ['horizontal', 'vertical']},
+        };
+    }
+    enpackage() {
+        return {
+            type: this.type,
+            id: this.id,
+            gridPos: { x: this.gridPos.x, y: this.gridPos.y },
+
+            name: this.detail.name,
+            direction: this.detail.direction,
+
+            index: this.index,
+        };
+    }
+    unpackage(objectSetting) {
+        this.type = objectSetting.type;
+        this.id = objectSetting.id;
+        this.gridPos = new Vec2(objectSetting.gridPos.x, objectSetting.gridPos.y);
+        this.pos = this.gridPos.mul(w).add(constant.mapStart).add(new Vec2(0.5 * w, 0.5 * w));
+
+        this.detail.name = objectSetting.name;
+        this.detail.direction = objectSetting.direction;
+
+        this.index = objectSetting.index;
+
+        this.perspective = true;
+    }
+    collision(target) {
+        switch (target.type) {
+            case 'sphere':
+                const parameters = {
+                    horizontal: new Vec2(w, 0.4 * w), vertical: new Vec2(0.4 * w, w),
+                };
+                if (this.locked && isCollision({ type: 'cube', pos: this.pos, size: parameters[this.detail.direction] }, target)) return 'lockedWall';
+                return 'none';
+            default:
+                return 'none';
+        }
+    }
+    draw(ctx) {
+        if (!this.locked) return;
+
+        ctx.save();
+        ctx.translate(this.pos.x, this.pos.y);
+        ctx.globalAlpha = (this.perspective) ? 0.6 : 1;
+        if (this.detail.direction === 'vertical') ctx.rotate(0.5 * Math.PI);
+
+        ctx.beginPath();
+        ctx.rect(-0.5 * w, -0.1 * w, w, 0.2 * w);
+        ctx.fillStyle = '#9D9D9D';
+        ctx.fill();
+        ctx.strokeStyle = 'black';
+        ctx.stroke();
+        ctx.closePath();
+
+        ctx.globalAlpha = 1;
+        ctx.beginPath();
+        ctx.arc(0, 0, 0.2 * w, 0, 2 * Math.PI);
+        ctx.fillStyle = (this.index >= 0) ? colorList[this.index]: 'white';
+        ctx.fill();
+        ctx.strokeStyle = 'black';
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(0, -0.06 * w, 0.08 * w, 0.375 * Math.PI, 0.625 * Math.PI, true);
+        ctx.lineTo(-0.04 * w, 0.13 * w);
+        ctx.lineTo(0.04 * w, 0.13 * w);
+        ctx.fillStyle = 'black';
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.restore();
+    }
+    place(map, objects = null) {
+        if (this.index === -1) {
+            let usedIndex = [0, 0, 0, 0, 0, 0, 0, 0];
+            for (let i = 0; i < objects.length; i++) {
+                if (objects[i].type === 'unlocker') usedIndex[objects[i].index] = Math.max(1, usedIndex[objects[i].index]);
+                if (objects[i].type === 'lockedWall') usedIndex[objects[i].index] = 2;
+            }
+            for (let i = 0; i < usedIndex.length; i++) {
+                if (usedIndex[i] === 1) {
+                    this.index = i;
+                    break;
+                }
+            }
+            if (this.index === -1) {
+                for (let i = 0; i < usedIndex.length; i++) {
+                    if (usedIndex[i] === 0) {
+                        this.index = i;
+                        break;
+                    }
+                }
+            }
+        }
+        if (this.index === -1) return false;
+        this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
+        let gridPos = this.gridPos;
+        if (constant.typeLayerPairs[map[gridPos.y][gridPos.x].type].isOverlap(this.layer)) return false;
+        if (map[gridPos.y][gridPos.x].layer.isOverlap(this.layer)) return false;
+        map[gridPos.y][gridPos.x].layer.add(this.layer);
+        return true;
+    }
+    remove(map, objects = null) {
+        let gridPos = this.gridPos;
+        map[gridPos.y][gridPos.x].layer.sub(this.layer);
+    }
+}
+
+/* Æ_°Í */
+export class unlocker {
+    constructor(pos = new Vec2(0, 0)) {
+        this.type = 'unlocker';
+        this.id = uuidv4();
+        this.pos = pos;
+        this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
+
+        this.detail = {
+            name: 'unlocker'
+        };
+
+        this.loadable = false;
+
+        this.perspective = false;
+
+        this.used = false;
+        this.index = -1;
+
+        this.layer = new Layer(4);
+    }
+    clone() {
+        const cloneObject = new unlocker();
+        cloneObject.unpackage(this.enpackage());
+        return cloneObject;
+    }
+    setPerspective(perspective) {
+        this.perspective = perspective;
+    }
+    detailFunction() {
+        return {
+            name: { type: 'text' }
+        };
+    }
+    enpackage() {
+        return {
+            type: this.type,
+            id: this.id,
+            gridPos: { x: this.gridPos.x, y: this.gridPos.y },
+
+            name: this.detail.name,
+
+            index: this.index,
+        };
+    }
+    unpackage(objectSetting) {
+        this.type = objectSetting.type;
+        this.id = objectSetting.id;
+        this.gridPos = new Vec2(objectSetting.gridPos.x, objectSetting.gridPos.y);
+        this.pos = this.gridPos.mul(w).add(constant.mapStart).add(new Vec2(0.5 * w, 0.5 * w));
+
+        this.detail.name = objectSetting.name;
+
+        this.index = objectSetting.index;
+
+        this.perspective = true;
+    }
+    collision(target) {
+        switch (target.type) {
+            case 'sphere':
+                if (!this.used && isCollision({ type: 'sphere', pos: this.pos, r: 0.35 * w }, target)) return 'unlocker';
+                return 'none';
+            default:
+                return 'none';
+        }
+    }
+    unlock(objects) {
+        for (let i = 0; i < objects.length; i++) {
+            if (objects[i].type === 'lockedWall' && objects[i].index === this.index) {
+                objects[i].locked = false;
+                this.used = true;
+            }
+        }
+    }
+    draw(ctx) {
+        if (this.used) return;
+
+        ctx.save();
+        ctx.translate(this.pos.x, this.pos.y);
+        ctx.globalAlpha = (this.perspective) ? 0.8 : 1;
+        ctx.rotate(0.25 * Math.PI);
+        
+        ctx.beginPath();
+        ctx.arc(0, -0.25 * w, 0.2 * w, 0.4 * Math.PI, 0.6 * Math.PI, true);
+        ctx.lineTo(-0.06 * w, 0.4 * w);
+        ctx.lineTo(0.06 * w, 0.45 * w);
+        ctx.lineTo(0.06 * w, 0.38 * w);
+        ctx.lineTo(0.15 * w, 0.38 * w);
+        ctx.lineTo(0.15 * w, 0.34 * w);
+        ctx.lineTo(0.06 * w, 0.34 * w);
+        ctx.lineTo(0.06 * w, 0.3 * w);
+        ctx.lineTo(0.18 * w, 0.3 * w);
+        ctx.lineTo(0.18 * w, 0.24 * w);
+        ctx.lineTo(0.06 * w, 0.24 * w);
+        let grd = ctx.createRadialGradient(0, -0.35 * w, 0, 0, 0, 0.5 * w);
+        grd.addColorStop(0, 'white');
+        grd.addColorStop(0.3, (this.index >= 0) ? colorList[this.index] : 'black');
+        grd.addColorStop(1, (this.index >= 0) ? colorList[this.index] : 'black');
+        ctx.fillStyle = grd;
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.restore();
+    }
+    place(map, objects) {
+        if (this.index === -1) {
+            let usedIndex = [0, 0, 0, 0, 0, 0, 0, 0];
+            for (let i = 0; i < objects.length; i++) {
+                if (objects[i].type === 'lockedWall') usedIndex[objects[i].index] = Math.max(1, usedIndex[objects[i].index]);
+                if (objects[i].type === 'unlocker') usedIndex[objects[i].index] = 2;
+            }
+            for (let i = 0; i < usedIndex.length; i++) {
+                if (usedIndex[i] === 1) {
+                    this.index = i;
+                    break;
+                }
+            }
+            if (this.index === -1) {
+                for (let i = 0; i < usedIndex.length; i++) {
+                    if (usedIndex[i] === 0) {
+                        this.index = i;
+                        break;
+                    }
+                }
+            }
+        }
+        if (this.index === -1) return false;
+        this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
+        let gridPos = this.gridPos;
+        if (constant.typeLayerPairs[map[gridPos.y][gridPos.x].type].isOverlap(this.layer)) return false;
+        if (map[gridPos.y][gridPos.x].layer.isOverlap(this.layer)) return false;
+        map[gridPos.y][gridPos.x].layer.add(this.layer);
+        return true;
+    }
+    remove(map, objects) {
+        let gridPos = this.gridPos;
+        map[gridPos.y][gridPos.x].layer.sub(this.layer);
     }
 }
