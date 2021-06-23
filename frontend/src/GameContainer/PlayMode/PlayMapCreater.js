@@ -19,7 +19,11 @@ const PlayMapCreater = (props) => {
         me: new Player(1, 'name', 0, 0),
         startTime: Date.now(),
         endTime: Date.now(),
-        gameState: 'playing'
+        gameState: 'playing',
+	    pressDown: false, 
+        pressRight: false, 
+        pressLeft: false, 
+        pressUp: false
     });
 
     useEffect(() => {
@@ -93,7 +97,7 @@ const PlayMapCreater = (props) => {
         <>
             <div>
                 <canvas ref={canvasRef} id='PlayModeCanvas' width={CONSTANT.CanvasWidth} height={CONSTANT.CanvasHeight}
-                    style={{ position: "absolute", left: 50, top: 50, zIndex: 0 }}></canvas>
+                    style={{ position: "absolute", left: 150, top: 60, zIndex: 0 }} ></canvas>
             </div>
 
             <div className="form-popup" id="gameForm">

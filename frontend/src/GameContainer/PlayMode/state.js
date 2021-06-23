@@ -30,11 +30,25 @@ export function updateState(status, setting, setStatus) {
 
   const dt = Date.now() - status.lastUpdateTime
 
-  status.me.update(dt)
   checkLocation(status, map, setStatus)
-  checkLive(status, objects, setStatus)
+  checkEncounter(status, objects, setStatus)
   status.lastUpdateTime = Date.now()
+  push(status)
+
+  status.me.update(dt)
+
 }
+
+function push(status){
+  let { pressDown, pressRight, pressLeft, pressUp } = status
+  let [pushX, pushY] = [0, 0]
+  if (pressDown) pushY += 1
+  if (pressUp) pushY -= 1
+  if (pressRight) pushX += 1
+  if (pressLeft) pushX -= 1
+  status.me.push(new Vec2(pushX, pushY))
+}
+
 
 function checkLocation(status, map, setStatus) {
   let { x, y } = status.me.serializeForUpdate()
@@ -95,7 +109,7 @@ function checkLocation(status, map, setStatus) {
 
 
 // check Live: Code from EditMode/Engine
-function checkLive(status, objects, setStatus) {
+function checkEncounter(status, objects, setStatus) {
   let { me, gameState } = status
   let onPlatform = false
   let platformID, platformPos
@@ -104,16 +118,27 @@ function checkLive(status, objects, setStatus) {
   for (let i = 0; i < objects.length; i++) {
     if (objects[i].collision) {
       const result = objects[i].collision({ type: 'sphere', pos: me.loc, r: CONSTANT.PlayerR });
+      if (result.includes('none'))continue
       console.log('result', result)
       if (result === 'block')
         me.squareRebound(objects[i].pos)
-      if (result === 'platform' || result === 'movingPlatform' || me.loc.length( objects[i].pos) < platformDistance ) {
+      else if (result === 'platform' || result === 'movingPlatform' || me.loc.length( objects[i].pos) < platformDistance ) {
         onPlatform = true
         platformDistance =  me.loc.length( objects[i].pos)
         platformID = i
         platformPos = objects[i].pos
-      }
-      // else if ( result !== 'none') setStatus( () => ({...status, gameState: CONSTANT.GameOver, endTime: Date.now()})) 
+        status.me.setFriction(5)
+      } else if (result === 'unlocker') objects[i].unlock(objects)
+      else if (result === 'portal') me.moveTo(objects[i].teleport(objects)) 
+      else if (result === 'conveyor') me.addVelocity(objects[i].detail.direction, 80)
+      else if ( result === 'spike' || result === 'arrow' || result === 'trap' || result === 'missileRay' || result === 'cymbalWave')
+       setStatus( () => ({...status, gameState: CONSTANT.GameOver, endTime: Date.now()})) 
+
+      // floor 
+      if (result === 'mucus')
+        status.me.setFriction(10)
+      else if (result === 'ice')
+        status.me.setFriction(0.2)
     }
   }
   if (onPlatform){

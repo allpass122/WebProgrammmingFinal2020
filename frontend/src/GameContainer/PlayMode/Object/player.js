@@ -1,11 +1,11 @@
 import ObjectClass from './object';
 import Vec2 from '../../Class/Vec2';
-const PUSH_FORCE = 500
-const FRICTION = 0.1
+const PUSH_FORCE = 800
+const FRICTION = 0.08
 
 export default class Player extends ObjectClass {
   constructor(id, username, x, y) {
-    super(id, x, y, Math.random() * 2 * Math.PI, new Vec2(0, 0));
+    super(id, x, y, new Vec2(0, 0));
     this.username = username;
     this.score = 0;
 
@@ -23,18 +23,13 @@ export default class Player extends ObjectClass {
     // ms to s
     dt = dt / 1000
     this.updateFAV(dt)
-
-    // Update score
-
-    // Make sure the player stays in bounds
-
-
     return null;
   }
 
   updateFAV(dt) {
     // acceleration change  a = (F + f*v*v) / m
-    const v2 = new Vec2(this.velocity.x * Math.abs(this.velocity.x), this.velocity.y * Math.abs(this.velocity.y))
+    // const v2 = new Vec2(this.velocity.x * Math.abs(this.velocity.x), this.velocity.y * Math.abs(this.velocity.y))
+    const v2 = this.velocity.unit().mul( Math.pow(this.velocity.length(),2))
     this.acceleration = this.force.sub(v2.mul(this.friction)).div(this.m)
 
     // velocity change
@@ -46,7 +41,27 @@ export default class Player extends ObjectClass {
   }
 
   moveTo(x, y) {
-    this.loc = new Vec2(x, y)
+    if (!y){
+      const newLoc = x
+      this.loc = newLoc
+    } else this.loc = new Vec2(x, y)
+  }
+
+  addVelocity(dir, vel) {
+    switch (dir) {
+      case 'down':
+        this.velocity = this.velocity.add(new Vec2(0, vel))
+        break
+      case 'right':
+        this.velocity = this.velocity.add(new Vec2(vel, 0))
+        break
+      case 'left':
+        this.velocity = this.velocity.add(new Vec2(-vel, 0))
+        break
+      case 'up':
+        this.velocity = this.velocity.add(new Vec2(0, -vel))
+        break
+    }
   }
 
   moveOnPlatform(id, platformPos) {
@@ -111,31 +126,14 @@ export default class Player extends ObjectClass {
     this.lastLoc = this.loc
   }
 
-  push(dir) {
-    switch (dir) {
-      case 'down':
-        this.force = new Vec2(0, PUSH_FORCE)
-        break
-      case 'right':
-        this.force = new Vec2(PUSH_FORCE, 0)
-        break
-      case 'left':
-        this.force = new Vec2(-PUSH_FORCE, 0)
-        break
-      case 'up':
-        this.force = new Vec2(0, -PUSH_FORCE)
-        break
-      default:
-        console.log("key not handled")
-    }
+  push(vec) {
+    this.force = vec.mul(PUSH_FORCE)
   }
 
 
   serializeForUpdate() {
     return {
       ...(super.serializeForUpdate()),
-      direction: this.direction,
-      hp: this.hp,
     };
   }
 }
