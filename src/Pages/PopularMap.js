@@ -137,6 +137,7 @@ const useStyles = makeStyles((theme) => ({
 function PopularMap(props) {
   const history = useHistory();
   const classes = useStyles();
+  const { name, uuid, login } = props.data;
   const [open, setOpen] = useState(true);
   const [newestMaps, setNewestMaps] = useState([]);
   const [allMaps, setAllMaps] = useState([]);
@@ -160,12 +161,6 @@ function PopularMap(props) {
     getAllMapsByOrder();
   }, []);
 
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
   // ref:https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
   function shuffle(array) {
     var currentIndex = array.length,
@@ -233,7 +228,9 @@ function PopularMap(props) {
             edge="start"
             color="inherit"
             aria-label="open drawer"
-            onClick={handleDrawerOpen}
+            onClick={() => {
+              setOpen(true);
+            }}
             className={clsx(
               classes.menuButton,
               open && classes.menuButtonHidden
@@ -260,7 +257,11 @@ function PopularMap(props) {
         open={open}
       >
         <div className={classes.toolbarIcon}>
-          <IconButton onClick={handleDrawerClose}>
+          <IconButton
+            onClick={() => {
+              setOpen(false);
+            }}
+          >
             <ChevronLeftIcon />
           </IconButton>
         </div>
@@ -313,7 +314,7 @@ function PopularMap(props) {
             {/* Recent Orders */}
             <Grid item xs={12}>
               <Paper className={classes.paper}>
-                <Orders data={allMaps} />
+                <Orders data={allMaps} info={props.data} />
               </Paper>
             </Grid>
           </Grid>
@@ -330,6 +331,14 @@ function checkLogin(props) {
 }
 
 function index(props) {
-  return <>{checkLogin(props) ? <PopularMap /> : <ErrorPage />}</>;
+  return (
+    <>
+      {checkLogin(props) ? (
+        <PopularMap data={props.location.state} />
+      ) : (
+        <ErrorPage />
+      )}
+    </>
+  );
 }
 export default index;

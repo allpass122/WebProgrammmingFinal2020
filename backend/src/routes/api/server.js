@@ -213,4 +213,17 @@ router.post("/getAllMapsByOrder", async function (req, res) {
       }
     });
 });
+/* Challenge */
+router.post("/challengeSuccess", async function (req, res) {
+  const { mapLocal } = req.body;
+  console.log(`challengeSuccess`);
+  mapSchema
+    .updateOne({ id: mapLocal.id }, { $set: { statistic: mapLocal.statistic } })
+    .catch((err) => {
+      console.log("Error: " + err);
+    });
+  res.send({ success: true, errorCode: 0 });
+
+  return;
+});
 export default router;
