@@ -56,7 +56,7 @@ function Edit(props) {
   const [msgOpen, setMsgOpen] = useState(false);
   const [alertMsg, setAlertMsg] = useState("");
   const [alertType, setAlertType] = useState("success"); // "error", "warning", "info", "success"
-  const [setting, setSetting] = useState("");
+  const [setting, setSetting] = useState(init);
   const [idGetMap, setidGetMap] = useState(false);
   const [publish, setPublish] = useState(false);
   const childRef = useRef();
@@ -65,7 +65,7 @@ function Edit(props) {
 
   const handleUpload = async () => {
     let settingPack = setting;
-    // let settingPack = enpackage(setting);
+    let id0 = id;
     const {
       data: { success, errorCode },
     } = await instance.post("/api/upload", {
@@ -75,10 +75,11 @@ function Edit(props) {
       description,
       name,
       publish,
+      id0,
     });
     if (!success) {
       if (errorCode === 1) {
-        setAlertMsg("This map exists.");
+        setAlertMsg("This map exists. The map has been updated");
         setAlertType("warning");
         setMsgOpen(true);
         // alert(`This map exists.`);
@@ -136,7 +137,7 @@ function Edit(props) {
     <div style={{ textAlign: "center" }}>
       <Snackbar
         open={msgOpen}
-        autoHideDuration={1000}
+        autoHideDuration={500}
         onClose={() => {
           setMsgOpen(false);
         }}
@@ -238,7 +239,7 @@ function Edit(props) {
           </div>
         </>
       </Modal>
-      {setting === "" || msgOpen === true ? (
+      {msgOpen === true ? (
         <LoadingPage />
       ) : (
         <EditMode

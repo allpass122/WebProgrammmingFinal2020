@@ -63,7 +63,8 @@ function Hasmap(arr, id) {
   return false;
 }
 router.post("/upload", async function (req, res) {
-  const { uuid, settingPack, title, description, name, publish } = req.body;
+  const { uuid, settingPack, title, description, name, publish, id0 } =
+    req.body;
   console.log(`UPLOAD`);
   console.log(settingPack);
 
@@ -81,8 +82,25 @@ router.post("/upload", async function (req, res) {
       } else {
         // console.log(`id:${id}`);
         let user = result[0];
-        if (Hasmap(user.mapIDs, id)) {
-          // id(map) exist
+        // if (Hasmap(user.mapIDs, id)) {
+        if (id0 !== 0) {
+          // not a new map
+          mapSchema
+            .updateOne(
+              { id: id0 },
+              {
+                $set: {
+                  publish: publish,
+                  description: description,
+                  title: title,
+                  content: settingPack,
+                },
+              }
+            )
+            .catch((err) => {
+              console.log("Error: " + err);
+            });
+
           res.send({ success: false, errorCode: 1 });
           console.log(`user has this map`);
           return;

@@ -124,7 +124,7 @@ const Play = (props) => {
     <div style={{ textAlign: "center" }}>
       <Snackbar
         open={msgOpen}
-        autoHideDuration={1000}
+        autoHideDuration={500}
         onClose={() => {
           setMsgOpen(false);
         }}
