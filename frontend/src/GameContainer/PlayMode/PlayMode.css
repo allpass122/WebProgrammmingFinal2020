@@ -5,8 +5,8 @@
   left: 50%;
   transform: translate(-50%, -50%);
 
-  width: 500px;
-  padding: 100px;
+  width: 600px;
+  padding: 50px;
   background-color: rgba(199, 246, 246, 0.438);
 
   display: none;
@@ -14,11 +14,12 @@
   border: 3px solid #f1f1f1;
   z-index: 9;
 
-  font-size: 5rem;
+  font-size: 3rem;
   text-align: center;
 }
 
-label span {
+
+span {
   display: block;
   font-weight: bold;
 }
@@ -47,3 +48,24 @@ label span {
 	top:1px;
 }
 
+/* HIDE RADIO */
+[type=radio] { 
+	position: absolute;
+	opacity: 0;
+	width: 0;
+	height: 0;
+  }
+  
+  /* IMAGE STYLES */
+  [type=radio] + img {
+	width: 80px;
+	padding: 10px;
+	cursor: pointer;
+  }
+  [type=radio]+ img:hover {
+	filter: brightness(1.2);
+  }
+  /* CHECKED STYLES */
+  [type=radio]:checked + img {
+	outline: 6px solid rgba(17, 72, 87, 0.739);
+  }

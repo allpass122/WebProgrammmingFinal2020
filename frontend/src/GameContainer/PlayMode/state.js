@@ -99,10 +99,10 @@ function checkLocation(status, map, setStatus) {
   else if (floorType.includes('ice'))
     status.me.setFriction(0.2)
   else if (floorType.includes('dead'))
-    setStatus( () => ({...status, gameState: CONSTANT.GameOver, endTime: Date.now()})) 
+    setStatus( () => ({...status, gameState: CONSTANT.GameOver, endTime: Date.now(), playTime:Date.now()-status.startTime })) 
   
   if (floorType.includes('end'))
-    setStatus( () => ({...status, gameState: CONSTANT.WIN, endTime: Date.now()})) 
+    setStatus( () => ({...status, gameState: CONSTANT.WIN, endTime: Date.now(), playTime:Date.now()-status.startTime })) 
 
   status.me.updateLastLoc()
 }
@@ -120,8 +120,10 @@ function checkEncounter(status, objects, setStatus) {
       const result = objects[i].collision({ type: 'sphere', pos: me.loc, r: CONSTANT.PlayerR });
       if (result.includes('none'))continue
       console.log('result', result)
-      if (result === 'block')
+      if (result === 'block'){
+        me.returnLastLoc() 
         me.squareRebound(objects[i].pos)
+      }
       else if (result === 'platform' || result === 'movingPlatform' || me.loc.length( objects[i].pos) < platformDistance ) {
         onPlatform = true
         platformDistance =  me.loc.length( objects[i].pos)
@@ -131,8 +133,9 @@ function checkEncounter(status, objects, setStatus) {
       } else if (result === 'unlocker') objects[i].unlock(objects)
       else if (result === 'portal') me.moveTo(objects[i].teleport(objects)) 
       else if (result === 'conveyor') me.addVelocity(objects[i].detail.direction, 80)
-      else if ( result === 'spike' || result === 'arrow' || result === 'trap' || result === 'missileRay' || result === 'cymbalWave')
-       setStatus( () => ({...status, gameState: CONSTANT.GameOver, endTime: Date.now()})) 
+      else if (result === 'missileRay') objects[i].fire(me);
+      else if ( result === 'spike' || result === 'arrow' || result === 'trap' ||  result === 'cymbalWave' || result === 'missile' )
+       setStatus( () => ({...status, gameState: CONSTANT.GameOver, endTime: Date.now(), playTime:Date.now()-status.startTime})) 
 
       // floor 
       if (result === 'mucus')

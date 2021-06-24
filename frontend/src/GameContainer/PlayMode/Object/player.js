@@ -8,6 +8,7 @@ export default class Player extends ObjectClass {
     super(id, x, y, new Vec2(0, 0));
     this.username = username;
     this.score = 0;
+    this.pos = new Vec2(0, 0)
 
     this.friction = FRICTION
     this.m = 1
@@ -23,6 +24,7 @@ export default class Player extends ObjectClass {
     // ms to s
     dt = dt / 1000
     this.updateFAV(dt)
+    this.pos = this.loc
     return null;
   }
 

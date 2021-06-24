@@ -39,7 +39,7 @@ function Drawer(ctx, setting, status) {
 	}
 	ctx.restore();
 	
-	drawPlayer(ctx, me, me)
+	drawPlayer(ctx, me, me, status.head)
 }
 
 function focusPlayer(context, me) {
@@ -51,7 +51,7 @@ function focusPlayer(context, me) {
 }
 
 // Renders a player at the given coordinates
-function drawPlayer(context, me, player) {
+function drawPlayer(context, me, player, head = 'seal.svg') {
 	const { x, y } = me;
 	const w = constant.gridWidth
 	// const canvasX = CONSTANT.CanvasWidth / 2 + x - me.x;
@@ -61,7 +61,7 @@ function drawPlayer(context, me, player) {
 	focusPlayer(context, me)
 	context.translate(x, y);
 	context.drawImage(
-		getAsset('seal.svg'),
+		getAsset(head),
 		-CONSTANT.PlayerR,
 		-CONSTANT.PlayerR,
 		CONSTANT.PlayerR * 2,
