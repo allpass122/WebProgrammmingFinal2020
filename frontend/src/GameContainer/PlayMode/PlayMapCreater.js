@@ -1,9 +1,11 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useImperativeHandle, forwardRef, } from 'react';
 import DrawMap from './Drawer';
 import Engine from '../EditMode/Engine';
 import Controller from './Controller';
 import { initState, updateState } from './state'
 import { getAsset, getAssetNames, downloadAssets } from './assets';
+import { enpackage, unpackage, show } from "../DataPackager";
+
 
 import CONSTANT from './PlayModeConstant'
 import Player from './Object/player'
@@ -12,7 +14,8 @@ import "./PlayMode.css"
 
 
 const PlayMapCreater = (props) => {
-    let { setting } = props
+    // let { setting } = props
+    const [setting, setSetting] = useState(props.setting)
     const [loading, setLoading] = useState(false);
     useEffect( async () => {
         downloadAssets().then( setLoading(true) )
@@ -47,12 +50,15 @@ const PlayMapCreater = (props) => {
                 status.gameState === CONSTANT.WIN
             );
             openForm("gameForm");
+            setSetting( ()=> unpackage(enpackage(setting)) )
         }
     }, [status]);
 
 
     function closeForm(form) {
         document.getElementById(form).style.display = "none";
+        //mmmm
+        
         setStatus(() => ({ ...defaultState, head: status.head , gameState: 'playing' }))
     }
 
