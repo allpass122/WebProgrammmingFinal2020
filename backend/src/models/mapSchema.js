@@ -13,6 +13,9 @@ const mapSchema = new Schema({
     passTime: Number,
     playTime: Number,
   },
+  rateRec: Array,
+  passPeople: Array,
 });
+// rateRec: [{name:"Amy", rate:0}, {name:"Ben", rate:1}, ... ]
 const MapSchema = mongoose.model("FinalProjectMaps", mapSchema);
 export default MapSchema;

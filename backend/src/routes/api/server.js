@@ -116,6 +116,8 @@ router.post("/upload", async function (req, res) {
       passTime: 0,
       playTime: 0,
     },
+    rateRec: [],
+    passPeople: [],
   });
   const exist = await mapSchema.findOne({ id: id });
   if (!exist) {
@@ -218,12 +220,68 @@ router.post("/challengeSuccess", async function (req, res) {
   const { mapLocal } = req.body;
   console.log(`challengeSuccess`);
   mapSchema
-    .updateOne({ id: mapLocal.id }, { $set: { statistic: mapLocal.statistic } })
+    .updateOne(
+      { id: mapLocal.id },
+      {
+        $set: {
+          statistic: mapLocal.statistic,
+          passPeople: mapLocal.passPeople,
+        },
+      }
+    )
     .catch((err) => {
       console.log("Error: " + err);
     });
   res.send({ success: true, errorCode: 0 });
 
   return;
+});
+/* Rate Map */
+router.post("/rateMap", async function (req, res) {
+  const { rateID, val, name } = req.body;
+  console.log(`rateMap`);
+  const existing = await mapSchema
+    .find({ id: rateID })
+    .exec(function (error, result) {
+      if (!result.length) {
+        console.log(`NO map ${rateID}`);
+        res.send({ success: false, errorCode: 100 });
+        return;
+      } else {
+        let map = result[0];
+        if (!map.passPeople.includes(name)) {
+          // not pass
+          res.send({ success: false, errorCode: 1 });
+        } else if (
+          map.rateRec.filter((ele) => {
+            return ele.name === name;
+          }).length === 0
+        ) {
+          // never rate
+          map.rateRec.push({ name: name, rate: val });
+          res.send({ success: true, errorCode: 0 });
+        } else if (
+          map.rateRec.filter((ele) => {
+            return ele.name === name;
+          }).length === 1
+        ) {
+          // has rated
+          map.rateRec
+            .filter((ele) => {
+              return ele.name === name;
+            })
+            .forEach((ele) => {
+              ele.rate = val;
+            });
+          console.log(map.rateRec);
+          res.send({ success: false, errorCode: 2 });
+        }
+        mapSchema
+          .updateOne({ id: rateID }, { $set: { rateRec: map.rateRec } })
+          .catch((err) => {
+            console.log("Error: " + err);
+          });
+      }
+    });
 });
 export default router;

@@ -5,6 +5,8 @@ import EditMode from "../GameContainer/EditMode/Main";
 import Vec2 from "../GameContainer/Class/Vec2";
 import { useHistory } from "react-router-dom";
 import ErrorPage from "./ErrorPage";
+import LoadingPage from "./LoadingPage";
+
 // import util from "util";
 import init from "../GameContainer/Setting/example_0";
 import { enpackage, unpackage, show } from "../GameContainer/DataPackager";
@@ -54,7 +56,7 @@ function Edit(props) {
   const [msgOpen, setMsgOpen] = useState(false);
   const [alertMsg, setAlertMsg] = useState("");
   const [alertType, setAlertType] = useState("success"); // "error", "warning", "info", "success"
-  const [setting, setSetting] = useState(init);
+  const [setting, setSetting] = useState("");
   const [idGetMap, setidGetMap] = useState(false);
   const [publish, setPublish] = useState(false);
   const childRef = useRef();
@@ -134,7 +136,7 @@ function Edit(props) {
     <div style={{ textAlign: "center" }}>
       <Snackbar
         open={msgOpen}
-        autoHideDuration={3000}
+        autoHideDuration={1000}
         onClose={() => {
           setMsgOpen(false);
         }}
@@ -236,13 +238,17 @@ function Edit(props) {
           </div>
         </>
       </Modal>
-      <EditMode
-        width="1200px"
-        height="600px"
-        ref={childRef}
-        setting={unpackage(setting)}
-        save={save}
-      />
+      {setting === "" || msgOpen === true ? (
+        <LoadingPage />
+      ) : (
+        <EditMode
+          width="1200px"
+          height="600px"
+          ref={childRef}
+          setting={unpackage(setting)}
+          save={save}
+        />
+      )}
     </div>
   );
 }
