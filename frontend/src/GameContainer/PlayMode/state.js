@@ -79,17 +79,17 @@ function checkLocation(status, map, setStatus) {
       && y - CONSTANT.PlayerR < constant.mapStart.y + (block.y + 1) * w) {
       status.me.returnLastLoc()
       status.me.squareRebound(new Vec2(constant.mapStart.x + (block.x + 0.5) * w, constant.mapStart.y + (block.y + 0.5) * w))
-      // return true break Array.some()
       return true
     }
   })
 
-  // console.log('x,y', x, y)
   // check floor type & onPlateform
   let mapX = Math.floor((x - constant.mapStart.x) / w)
   let mapY = Math.floor((y - constant.mapStart.y) / w)
+  // console.log('mapX', mapX, ' mapY', mapY)
   if ( (mapX < 0 || mapX > constant.mapSize.x) || (mapY < 0 || mapY > constant.mapSize.y) ) return
   const floorType = map[mapY][mapX].type
+  status.me.resetFriction()
   if (status.me.onPlatform() ){
     status.me.setFriction(6)
   } else if (floorType.includes('none') || floorType.includes('start') || floorType.includes('end') )
@@ -97,7 +97,7 @@ function checkLocation(status, map, setStatus) {
   else if (floorType.includes('muddy'))
     status.me.setFriction(5)
   else if (floorType.includes('ice'))
-    status.me.setFriction(0.2)
+    status.me.setFriction(0.5)
   else if (floorType.includes('dead'))
     setStatus( () => ({...status, gameState: CONSTANT.GameOver, endTime: Date.now(), playTime:Date.now()-status.startTime })) 
   
@@ -118,9 +118,10 @@ function checkEncounter(status, objects, setStatus) {
   for (let i = 0; i < objects.length; i++) {
     if (objects[i].collision) {
       const result = objects[i].collision({ type: 'sphere', pos: me.loc, r: CONSTANT.PlayerR });
-      if (result.includes('none'))continue
+      if (result.includes('none')) continue
+      me.resetFriction()
       console.log('result', result)
-      if (result === 'block'){
+      if (result === 'block' || result === 'lockedWall'){
         me.returnLastLoc() 
         me.squareRebound(objects[i].pos)
       }
@@ -141,7 +142,7 @@ function checkEncounter(status, objects, setStatus) {
       if (result === 'mucus')
         status.me.setFriction(10)
       else if (result === 'ice')
-        status.me.setFriction(0.2)
+        status.me.setFriction(0.5)
     }
   }
   if (onPlatform){
