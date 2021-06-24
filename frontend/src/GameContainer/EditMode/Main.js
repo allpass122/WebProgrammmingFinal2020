@@ -142,7 +142,7 @@ const EditGameMode = forwardRef((props, ref) => {
           style={{
             width: 1024,
             height: 64,
-            backgroundColor: "white",
+            backgroundColor: 'inherit',
             margin: "0px auto",
           }}
         >
