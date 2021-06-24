@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
 import clsx from "clsx";
-import { makeStyles } from "@material-ui/core/styles";
+import { withStyles, makeStyles } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Drawer from "@material-ui/core/Drawer";
 import Box from "@material-ui/core/Box";
@@ -14,14 +14,12 @@ import List from "@material-ui/core/List";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
-// import Badge from "@material-ui/core/Badge";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import Link from "@material-ui/core/Link";
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-// import NotificationsIcon from "@material-ui/icons/Notifications";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -31,10 +29,34 @@ import InsertEmoticonIcon from "@material-ui/icons/InsertEmoticon";
 import FiberNewIcon from "@material-ui/icons/FiberNew";
 import AccessibleForwardIcon from "@material-ui/icons/AccessibleForward";
 import ArrowBackRoundedIcon from "@material-ui/icons/ArrowBackRounded";
-// import { mainListItems, secondaryListItems } from "./PageComponent/listItems";
-// import Chart from "./PageComponent/Chart";
-// import Deposits from "./PageComponent/Deposits";
+import TextField from "@material-ui/core/TextField";
+
 import Orders from "./PageComponent/Orders";
+
+const CssTextField = withStyles({
+  root: {
+    "& label.Mui-focused": {
+      color: "black",
+    },
+    "& .MuiInput-underline:after": {
+      borderBottomColor: "green",
+    },
+    "& .MuiOutlinedInput-root": {
+      "& fieldset": {
+        borderColor: "red",
+        backgroundColor: "RoyalBlue",
+      },
+      "&:hover fieldset": {
+        borderColor: "yellow",
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: "green",
+        backgroundColor: "white",
+        opacity: "0.1",
+      },
+    },
+  },
+})(TextField);
 
 function Copyright() {
   return (
@@ -137,10 +159,12 @@ const useStyles = makeStyles((theme) => ({
 function PopularMap(props) {
   const history = useHistory();
   const classes = useStyles();
+  const { name, uuid, login } = props.data;
   const [open, setOpen] = useState(true);
   const [newestMaps, setNewestMaps] = useState([]);
   const [allMaps, setAllMaps] = useState([]);
   const [isBusy, setBusy] = useState(true);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     setBusy(true);
@@ -160,12 +184,6 @@ function PopularMap(props) {
     getAllMapsByOrder();
   }, []);
 
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
   // ref:https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
   function shuffle(array) {
     var currentIndex = array.length,
@@ -219,6 +237,14 @@ function PopularMap(props) {
     arr = arr.reverse();
     setAllMaps(arr);
   };
+  const handlerSearch = (w) => {
+    console.log(`HandlerSearch`);
+    let arr = [...newestMaps];
+    arr = arr.filter((ele) => {
+      return ele.author.toLowerCase().includes(w.toLowerCase());
+    });
+    setAllMaps(arr);
+  };
   // const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   // console.log("Render");
   return (
@@ -233,7 +259,9 @@ function PopularMap(props) {
             edge="start"
             color="inherit"
             aria-label="open drawer"
-            onClick={handleDrawerOpen}
+            onClick={() => {
+              setOpen(true);
+            }}
             className={clsx(
               classes.menuButton,
               open && classes.menuButtonHidden
@@ -241,6 +269,17 @@ function PopularMap(props) {
           >
             <MenuIcon />
           </IconButton>
+          <CssTextField
+            className={classes.margin}
+            label="Search Author"
+            variant="outlined"
+            id="custom-css-outlined-input"
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value.trim());
+              handlerSearch(e.target.value.trim());
+            }}
+          />
           <Typography
             component="h1"
             variant="h6"
@@ -260,7 +299,11 @@ function PopularMap(props) {
         open={open}
       >
         <div className={classes.toolbarIcon}>
-          <IconButton onClick={handleDrawerClose}>
+          <IconButton
+            onClick={() => {
+              setOpen(false);
+            }}
+          >
             <ChevronLeftIcon />
           </IconButton>
         </div>
@@ -313,7 +356,7 @@ function PopularMap(props) {
             {/* Recent Orders */}
             <Grid item xs={12}>
               <Paper className={classes.paper}>
-                <Orders data={allMaps} />
+                <Orders data={allMaps} info={props.data} />
               </Paper>
             </Grid>
           </Grid>
@@ -330,6 +373,14 @@ function checkLogin(props) {
 }
 
 function index(props) {
-  return <>{checkLogin(props) ? <PopularMap /> : <ErrorPage />}</>;
+  return (
+    <>
+      {checkLogin(props) ? (
+        <PopularMap data={props.location.state} />
+      ) : (
+        <ErrorPage />
+      )}
+    </>
+  );
 }
 export default index;

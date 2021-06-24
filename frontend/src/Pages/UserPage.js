@@ -3,6 +3,8 @@ import React from "react";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
+import { enpackage, unpackage, show } from "../GameContainer/DataPackager";
+import LoadingPage from "./LoadingPage";
 
 import AppBar from "@material-ui/core/AppBar";
 import Button from "@material-ui/core/Button";
@@ -164,6 +166,7 @@ export default function Album(props) {
       // console.log(IDs[0]);
       getMap(IDs[ID].id);
     }
+    setBusy(false);
   };
 
   const getMapIDs = async () => {
@@ -184,7 +187,7 @@ export default function Album(props) {
       // console.log(mapIDs);
       // console.log(allMaps);
     }
-    setBusy(false);
+    // setBusy(false);
   };
 
   const handlerStatistic = (key) => {
@@ -290,6 +293,8 @@ export default function Album(props) {
                           name: name,
                           login: true,
                           id: 0,
+                          title: "",
+                          description: "",
                         },
                       });
                     }}
@@ -337,89 +342,107 @@ export default function Album(props) {
             </Button>
           </DialogActions>
         </Dialog>
-        <Container className={classes.cardGrid} maxWidth="md">
-          {/* End hero unit */}
-          <Grid container spacing={4}>
-            {mapIDs.map((ele, key) => (
-              <Grid item key={ele} xs={12} sm={6} md={4}>
-                <Card className={classes.card}>
-                  <CardMedia
-                    className={classes.cardMedia}
-                    image="https://source.unsplash.com/random"
-                    title="Image title"
-                  />
-                  <CardContent className={classes.cardContent}>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      {ele.title}
-                    </Typography>
-                    <Typography>{ele.description}</Typography>
-                  </CardContent>
-                  <CardActions>
-                    <Button
-                      size="small"
-                      color="primary"
-                      onClick={() => {
-                        history.push({
-                          pathname: `/PlayMode`,
-                          state: { uuid: uuid, name: name, login: true },
-                        });
-                      }}
-                    >
-                      Play
-                    </Button>
-                    <Button
-                      size="small"
-                      color="primary"
-                      onClick={() => {
-                        history.push({
-                          pathname: `/EditMode`,
-                          state: {
-                            uuid: uuid,
-                            name: name,
-                            login: true,
-                            id: ele.id,
-                          },
-                        });
-                      }}
-                    >
-                      Edit
-                    </Button>
-                    {allMaps[key] === undefined ? (
-                      <p>???</p>
-                    ) : allMaps[key].publish ? (
-                      <Tooltip title={handlerStatistic(key)}>
-                        <Button size="small" color="primary" variant="text">
-                          Statistic
-                        </Button>
-                      </Tooltip>
-                    ) : (
-                      <>
-                        <ColorButton
-                          size="small"
-                          color="primary"
-                          variant="contained"
-                        >
-                          Private
-                        </ColorButton>
-                      </>
-                    )}
-                    <IconButton
-                      className={classes.margin}
-                      size="large"
-                      variant="outlined"
-                      color="secondary"
-                      onClick={() => {
-                        handlerDeleteSingleMap(ele.id);
-                      }}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </CardActions>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-        </Container>
+        {isBusy ? (
+          <LoadingPage />
+        ) : (
+          <Container className={classes.cardGrid} maxWidth="md">
+            {/* End hero unit */}
+            <Grid container spacing={4}>
+              {mapIDs.map((ele, key) => (
+                <Grid item key={ele} xs={12} sm={6} md={4}>
+                  <Card className={classes.card}>
+                    <CardMedia
+                      className={classes.cardMedia}
+                      image="https://source.unsplash.com/random"
+                      title="Image title"
+                    />
+                    <CardContent className={classes.cardContent}>
+                      <Typography gutterBottom variant="h5" component="h2">
+                        {/* {ele.title} */}
+                        {allMaps[key] ? allMaps[key].title : ""}
+                      </Typography>
+                      <Typography>
+                        {allMaps[key] ? allMaps[key].description : ""}
+                      </Typography>
+                    </CardContent>
+                    <CardActions>
+                      <Button
+                        size="small"
+                        color="primary"
+                        onClick={() => {
+                          history.push({
+                            pathname: `/PlayMode`,
+                            state: {
+                              uuid: uuid,
+                              name: name,
+                              login: true,
+                              id: ele.id,
+                              mode: "test",
+                            },
+                          });
+                        }}
+                      >
+                        Play
+                      </Button>
+                      <Button
+                        size="small"
+                        color="primary"
+                        disabled={allMaps[key] ? allMaps[key].publish : false}
+                        onClick={() => {
+                          history.push({
+                            pathname: `/EditMode`,
+                            state: {
+                              uuid: uuid,
+                              name: name,
+                              login: true,
+                              id: ele.id,
+                              title: allMaps[key] ? allMaps[key].title : "",
+                              description: allMaps[key]
+                                ? allMaps[key].description
+                                : "",
+                            },
+                          });
+                        }}
+                      >
+                        Edit
+                      </Button>
+                      {allMaps[key] === undefined ? (
+                        <p>???</p>
+                      ) : allMaps[key].publish ? (
+                        <Tooltip title={handlerStatistic(key)}>
+                          <Button size="small" color="primary" variant="text">
+                            Statistic
+                          </Button>
+                        </Tooltip>
+                      ) : (
+                        <>
+                          <ColorButton
+                            size="small"
+                            color="primary"
+                            variant="contained"
+                          >
+                            Private
+                          </ColorButton>
+                        </>
+                      )}
+                      <IconButton
+                        className={classes.margin}
+                        size="large"
+                        variant="outlined"
+                        color="secondary"
+                        onClick={() => {
+                          handlerDeleteSingleMap(ele.id);
+                        }}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </CardActions>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          </Container>
+        )}
       </main>
       {/* Footer */}
       <footer className={classes.footer}>

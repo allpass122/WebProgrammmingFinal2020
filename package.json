@@ -6,10 +6,15 @@
   "license": "MIT",
   "scripts": {
     "start": "cd frontend && yarn start",
-    "server": "cd backend && yarn server"
+    "server": "cd backend && yarn server",
+    "build": "webpack --config ./webpack.conf.js"
   },
   "dependencies": {
     "axios": "^0.21.1",
     "styled-components": "^5.3.0"
+  },
+  "devDependencies": {
+    "webpack": "^5.40.0",
+    "webpack-cli": "^4.7.2"
   }
 }
