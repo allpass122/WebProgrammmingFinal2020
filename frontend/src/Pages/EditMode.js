@@ -5,6 +5,8 @@ import EditMode from "../GameContainer/EditMode/Main";
 import Vec2 from "../GameContainer/Class/Vec2";
 import { useHistory } from "react-router-dom";
 import ErrorPage from "./ErrorPage";
+import LoadingPage from "./LoadingPage";
+
 // import util from "util";
 import init from "../GameContainer/Setting/example_0";
 import { enpackage, unpackage, show } from "../GameContainer/DataPackager";
@@ -48,8 +50,8 @@ function Edit(props) {
   const classes = useStyles();
   const history = useHistory();
   const [open, setOpen] = useState(false);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [title, setTitle] = useState(props.data.title);
+  const [description, setDescription] = useState(props.data.description);
   // for Snackbar Alert
   const [msgOpen, setMsgOpen] = useState(false);
   const [alertMsg, setAlertMsg] = useState("");
@@ -63,7 +65,7 @@ function Edit(props) {
 
   const handleUpload = async () => {
     let settingPack = setting;
-    // let settingPack = enpackage(setting);
+    let id0 = id;
     const {
       data: { success, errorCode },
     } = await instance.post("/api/upload", {
@@ -73,10 +75,11 @@ function Edit(props) {
       description,
       name,
       publish,
+      id0,
     });
     if (!success) {
       if (errorCode === 1) {
-        setAlertMsg("This map exists.");
+        setAlertMsg("This map exists. The map has been updated");
         setAlertType("warning");
         setMsgOpen(true);
         // alert(`This map exists.`);
@@ -134,7 +137,7 @@ function Edit(props) {
     <div style={{ textAlign: "center" }}>
       <Snackbar
         open={msgOpen}
-        autoHideDuration={3000}
+        autoHideDuration={500}
         onClose={() => {
           setMsgOpen(false);
         }}
@@ -166,6 +169,7 @@ function Edit(props) {
           color="secondary"
           disabled={Object.entries(setting).length === 0}
           onClick={() => {
+            childRef.current.returnSetting();
             setOpen(true);
           }}
         >
@@ -175,7 +179,17 @@ function Edit(props) {
           size="large"
           variant="contained"
           color="secondary"
-          onClick={() => childRef.current.returnSetting()}
+          onClick={() => {
+            childRef.current.returnSetting();
+            if (!title || !description) {
+              setOpen(true);
+            } else {
+              setPublish(false);
+              setOpen(true);
+              setOpen(false);
+              handleUpload();
+            }
+          }}
         >
           <SaveIcon />
         </IconButton>
@@ -236,13 +250,17 @@ function Edit(props) {
           </div>
         </>
       </Modal>
-      <EditMode
-        width="1200px"
-        height="600px"
-        ref={childRef}
-        setting={unpackage(setting)}
-        save={save}
-      />
+      {msgOpen === true ? (
+        <LoadingPage />
+      ) : (
+        <EditMode
+          width="1200px"
+          height="600px"
+          ref={childRef}
+          setting={unpackage(setting)}
+          save={save}
+        />
+      )}
     </div>
   );
 }

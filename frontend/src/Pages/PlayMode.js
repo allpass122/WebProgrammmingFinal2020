@@ -1,9 +1,11 @@
 import React from "react";
 import axios from "axios";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { enpackage, unpackage, show } from "../GameContainer/DataPackager";
 import { useHistory } from "react-router-dom";
 import ErrorPage from "./ErrorPage";
+import LoadingPage from "./LoadingPage";
+
 import PlayMode from "../GameContainer/PlayMode/PlayMapCreater";
 import init from "../GameContainer/Setting/example_0";
 
@@ -46,8 +48,10 @@ const Play = (props) => {
   const [alertMsg, setAlertMsg] = useState("");
   const [alertType, setAlertType] = useState("success"); // "error", "warning", "info", "success"
   const [idGetMap, setidGetMap] = useState(false);
-  const [setting, setSetting] = useState(init);
+  const [setting, setSetting] = useState("");
   const [mapp, setMapp] = useState({});
+  // get data before render
+  const [isBusy, setBusy] = useState(true);
 
   const { name, uuid, login, id, mode } = props.data;
 
@@ -71,9 +75,9 @@ const Play = (props) => {
     }
   };
 
-  if (id !== 0 && idGetMap === false) {
-    getMap();
-  }
+  // if (id !== 0 && idGetMap === false) {
+  //   getMap();
+  // }
 
   const challengeSuccess = async (mapLocal) => {
     const {
@@ -98,6 +102,9 @@ const Play = (props) => {
     // pass
     if (pass) {
       mapLocal.statistic.passTime += 1;
+      if (!mapLocal.passPeople.includes(name)) {
+        mapLocal.passPeople.push(name);
+      }
     }
     // new record
     if (mapLocal.statistic.fastestPass > time / 1000.0 && pass) {
@@ -107,11 +114,17 @@ const Play = (props) => {
     challengeSuccess(mapLocal);
   };
 
+  useEffect(() => {
+    // console.log(`busy?${isBusy}`);
+    setBusy(true);
+    getMap();
+  }, []);
+
   return (
     <div style={{ textAlign: "center" }}>
       <Snackbar
         open={msgOpen}
-        autoHideDuration={3000}
+        autoHideDuration={500}
         onClose={() => {
           setMsgOpen(false);
         }}
@@ -145,12 +158,16 @@ const Play = (props) => {
           {mode === "challenge" ? "Challenge Mode" : " Practice Mode"}
         </IconButton>
       </div>
-      <PlayMode
-        width="1200px"
-        height="600px"
-        setting={unpackage(setting)}
-        challenge={challenge}
-      />
+      {setting === "" || msgOpen === true ? (
+        <LoadingPage />
+      ) : (
+        <PlayMode
+          width="1200px"
+          height="600px"
+          setting={unpackage(setting)}
+          challenge={challenge}
+        />
+      )}
     </div>
   );
 };
