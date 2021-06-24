@@ -77,7 +77,7 @@ router.post("/upload", async function (req, res) {
       // console.log(`res:${result} and ${typeof result}`);
       if (!result.length) {
         console.log(`Upload find NO user ${uuid}`);
-        res.send({ success: false, errorCode: 100 });
+        res.send({ success: false, errorCode: 100, idNew: 0 });
         return;
       } else {
         // console.log(`id:${id0}`);
@@ -101,12 +101,12 @@ router.post("/upload", async function (req, res) {
               console.log("Error: " + err);
             });
 
-          res.send({ success: false, errorCode: 1 });
+          res.send({ success: false, errorCode: 1, idNew: id0 });
           console.log(`user has this map`);
           return;
-        } else if (user.mapIDs.length >= 8) {
+        } else if (user.mapIDs.length >= 16) {
           // too many maps
-          res.send({ success: false, errorCode: 2 });
+          res.send({ success: false, errorCode: 2, idNew: 0 });
           return;
         } else {
           console.log(`user.mapIDs.push`);
@@ -116,7 +116,7 @@ router.post("/upload", async function (req, res) {
             .catch((err) => {
               console.log("Error: " + err);
             });
-          res.send({ success: true, errorCode: 0 });
+          res.send({ success: true, errorCode: 0, idNew: id });
         }
       }
     });

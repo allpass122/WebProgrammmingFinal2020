@@ -59,15 +59,20 @@ function Edit(props) {
   const [setting, setSetting] = useState(init);
   const [idGetMap, setidGetMap] = useState(false);
   const [publish, setPublish] = useState(false);
+  // upload work around
+  const [delayUpload, setDelayUpload] = useState(false);
+
+  const [id, setId] = useState(props.data.id);
   const childRef = useRef();
 
-  const { name, uuid, login, id } = props.data;
+  let { name, uuid, login } = props.data;
 
   const handleUpload = async () => {
+    console.log("upload function");
     let settingPack = setting;
     let id0 = id;
     const {
-      data: { success, errorCode },
+      data: { success, errorCode, idNew },
     } = await instance.post("/api/upload", {
       uuid,
       settingPack,
@@ -99,7 +104,9 @@ function Edit(props) {
       setAlertType("success");
       setMsgOpen(true);
     }
-    console.log("Upload");
+    // id = idNew;
+    setId(idNew);
+    console.log("Upload success");
     setOpen(false);
   };
 
@@ -125,8 +132,13 @@ function Edit(props) {
   if (id !== 0 && idGetMap === false) {
     getMap();
   }
+  if (delayUpload) {
+    handleUpload();
+    setDelayUpload(false);
+  }
 
   const save = (setting) => {
+    console.log("Update setting");
     setSetting(enpackage(setting));
     // show(enpackage(setting));
   };
@@ -185,9 +197,12 @@ function Edit(props) {
               setOpen(true);
             } else {
               setPublish(false);
-              setOpen(true);
-              setOpen(false);
-              handleUpload();
+              setDelayUpload(true);
+              // setTimeout(setOpen(true), 500);
+              // setOpen(false);
+
+              // handleUpload();
+              // setTimeout(handleUpload, 600);
             }
           }}
         >

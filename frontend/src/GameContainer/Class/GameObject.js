@@ -1061,7 +1061,7 @@ export class cymbalWave {
             small: 1.5, normal: 2.5, large: 3.5
         }
         if (this.r > w * parameters[this.detail.range]) return { type: 'destory' };
-        this.r = 0.4 * w + 0.5 * w * (Date.now() - this.lastRecord) / 1000; 
+        this.r = 0.4 * w + 0.5 * w * (Date.now() - this.lastRecord) / 1000;
         return { type: 'none' };
     }
     collision(target) {
@@ -1374,7 +1374,7 @@ export class portal {
         this.loadable = false;
 
         this.open = false;
-        this.index = -1; 
+        this.index = -1;
 
         this.cooldown = false;
         this.lastClose = 0;
@@ -1406,7 +1406,7 @@ export class portal {
 
             name: this.detail.name,
 
-            index: (this.open)? this.index: -1,
+            index: (this.open) ? this.index : -1,
         };
     }
     unpackage(objectSetting) {
@@ -1483,9 +1483,9 @@ export class portal {
         ctx.rect(-0.3 * w, -0.3 * w, 0.6 * w, 0.6 * w);
         ctx.clip();
         ctx.globalAlpha = (this.open) ? 0.95 :
-                          (!this.cooldown) ? 0.2 :
-                          (this.cooldownCycle < 0.1) ? 0.2 + 0.75 * (1 - this.cooldownCycle * 10) :
-                          (this.cooldownCycle > 0.9) ? 0.2 + 0.75 * (1 - (1 - this.cooldownCycle) * 10) : 0.2;
+            (!this.cooldown) ? 0.2 :
+                (this.cooldownCycle < 0.1) ? 0.2 + 0.75 * (1 - this.cooldownCycle * 10) :
+                    (this.cooldownCycle > 0.9) ? 0.2 + 0.75 * (1 - (1 - this.cooldownCycle) * 10) : 0.2;
 
         ctx.beginPath();
         ctx.rect(-0.32 * w, -0.32 * w, 0.64 * w, 0.64 * w);
@@ -1502,7 +1502,7 @@ export class portal {
         ctx.fillStyle = grd;
         ctx.fill();
         ctx.closePath();
-        
+
 
         ctx.restore();
     }
@@ -1647,7 +1647,7 @@ export class trapPlatform {
         if (this.open) {
             this.openCycle = (Date.now() - this.lastChange) / parameters[this.detail.duration];
             this.openCycle = (this.openCycle < 0.1 * 6000 / parameters[this.detail.duration]) ? this.openCycle / (0.1 * 6000 / parameters[this.detail.duration]) :
-                             (this.openCycle > 1 - (0.1 * 6000 / parameters[this.detail.duration])) ? (1 - this.openCycle) / (0.1 * 6000 / parameters[this.detail.duration]): 1;
+                (this.openCycle > 1 - (0.1 * 6000 / parameters[this.detail.duration])) ? (1 - this.openCycle) / (0.1 * 6000 / parameters[this.detail.duration]) : 1;
             if (Date.now() > this.lastChange + parameters[this.detail.duration]) {
                 this.open = false;
                 this.lastChange = Date.now();
@@ -1686,7 +1686,7 @@ export class trapPlatform {
             ctx.save();
 
             if (this.open) {
-                let p = (i === 0) ? -1: 1;
+                let p = (i === 0) ? -1 : 1;
                 ctx.beginPath();
                 ctx.moveTo(-0.05 * w + p * (0.3 * w) * this.openCycle, -0.35 * w);
                 ctx.lineTo(0.05 * w + p * (0.3 * w) * this.openCycle, -0.25 * w);
@@ -1716,7 +1716,7 @@ export class trapPlatform {
         ctx.strokeStyle = '#3C3C3C';
         ctx.stroke();
         ctx.closePath();
-        
+
         ctx.beginPath();
         ctx.rect(-0.35 * w, -0.35 * w, 0.7 * w, 0.7 * w);
         ctx.strokeStyle = '#3C3C3C';
@@ -1918,7 +1918,7 @@ export class missileBase {
                     up: 1.5, down: 0.5, left: 1, right: 0,
                 }
                 ctx.arc(0, 0, this.r * w, (parameters[this.detail.direction] + 2 * this.rotateCycle - this.range * this.unfoldCycle) * Math.PI,
-                                          (parameters[this.detail.direction] + 2 * this.rotateCycle + this.range * this.unfoldCycle) * Math.PI);
+                    (parameters[this.detail.direction] + 2 * this.rotateCycle + this.range * this.unfoldCycle) * Math.PI);
                 ctx.lineTo(0, 0);
                 ctx.fillStyle = grd;
                 ctx.fill();
@@ -2128,7 +2128,7 @@ export class lockedWall {
     detailFunction() {
         return {
             name: { type: 'text' },
-            direction: { type: 'select', options: ['horizontal', 'vertical']},
+            direction: { type: 'select', options: ['horizontal', 'vertical'] },
         };
     }
     enpackage() {
@@ -2187,7 +2187,7 @@ export class lockedWall {
         ctx.globalAlpha = 1;
         ctx.beginPath();
         ctx.arc(0, 0, 0.2 * w, 0, 2 * Math.PI);
-        ctx.fillStyle = (this.index >= 0) ? colorList[this.index]: 'white';
+        ctx.fillStyle = (this.index >= 0) ? colorList[this.index] : 'white';
         ctx.fill();
         ctx.strokeStyle = 'black';
         ctx.stroke();
@@ -2319,7 +2319,7 @@ export class unlocker {
         ctx.translate(this.pos.x, this.pos.y);
         ctx.globalAlpha = (this.perspective) ? 0.8 : 1;
         ctx.rotate(0.25 * Math.PI);
-        
+
         ctx.beginPath();
         ctx.arc(0, -0.25 * w, 0.2 * w, 0.4 * Math.PI, 0.6 * Math.PI, true);
         ctx.lineTo(-0.06 * w, 0.4 * w);
