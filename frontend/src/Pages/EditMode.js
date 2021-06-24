@@ -50,8 +50,8 @@ function Edit(props) {
   const classes = useStyles();
   const history = useHistory();
   const [open, setOpen] = useState(false);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [title, setTitle] = useState(props.data.title);
+  const [description, setDescription] = useState(props.data.description);
   // for Snackbar Alert
   const [msgOpen, setMsgOpen] = useState(false);
   const [alertMsg, setAlertMsg] = useState("");
@@ -169,6 +169,7 @@ function Edit(props) {
           color="secondary"
           disabled={Object.entries(setting).length === 0}
           onClick={() => {
+            childRef.current.returnSetting();
             setOpen(true);
           }}
         >
@@ -178,7 +179,17 @@ function Edit(props) {
           size="large"
           variant="contained"
           color="secondary"
-          onClick={() => childRef.current.returnSetting()}
+          onClick={() => {
+            childRef.current.returnSetting();
+            if (!title || !description) {
+              setOpen(true);
+            } else {
+              setPublish(false);
+              setOpen(true);
+              setOpen(false);
+              handleUpload();
+            }
+          }}
         >
           <SaveIcon />
         </IconButton>

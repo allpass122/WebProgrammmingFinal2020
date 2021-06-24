@@ -293,6 +293,8 @@ export default function Album(props) {
                           name: name,
                           login: true,
                           id: 0,
+                          title: "",
+                          description: "",
                         },
                       });
                     }}
@@ -394,6 +396,10 @@ export default function Album(props) {
                               name: name,
                               login: true,
                               id: ele.id,
+                              title: allMaps[key] ? allMaps[key].title : "",
+                              description: allMaps[key]
+                                ? allMaps[key].description
+                                : "",
                             },
                           });
                         }}

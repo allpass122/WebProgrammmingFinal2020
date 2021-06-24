@@ -66,7 +66,7 @@ router.post("/upload", async function (req, res) {
   const { uuid, settingPack, title, description, name, publish, id0 } =
     req.body;
   console.log(`UPLOAD`);
-  console.log(settingPack);
+  // console.log(settingPack);
 
   // use setting and public to decide a unique hash id
   let id = hash({ setting: settingPack, publish: publish });
@@ -80,7 +80,7 @@ router.post("/upload", async function (req, res) {
         res.send({ success: false, errorCode: 100 });
         return;
       } else {
-        // console.log(`id:${id}`);
+        // console.log(`id:${id0}`);
         let user = result[0];
         // if (Hasmap(user.mapIDs, id)) {
         if (id0 !== 0) {
