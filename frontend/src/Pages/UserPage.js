@@ -34,6 +34,8 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import Preview from "../GameContainer/Preview";
+import initSetting from "../GameContainer/Setting/example_0";
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -356,7 +358,7 @@ export default function Album(props) {
                       image="https://source.unsplash.com/random"
                       title="Image title"
                     /> */}
-                    <canvas></canvas>
+                          <Preview setting={unpackage(allMaps[key] ? allMaps[key].content : initSetting)} />
                     <CardContent className={classes.cardContent}>
                       <Typography gutterBottom variant="h5" component="h2">
                         {/* {ele.title} */}
