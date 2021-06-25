@@ -13,8 +13,6 @@ function Drawer(ctx, setting, status) {
 	let me = status.me.serializeForUpdate()
 	const w = constant.gridWidth
 
-
-
 	/* �M�ŵe�� */
 	clear(ctx);
 
