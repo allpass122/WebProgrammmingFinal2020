@@ -68,7 +68,8 @@ router.post("/upload", async function (req, res) {
   // console.log(settingPack);
 
   // use setting and public to decide a unique hash id
-  let id = hash({ setting: settingPack, publish: publish });
+  // let id = hash({ setting: settingPack, publish: publish });
+  let id = hash({time: Date.now()});
   const existing = await userSchema
     .find({ uuid: uuid })
     .exec(function (error, result) {

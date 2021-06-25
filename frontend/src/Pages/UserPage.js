@@ -166,7 +166,7 @@ export default function Album(props) {
       // console.log(IDs[0]);
       getMap(IDs[ID].id);
     }
-    setBusy(false);
+    // setBusy(false);
   };
 
   const getMapIDs = async () => {
@@ -180,14 +180,14 @@ export default function Album(props) {
       // alert(`Wrong password or the user doesn't exist.`);
     } else {
       // console.log(`${name} ${uuid}`);
-      // console.log(mapIDs);
+      console.log(mapIDs);
       setMapIDs(mapIDs);
       setAllMaps([]);
       getAllMaps(mapIDs);
       // console.log(mapIDs);
       // console.log(allMaps);
     }
-    // setBusy(false);
+    setBusy(false);
   };
 
   const handlerStatistic = (key) => {
@@ -206,7 +206,7 @@ export default function Album(props) {
     setBusy(true);
     getMapIDs();
   }, []);
-
+  // console.log("render")
   return (
     <React.Fragment>
       <CssBaseline />
@@ -429,7 +429,6 @@ export default function Album(props) {
                       )}
                       <IconButton
                         className={classes.margin}
-                        disabled={allMaps[key]===undefined}
                         size="large"
                         variant="outlined"
                         color="secondary"
