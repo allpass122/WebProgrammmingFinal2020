@@ -370,6 +370,7 @@ export default function Album(props) {
                       <Button
                         size="small"
                         color="primary"
+                        disabled={allMaps[key]===undefined}
                         onClick={() => {
                           history.push({
                             pathname: `/PlayMode`,
@@ -388,7 +389,7 @@ export default function Album(props) {
                       <Button
                         size="small"
                         color="primary"
-                        disabled={allMaps[key] ? allMaps[key].publish : false}
+                        disabled={allMaps[key]===undefined || (allMaps[key]!==undefined && allMaps[key].publish)}
                         onClick={() => {
                           history.push({
                             pathname: `/EditMode`,
@@ -428,6 +429,7 @@ export default function Album(props) {
                       )}
                       <IconButton
                         className={classes.margin}
+                        disabled={allMaps[key]===undefined}
                         size="large"
                         variant="outlined"
                         color="secondary"
