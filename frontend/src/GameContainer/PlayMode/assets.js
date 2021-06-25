@@ -1,7 +1,9 @@
 // tribute to https://github.com/vzhou842/example-.io-game 
 
 const ASSET_NAMES = [
-  'seal.svg'
+  'seal.svg',
+  'lion.svg',
+  'cat.svg'
 ];
 
 const assets = {};
@@ -12,7 +14,6 @@ function downloadAsset(assetName) {
   return new Promise(resolve => {
     const asset = new Image();
     asset.onload = () => {
-      console.log(`Downloaded ${assetName}`);
       assets[assetName] = asset;
       resolve();
     };
@@ -23,3 +24,5 @@ function downloadAsset(assetName) {
 export const downloadAssets = () => downloadPromise;
 
 export const getAsset = assetName => assets[assetName];
+
+export const getAssetNames = () => ASSET_NAMES;

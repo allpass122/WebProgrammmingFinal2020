@@ -5,6 +5,17 @@ import { v4 as uuidv4 } from "uuid";
 import hash from "object-hash";
 
 const router = Router();
+// function Hasmap(arr, id) {
+//   for (var ele in arr) {
+//     console.log(`Element:`);
+//     console.log(arr[ele]);
+//     if (arr[ele].id === id) {
+//       return true;
+//     }
+//   }
+//   return false;
+// }
+
 /* For Login */
 router.post("/login", async function (req, res) {
   const { name, pwd } = req.body;
@@ -25,7 +36,6 @@ router.post("/login", async function (req, res) {
       }
     });
 });
-
 router.post("/signup", async function (req, res) {
   const { name_, pwd_ } = req.body;
   console.log(`receive ${name_} ${pwd_}`);
@@ -40,7 +50,6 @@ router.post("/signup", async function (req, res) {
     res.send({ success: true, msg: `Success!` });
   }
 });
-
 router.post("/clear", async function (req, res) {
   try {
     await userSchema.deleteMany({});
@@ -52,16 +61,6 @@ router.post("/clear", async function (req, res) {
   }
 });
 /* For map */
-function Hasmap(arr, id) {
-  for (var ele in arr) {
-    console.log(`Element:`);
-    console.log(arr[ele]);
-    if (arr[ele].id === id) {
-      return true;
-    }
-  }
-  return false;
-}
 router.post("/upload", async function (req, res) {
   const { uuid, settingPack, title, description, name, publish, id0 } =
     req.body;
@@ -69,7 +68,8 @@ router.post("/upload", async function (req, res) {
   // console.log(settingPack);
 
   // use setting and public to decide a unique hash id
-  let id = hash({ setting: settingPack, publish: publish });
+  // let id = hash({ setting: settingPack, publish: publish });
+  let id = hash({time: Date.now()});
   const existing = await userSchema
     .find({ uuid: uuid })
     .exec(function (error, result) {
@@ -83,7 +83,7 @@ router.post("/upload", async function (req, res) {
         // console.log(`id:${id0}`);
         let user = result[0];
         // if (Hasmap(user.mapIDs, id)) {
-        if (id0 !== 0) {
+        if (id0 !== 0 && !publish) {
           // not a new map
           mapSchema
             .updateOne(
@@ -138,7 +138,7 @@ router.post("/upload", async function (req, res) {
     passPeople: [],
   });
   const exist = await mapSchema.findOne({ id: id });
-  if (!exist) {
+  if (publish || (!exist && id0 === 0) ) {
     await newMap.save();
     console.log(`Created map ${newMap}`);
     // res.send({ success: true, errorCode: 0 });

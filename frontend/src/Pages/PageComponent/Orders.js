@@ -15,7 +15,7 @@ import IconButton from "@material-ui/core/IconButton";
 import SportsEsportsIcon from "@material-ui/icons/SportsEsports";
 import GradeIcon from "@material-ui/icons/Grade";
 import Modal from "@material-ui/core/Modal";
-import Title from "./Title";
+// import Title from "./Title";
 import Rating from "@material-ui/lab/Rating";
 import Typography from "@material-ui/core/Typography";
 import Snackbar from "@material-ui/core/Snackbar";
@@ -72,7 +72,7 @@ export default function Orders(props) {
         setMsgOpen(true);
       } else if (errorCode === 2) {
         setAlertMsg(`You rated it before, the previous rate has been updated!`);
-        setAlertType("warning");
+        setAlertType("info");
         setMsgOpen(true);
       } else {
         setAlertMsg(`Unknow error: ${errorCode}`);
@@ -205,8 +205,8 @@ export default function Orders(props) {
               <TableCell>{map.description}</TableCell>
               <TableCell>{map.statistic.playTime}</TableCell>
               <TableCell>{map.statistic.passTime}</TableCell>
-              <TableCell>{map.statistic.fastestPass}</TableCell>
-              <TableCell align="right">{map.statistic.fastestMan}</TableCell>
+              <TableCell>{map.statistic.fastestPass===999.9?"-":map.statistic.fastestPass}</TableCell>
+              <TableCell align="right">{map.statistic.fastestMan==="None"?"-":map.statistic.fastestMan}</TableCell>
 
               {`${computeScore(map.rateRec)[2].toFixed(2)}(${
                 computeScore(map.rateRec)[1]
