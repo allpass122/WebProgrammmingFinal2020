@@ -143,32 +143,20 @@ export default function Album(props) {
     setDeleteID(id);
     setOpenDialog(true);
   };
-  const getMap = async (id) => {
+
+  const getAllMaps = async (mapIDs) => {
+    console.log(`getAllMaps`);
     const {
-      data: { success, errorCode, map },
-    } = await instance.post("/api/getMap", {
-      id,
+      data: { success, errorCode, maps },
+    } = await instance.post("/api/getAllMaps", {
+      mapIDs,
     });
     if (!success) {
       console.log(`FAIL`);
     } else {
-      // console.log(`${id}, ${map.id}`);
-      setAllMaps((pre) => {
-        let tmp = [...pre];
-        let idx = mapIDs.findIndex((ele) => ele.id === id);
-        tmp[idx] = map;
-        return tmp;
-      });
+      // console.log(maps);
+      setAllMaps(maps);
     }
-  };
-
-  const getAllMaps = (IDs) => {
-    // console.log(`GRTALL`);
-    for (var ID in IDs) {
-      // console.log(IDs[0]);
-      getMap(IDs[ID].id);
-    }
-    // setBusy(false);
   };
 
   const getMapIDs = async () => {
@@ -179,15 +167,11 @@ export default function Album(props) {
       uuid,
     });
     if (!success) {
-      // alert(`Wrong password or the user doesn't exist.`);
+      console.log(`getMapids fail`);
     } else {
-      // console.log(`${name} ${uuid}`);
       console.log(mapIDs);
       setMapIDs(mapIDs);
-      setAllMaps([]);
       getAllMaps(mapIDs);
-      // console.log(mapIDs);
-      // console.log(allMaps);
     }
     setBusy(false);
   };
@@ -208,6 +192,7 @@ export default function Album(props) {
     setBusy(true);
     getMapIDs();
   }, []);
+
   // console.log("render")
   return (
     <React.Fragment>
@@ -358,7 +343,11 @@ export default function Album(props) {
                       image="https://source.unsplash.com/random"
                       title="Image title"
                     /> */}
-                          <Preview setting={unpackage(allMaps[key] ? allMaps[key].content : initSetting)} />
+                    <Preview
+                      setting={unpackage(
+                        allMaps[key] ? allMaps[key].content : initSetting
+                      )}
+                    />
                     <CardContent className={classes.cardContent}>
                       <Typography gutterBottom variant="h5" component="h2">
                         {/* {ele.title} */}
@@ -372,7 +361,7 @@ export default function Album(props) {
                       <Button
                         size="small"
                         color="primary"
-                        disabled={allMaps[key]===undefined}
+                        disabled={allMaps[key] === undefined}
                         onClick={() => {
                           history.push({
                             pathname: `/PlayMode`,
@@ -380,7 +369,7 @@ export default function Album(props) {
                               uuid: uuid,
                               name: name,
                               login: true,
-                              id: ele.id,
+                              id: ele,
                               mode: "test",
                             },
                           });
@@ -391,7 +380,10 @@ export default function Album(props) {
                       <Button
                         size="small"
                         color="primary"
-                        disabled={allMaps[key]===undefined || (allMaps[key]!==undefined && allMaps[key].publish)}
+                        disabled={
+                          allMaps[key] === undefined ||
+                          (allMaps[key] !== undefined && allMaps[key].publish)
+                        }
                         onClick={() => {
                           history.push({
                             pathname: `/EditMode`,
@@ -399,7 +391,7 @@ export default function Album(props) {
                               uuid: uuid,
                               name: name,
                               login: true,
-                              id: ele.id,
+                              id: ele,
                               title: allMaps[key] ? allMaps[key].title : "",
                               description: allMaps[key]
                                 ? allMaps[key].description
@@ -435,7 +427,7 @@ export default function Album(props) {
                         variant="outlined"
                         color="secondary"
                         onClick={() => {
-                          handlerDeleteSingleMap(ele.id);
+                          handlerDeleteSingleMap(ele);
                         }}
                       >
                         <DeleteIcon />
