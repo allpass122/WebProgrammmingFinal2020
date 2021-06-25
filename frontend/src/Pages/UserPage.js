@@ -351,11 +351,12 @@ export default function Album(props) {
               {mapIDs.map((ele, key) => (
                 <Grid item key={ele} xs={12} sm={6} md={4}>
                   <Card className={classes.card}>
-                    <CardMedia
+                    {/* <CardMedia
                       className={classes.cardMedia}
                       image="https://source.unsplash.com/random"
                       title="Image title"
-                    />
+                    /> */}
+                    <canvas></canvas>
                     <CardContent className={classes.cardContent}>
                       <Typography gutterBottom variant="h5" component="h2">
                         {/* {ele.title} */}

@@ -85,13 +85,13 @@ function Edit(props) {
     if (!success) {
       if (errorCode === 1) {
         setAlertMsg("This map exists. The map has been updated");
-        setAlertType("warning");
+        setAlertType("info");
         setMsgOpen(true);
         // alert(`This map exists.`);
       } else if (errorCode === 2) {
         // alert(`Too many maps!! Every user can only save 8 maps.`);
         setAlertMsg("Too many maps!! Every user can only save 8 maps.");
-        setAlertType("warning");
+        setAlertType("error");
         setMsgOpen(true);
       } else {
         // alert(`Unknow error. Error code:${errorCode}`);

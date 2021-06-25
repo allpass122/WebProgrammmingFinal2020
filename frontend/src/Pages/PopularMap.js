@@ -269,6 +269,15 @@ function PopularMap(props) {
           >
             <MenuIcon />
           </IconButton>
+          <Typography
+            component="h1"
+            variant="h6"
+            color="inherit"
+            noWrap
+            className={classes.title}
+          >
+            Other Maps
+          </Typography>
           <CssTextField
             className={classes.margin}
             label="Search Author"
@@ -280,15 +289,6 @@ function PopularMap(props) {
               handlerSearch(e.target.value.trim());
             }}
           />
-          <Typography
-            component="h1"
-            variant="h6"
-            color="inherit"
-            noWrap
-            className={classes.title}
-          >
-            Other Maps
-          </Typography>
         </Toolbar>
       </AppBar>
       <Drawer
