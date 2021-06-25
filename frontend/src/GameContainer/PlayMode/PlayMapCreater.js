@@ -57,8 +57,6 @@ const PlayMapCreater = (props) => {
 
     function closeForm(form) {
         document.getElementById(form).style.display = "none";
-        //mmmm
-        
         setStatus(() => ({ ...defaultState, head: status.head , gameState: 'playing' }))
     }
 
@@ -76,6 +74,7 @@ const PlayMapCreater = (props) => {
         ctx.save()
         ctx.scale(CONSTANT.scale.w, CONSTANT.scale.h);
         ctx.translate(CONSTANT.translate.x, CONSTANT.translate.y);
+        
         initState(status, setting)
 
         let cancelController;
@@ -107,7 +106,7 @@ const PlayMapCreater = (props) => {
 
         // if (status.gameState !== 'playing')
         //     cancelAnimationFrame(requestId)
-        if (status.gameState === CONSTANT.GameOver){
+        if (status.gameState === CONSTANT.GameOver || status.gameState === 'start'){
             cancelController()
         }
         if (status.gameState === 'start')

@@ -6,7 +6,7 @@ const w = constant.gridWidth;
 let blockArea = []
 
 export function initState(status, setting) {
-  const { map } = setting
+  const { map, objects } = setting
 
   // random player start area
   const startArea = []
@@ -20,6 +20,11 @@ export function initState(status, setting) {
   map.forEach((line, y) => (line.forEach((square, x) => {
     if (square.type.includes('block')) blockArea.push({ x, y })
   })))
+
+  // set object no transparant
+  for (let i = 0; i < objects.length; i++) {
+    if (objects[i].setPerspective) objects[i].setPerspective(false)
+  }
 
   status.startTime = Date.now()
   status.lastUpdateTime = Date.now()
