@@ -34,6 +34,8 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import Preview from "../GameContainer/Preview";
+import initSetting from "../GameContainer/Setting/example_0";
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -166,7 +168,7 @@ export default function Album(props) {
       // console.log(IDs[0]);
       getMap(IDs[ID].id);
     }
-    setBusy(false);
+    // setBusy(false);
   };
 
   const getMapIDs = async () => {
@@ -180,14 +182,14 @@ export default function Album(props) {
       // alert(`Wrong password or the user doesn't exist.`);
     } else {
       // console.log(`${name} ${uuid}`);
-      // console.log(mapIDs);
+      console.log(mapIDs);
       setMapIDs(mapIDs);
       setAllMaps([]);
       getAllMaps(mapIDs);
       // console.log(mapIDs);
       // console.log(allMaps);
     }
-    // setBusy(false);
+    setBusy(false);
   };
 
   const handlerStatistic = (key) => {
@@ -206,7 +208,7 @@ export default function Album(props) {
     setBusy(true);
     getMapIDs();
   }, []);
-
+  // console.log("render")
   return (
     <React.Fragment>
       <CssBaseline />
@@ -356,7 +358,7 @@ export default function Album(props) {
                       image="https://source.unsplash.com/random"
                       title="Image title"
                     /> */}
-                    <canvas></canvas>
+                          <Preview setting={unpackage(allMaps[key] ? allMaps[key].content : initSetting)} />
                     <CardContent className={classes.cardContent}>
                       <Typography gutterBottom variant="h5" component="h2">
                         {/* {ele.title} */}
@@ -370,6 +372,7 @@ export default function Album(props) {
                       <Button
                         size="small"
                         color="primary"
+                        disabled={allMaps[key]===undefined}
                         onClick={() => {
                           history.push({
                             pathname: `/PlayMode`,
@@ -388,7 +391,7 @@ export default function Album(props) {
                       <Button
                         size="small"
                         color="primary"
-                        disabled={allMaps[key] ? allMaps[key].publish : false}
+                        disabled={allMaps[key]===undefined || (allMaps[key]!==undefined && allMaps[key].publish)}
                         onClick={() => {
                           history.push({
                             pathname: `/EditMode`,

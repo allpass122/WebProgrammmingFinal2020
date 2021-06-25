@@ -74,89 +74,133 @@ export default function Controller(scene, status, setStatus, setting, reset) {
 				newStatus.hold = false;
 				newStatus.holdObject = null;
 				setStatus(newStatus);
-				if (mousePos.between(new Vec2(88, 520), new Vec2(1112, 584))) {
+				if (mousePos.between(new Vec2(88, 516), new Vec2(1112, 580))) {
 					/* 在物件編輯庫內點擊則獲得一個新物件進行操控 */
 					let objectIndex = ~~((e.offsetX - 88) / 64);
-					switch (objectIndex) {
-						case 0:
+					let result = '';
+					if (objectIndex === 0) result = 'stoporplay';
+					else {
+						const objectList = [];
+						objectList.push('class platform');
+						if (status.opt === 1) objectList.push(...constant.editObjectList.platform);
+						objectList.push('class covering');
+						if (status.opt === 2) objectList.push(...constant.editObjectList.covering);
+						objectList.push('class obstacle');
+						if (status.opt === 3) objectList.push(...constant.editObjectList.obstacle);
+						objectList.push('class special');
+						if (status.opt === 4) objectList.push(...constant.editObjectList.special);
+						result = (objectList[objectIndex - 1]) ? objectList[objectIndex - 1] : '';
+                    }
+					switch (result) {
+						case 'stoporplay':
 							newStatus.active = !newStatus.active;
 							reset();
 							break;
-						case 1:
+						case 'class platform':
+							newStatus.opt = (status.opt === 1) ? 0 : 1;
+							break;
+						case 'class covering':
+							newStatus.opt = (status.opt === 2) ? 0 : 2;
+							break;
+						case 'class obstacle':
+							newStatus.opt = (status.opt === 3) ? 0 :  3;
+							break;
+						case 'class special':
+							newStatus.opt = (status.opt === 4) ? 0 : 4;
+							break;
+						case 'spikedBlock':
 							newStatus.holding = true;
 							newStatus.holdObject = new GameObject.spikedBlock(new Vec2(e.offsetX, e.offsetY));
 							newStatus.holdDetail = newStatus.holdObject.detailFunction();
 							newStatus.holdObject.setPerspective(true);
 							break;
-						case 2:
+						case 'platform':
 							newStatus.holding = true;
 							newStatus.holdObject = new GameObject.platform(new Vec2(e.offsetX, e.offsetY));
 							newStatus.holdDetail = newStatus.holdObject.detailFunction();
 							newStatus.holdObject.setPerspective(true);
 							break;
-						case 3:
+						case 'bow':
 							newStatus.holding = true;
 							newStatus.holdObject = new GameObject.bow(new Vec2(e.offsetX, e.offsetY));
 							newStatus.holdDetail = newStatus.holdObject.detailFunction();
 							newStatus.holdObject.setPerspective(true);
 							break;
-						case 4:
+						case 'movingPlatform':
 							newStatus.holding = true;
 							newStatus.holdObject = new GameObject.movingPlatform(new Vec2(e.offsetX, e.offsetY));
 							newStatus.holdDetail = newStatus.holdObject.detailFunction();
 							newStatus.holdObject.setPerspective(true);
 							break;
-						case 5:
+						case 'mucus':
 							newStatus.holding = true;
 							newStatus.holdObject = new GameObject.mucus(new Vec2(e.offsetX, e.offsetY));
 							newStatus.holdDetail = newStatus.holdObject.detailFunction();
 							newStatus.holdObject.setPerspective(true);
 							break;
-						case 6:
+						case 'cymbal':
 							newStatus.holding = true;
 							newStatus.holdObject = new GameObject.cymbal(new Vec2(e.offsetX, e.offsetY));
 							newStatus.holdDetail = newStatus.holdObject.detailFunction();
 							newStatus.holdObject.setPerspective(true);
 							break;
-						case 7:
+						case 'ice':
 							newStatus.holding = true;
 							newStatus.holdObject = new GameObject.ice(new Vec2(e.offsetX, e.offsetY));
 							newStatus.holdDetail = newStatus.holdObject.detailFunction();
 							newStatus.holdObject.setPerspective(true);
 							break;
-						case 8:
+						case 'conveyor':
 							newStatus.holding = true;
 							newStatus.holdObject = new GameObject.conveyor(new Vec2(e.offsetX, e.offsetY));
 							newStatus.holdDetail = newStatus.holdObject.detailFunction();
 							newStatus.holdObject.setPerspective(true);
 							break;
-						case 9:
+						case 'portal':
 							newStatus.holding = true;
 							newStatus.holdObject = new GameObject.portal(new Vec2(e.offsetX, e.offsetY));
 							newStatus.holdDetail = newStatus.holdObject.detailFunction();
 							newStatus.holdObject.setPerspective(true);
 							break;
-						case 10:
+						case 'trapPlatform':
 							newStatus.holding = true;
 							newStatus.holdObject = new GameObject.trapPlatform(new Vec2(e.offsetX, e.offsetY));
 							newStatus.holdDetail = newStatus.holdObject.detailFunction();
 							newStatus.holdObject.setPerspective(true);
 							break;
-						case 11:
+						case 'missileBase':
 							newStatus.holding = true;
 							newStatus.holdObject = new GameObject.missileBase(new Vec2(e.offsetX, e.offsetY));
 							newStatus.holdDetail = newStatus.holdObject.detailFunction();
 							newStatus.holdObject.setPerspective(true);
 							break;
-						case 12:
+						case 'lockedWall':
 							newStatus.holding = true;
 							newStatus.holdObject = new GameObject.lockedWall(new Vec2(e.offsetX, e.offsetY));
 							newStatus.holdDetail = newStatus.holdObject.detailFunction();
 							newStatus.holdObject.setPerspective(true);
 							break;
-						case 13:
+						case 'unlocker':
 							newStatus.holding = true;
 							newStatus.holdObject = new GameObject.unlocker(new Vec2(e.offsetX, e.offsetY));
+							newStatus.holdDetail = newStatus.holdObject.detailFunction();
+							newStatus.holdObject.setPerspective(true);
+							break;
+						case 'block':
+							newStatus.holding = true;
+							newStatus.holdObject = new GameObject.block(new Vec2(e.offsetX, e.offsetY));
+							newStatus.holdDetail = newStatus.holdObject.detailFunction();
+							newStatus.holdObject.setPerspective(true);
+							break; 
+						case 'movingPlatform_oblique':
+							newStatus.holding = true;
+							newStatus.holdObject = new GameObject.movingPlatform_oblique(new Vec2(e.offsetX, e.offsetY));
+							newStatus.holdDetail = newStatus.holdObject.detailFunction();
+							newStatus.holdObject.setPerspective(true);
+							break;
+						case 'movingPlatform_rect':
+							newStatus.holding = true;
+							newStatus.holdObject = new GameObject.movingPlatform_rect(new Vec2(e.offsetX, e.offsetY));
 							newStatus.holdDetail = newStatus.holdObject.detailFunction();
 							newStatus.holdObject.setPerspective(true);
 							break;

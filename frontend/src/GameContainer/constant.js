@@ -16,7 +16,7 @@ const constant = {
 	auxiliaryColor: '#D2E9FF', // 輔助格線顏色
 	typeLayerPairs: { // 各類格子佔據的層數
 		'none': new Layer(),
-		'block': new Layer(0),
+		'block': new Layer(),
 		'start': new Layer(0, 1, 2, 3),
 		'end': new Layer(0, 1, 2, 3),
 		'dead': new Layer(),
@@ -24,6 +24,19 @@ const constant = {
 		'muddy': new Layer()
 	},
 	maxLayer: 5, // 最大佔據層數
+	editObjectList: {
+		platform: ['platform', 'movingPlatform', 'movingPlatform_oblique', 'movingPlatform_rect', 'trapPlatform'],
+		covering: ['mucus', 'ice', 'conveyor'],
+		obstacle: ['block', 'spikedBlock', 'bow', 'cymbal', 'missileBase'],
+		special: ['portal', 'lockedWall', 'unlocker'],
+	},
+	editFrame: {
+		default: { fColor: '#F0F0F0', sColor: '#BEBEBE' },
+		platform: { fColor: '#ECECFF', sColor: '#CECEFF' },
+		covering: { fColor: '#E8FFF5', sColor: '#96FED1' },
+		obstacle: { fColor: '#FFECEC', sColor: '#FFB5B5' },
+		special: { fColor: '#FFFFDF', sColor: '#FFFF37' },
+    }
 };
 
 export default constant;

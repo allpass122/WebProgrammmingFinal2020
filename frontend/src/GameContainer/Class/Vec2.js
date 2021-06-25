@@ -71,7 +71,9 @@ export default class Vec2 {
         return new Vec2(1, 0);
     }
     static direction(dir) {
-        return (dir === 'up') ? Vec2.up() : (dir === 'down') ? Vec2.down() : (dir === 'left') ? Vec2.left() : Vec2.right();
+        return (dir === 'up') ? Vec2.up() : (dir === 'down') ? Vec2.down() : (dir === 'left') ? Vec2.left() : (dir === 'right') ? Vec2.right() :
+               (dir === 'right-up') ? Vec2.up().add(Vec2.right()).unit() : (dir === 'right-down') ? Vec2.down().add(Vec2.right()).unit() :
+               (dir === 'left-up') ? Vec2.up().add(Vec2.left()).unit() : (dir === 'left-down') ? Vec2.down().add(Vec2.left()).unit() : new Vec2(0, 0);
     }
     static leftUp(v1, v2) { // 回傳兩點圍成的矩形的左上座標
         return new Vec2(Math.min(v1.x, v2.x), Math.min(v1.y, v2.y));
