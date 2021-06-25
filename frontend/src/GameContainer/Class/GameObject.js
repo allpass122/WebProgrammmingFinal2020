@@ -103,7 +103,7 @@ export class spikedBlock {
                 return 'none';
         }
     }
-    draw(ctx) {
+    draw(ctx, layer = -1) {
         ctx.save();
         ctx.translate(this.pos.x, this.pos.y);
         ctx.globalAlpha = (this.perspective) ? 0.4 : 1;
@@ -248,7 +248,7 @@ export class platform {
                 return 'none';
         }
     }
-    draw(ctx) {
+    draw(ctx, layer = -1) {
         ctx.save();
         ctx.translate(this.pos.x, this.pos.y);
         ctx.globalAlpha = (this.perspective) ? 0.8 : 1;
@@ -315,7 +315,7 @@ export class movingPlatform {
         this.active = false;
         this.perspective = false;
 
-        this.layer = new Layer(1);
+        this.layer = new Layer(0, 1);
     }
     clone() {
         const cloneObject = new movingPlatform();
@@ -328,7 +328,7 @@ export class movingPlatform {
     detailFunction() {
         return {
             name: { type: 'text' },
-            distance: { type: 'int', min: 0, max: 31 },
+            distance: { type: 'int', min: 1, max: 31 },
             direction: { type: 'select', options: ['up', 'down', 'left', 'right'] },
             speed: { type: 'select', options: ['super slow', 'slow', 'normal', 'fast', 'super fast'] }
         };
@@ -381,69 +381,73 @@ export class movingPlatform {
                 return 'none';
         }
     }
-    draw(ctx) {
+    draw(ctx, layer = -1) {
         ctx.save();
         const originPos = this.gridPos.mul(w).add(constant.mapStart).add(new Vec2(0.5 * w, 0.5 * w));
         if (this.active) ctx.translate(originPos.x, originPos.y);
         else ctx.translate(this.pos.x, this.pos.y);
         ctx.globalAlpha = (this.perspective) ? 0.8 : 1;
 
-        ctx.save();
-        let dir = this.detail.direction;
-        ctx.rotate((dir === 'up') ? 0 : (dir === 'down') ? Math.PI : (dir === 'left') ? 1.5 * Math.PI : 0.5 * Math.PI);
+        if (layer === -1 || layer === 0) {
+            ctx.save();
+            let dir = this.detail.direction;
+            ctx.rotate((dir === 'up') ? 0 : (dir === 'down') ? Math.PI : (dir === 'left') ? 1.5 * Math.PI : 0.5 * Math.PI);
 
-        ctx.beginPath();
-        ctx.rect(-0.1 * w, -0.1 * w, 0.2 * w, 0.2 * w);
-        ctx.fillStyle = '#4F4F4F';
-        ctx.fill();
-        ctx.closePath();
+            ctx.beginPath();
+            ctx.rect(-0.1 * w, -0.1 * w, 0.2 * w, 0.2 * w);
+            ctx.fillStyle = '#4F4F4F';
+            ctx.fill();
+            ctx.closePath();
 
-        ctx.beginPath();
-        ctx.moveTo(0, 0);
-        ctx.lineTo(0, - this.detail.distance * w);
-        ctx.strokeStyle = '#4F4F4F';
-        ctx.stroke();
-        ctx.closePath();
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, - this.detail.distance * w);
+            ctx.strokeStyle = '#4F4F4F';
+            ctx.stroke();
+            ctx.closePath();
 
-        ctx.save();
-        ctx.translate(0, - this.detail.distance * w);
-        ctx.beginPath();
-        ctx.rect(-0.1 * w, -0.1 * w, 0.2 * w, 0.2 * w);
-        ctx.fillStyle = '#4F4F4F';
-        ctx.fill();
-        ctx.closePath();
-        ctx.restore();
+            ctx.save();
+            ctx.translate(0, - this.detail.distance * w);
+            ctx.beginPath();
+            ctx.rect(-0.1 * w, -0.1 * w, 0.2 * w, 0.2 * w);
+            ctx.fillStyle = '#4F4F4F';
+            ctx.fill();
+            ctx.closePath();
+            ctx.restore();
 
-        ctx.restore();
-
-        if (this.active) {
-            const relativePos = this.pos.sub(originPos);
-            ctx.translate(relativePos.x, relativePos.y);
+            ctx.restore();
         }
 
-        ctx.beginPath();
-        ctx.moveTo(0, (-0.45) * w);
-        ctx.arcTo(0.45 * w, (-0.45) * w, 0.45 * w, 0.45 * w, 0.1 * w);
-        ctx.arcTo(0.45 * w, 0.45 * w, (-0.45) * w, 0.45 * w, 0.1 * w);
-        ctx.arcTo((-0.45) * w, 0.45 * w, (-0.45) * w, (-0.45) * w, 0.1 * w);
-        ctx.arcTo((-0.45) * w, (-0.45) * w, 0.45 * w, (-0.45) * w, 0.1 * w);
-        ctx.lineTo(0, (-0.45) * w);
-        ctx.fillStyle = '#ead48b';
-        ctx.fill();
-        ctx.strokeStyle = '#cb934d';
-        ctx.stroke();
-        ctx.closePath();
+        if (layer === -1 || layer === 1) {
+            if (this.active) {
+                const relativePos = this.pos.sub(originPos);
+                ctx.translate(relativePos.x, relativePos.y);
+            }
 
-        ctx.beginPath();
-        ctx.moveTo(0, (-0.35) * w);
-        ctx.arcTo(0.35 * w, (-0.35) * w, 0.35 * w, 0.35 * w, 0.1 * w);
-        ctx.arcTo(0.35 * w, 0.35 * w, (-0.35) * w, 0.35 * w, 0.1 * w);
-        ctx.arcTo((-0.35) * w, 0.35 * w, (-0.35) * w, (-0.35) * w, 0.1 * w);
-        ctx.arcTo((-0.35) * w, (-0.35) * w, 0.35 * w, (-0.35) * w, 0.1 * w);
-        ctx.lineTo(0, (-0.35) * w);
-        ctx.strokeStyle = '#f4f788';
-        ctx.stroke();
-        ctx.closePath();
+            ctx.beginPath();
+            ctx.moveTo(0, (-0.45) * w);
+            ctx.arcTo(0.45 * w, (-0.45) * w, 0.45 * w, 0.45 * w, 0.1 * w);
+            ctx.arcTo(0.45 * w, 0.45 * w, (-0.45) * w, 0.45 * w, 0.1 * w);
+            ctx.arcTo((-0.45) * w, 0.45 * w, (-0.45) * w, (-0.45) * w, 0.1 * w);
+            ctx.arcTo((-0.45) * w, (-0.45) * w, 0.45 * w, (-0.45) * w, 0.1 * w);
+            ctx.lineTo(0, (-0.45) * w);
+            ctx.fillStyle = '#ead48b';
+            ctx.fill();
+            ctx.strokeStyle = '#cb934d';
+            ctx.stroke();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.moveTo(0, (-0.35) * w);
+            ctx.arcTo(0.35 * w, (-0.35) * w, 0.35 * w, 0.35 * w, 0.1 * w);
+            ctx.arcTo(0.35 * w, 0.35 * w, (-0.35) * w, 0.35 * w, 0.1 * w);
+            ctx.arcTo((-0.35) * w, 0.35 * w, (-0.35) * w, (-0.35) * w, 0.1 * w);
+            ctx.arcTo((-0.35) * w, (-0.35) * w, 0.35 * w, (-0.35) * w, 0.1 * w);
+            ctx.lineTo(0, (-0.35) * w);
+            ctx.strokeStyle = '#f4f788';
+            ctx.stroke();
+            ctx.closePath();
+        }
 
         ctx.restore();
     }
@@ -553,7 +557,7 @@ export class bow {
             return result;
         } else return { type: 'none' };
     }
-    draw(ctx) {
+    draw(ctx, layer = -1) {
         ctx.save();
         ctx.translate(this.pos.x, this.pos.y);
         ctx.globalAlpha = (this.perspective) ? 0.8 : 1;
@@ -682,7 +686,7 @@ export class arrow {
                 return 'none';
         }
     }
-    draw(ctx) {
+    draw(ctx, layer = -1) {
         ctx.save();
         ctx.translate(this.pos.x, this.pos.y);
         ctx.globalAlpha = (this.perspective) ? 0.9 : 1;
@@ -791,7 +795,7 @@ export class mucus {
                 return 'none';
         }
     }
-    draw(ctx) {
+    draw(ctx, layer = -1) {
         ctx.save();
         ctx.translate(this.pos.x, this.pos.y);
         ctx.globalAlpha = (this.perspective) ? 0.8 : 1;
@@ -951,7 +955,7 @@ export class cymbal {
                 return 'none';
         }
     }
-    draw(ctx) {
+    draw(ctx, layer = -1) {
         ctx.save();
         ctx.translate(this.pos.x, this.pos.y);
         ctx.globalAlpha = (this.perspective) ? 0.8 : 1;
@@ -1073,7 +1077,7 @@ export class cymbalWave {
                 return 'none';
         }
     }
-    draw(ctx) {
+    draw(ctx, layer = -1) {
         ctx.save();
         ctx.translate(this.pos.x, this.pos.y);
 
@@ -1156,7 +1160,7 @@ export class ice {
                 return 'none';
         }
     }
-    draw(ctx) {
+    draw(ctx, layer = -1) {
         ctx.save();
         ctx.translate(this.pos.x, this.pos.y);
         ctx.globalAlpha = (this.perspective) ? 0.8 : 1;
@@ -1283,7 +1287,7 @@ export class conveyor {
                 return 'none';
         }
     }
-    draw(ctx) {
+    draw(ctx, layer = -1) {
         ctx.save();
         ctx.translate(this.pos.x, this.pos.y);
         ctx.globalAlpha = (this.perspective) ? 0.8 : 1;
@@ -1406,7 +1410,7 @@ export class portal {
 
             name: this.detail.name,
 
-            index: (this.open) ? this.index : -1,
+            index: this.index,
         };
     }
     unpackage(objectSetting) {
@@ -1418,7 +1422,6 @@ export class portal {
         this.detail.name = objectSetting.name;
 
         this.index = objectSetting.index;
-        if (this.index >= 0) this.open = true;
 
         this.perspective = true;
     }
@@ -1454,7 +1457,7 @@ export class portal {
         }
         return this.pos.clone();
     }
-    draw(ctx) {
+    draw(ctx, layer = -1) {
         ctx.save();
         ctx.translate(this.pos.x, this.pos.y);
         ctx.globalAlpha = (this.perspective) ? 0.8 : 1;
@@ -1538,6 +1541,13 @@ export class portal {
                         this.open = false;
                         break;
                     }
+                }
+            }
+        } else {
+            for (let i = 0; i < objects.length; i++) {
+                if (objects[i].type === 'portal' && objects[i].index === this.index && objects[i].id != this.id) {
+                    objects[i].open = true;
+                    this.open = true;
                 }
             }
         }
@@ -1671,7 +1681,7 @@ export class trapPlatform {
                 return 'none';
         }
     }
-    draw(ctx) {
+    draw(ctx, layer = -1) {
         ctx.save();
         ctx.translate(this.pos.x, this.pos.y);
         ctx.globalAlpha = (this.perspective) ? 0.6 : 1;
@@ -1878,7 +1888,7 @@ export class missileBase {
         this.findTarget = target;
         this.lastFind = Date.now();
     }
-    draw(ctx) {
+    draw(ctx, layer = -1) {
         ctx.save();
         ctx.translate(this.pos.x, this.pos.y);
         ctx.globalAlpha = (this.perspective) ? 0.8 : 1;
@@ -2014,6 +2024,7 @@ export class missile {
                 else if (result === 'cymbalWave') return { type: 'destory' };
                 else if (result === 'missile') return { type: 'destory' };
                 else if (result === 'block') return { type: 'destory' };
+                else if (result === 'lockedWall') return { type: 'destory' };
             }
         }
         this.dirVec = this.target.pos.sub(this.pos).unit();
@@ -2030,7 +2041,7 @@ export class missile {
                 return 'none';
         }
     }
-    draw(ctx) {
+    draw(ctx, layer = -1) {
         ctx.save();
         ctx.translate(this.pos.x, this.pos.y);
         ctx.globalAlpha = (this.perspective) ? 0.9 : 1;
@@ -2168,7 +2179,7 @@ export class lockedWall {
                 return 'none';
         }
     }
-    draw(ctx) {
+    draw(ctx, layer = -1) {
         if (!this.locked) return;
 
         ctx.save();
@@ -2312,7 +2323,7 @@ export class unlocker {
             }
         }
     }
-    draw(ctx) {
+    draw(ctx, layer = -1) {
         if (this.used) return;
 
         ctx.save();
@@ -2373,6 +2384,520 @@ export class unlocker {
         return true;
     }
     remove(map, objects) {
+        let gridPos = this.gridPos;
+        map[gridPos.y][gridPos.x].layer.sub(this.layer);
+    }
+}
+
+/* 方塊 */
+export class block {
+    constructor(pos = new Vec2(0, 0)) {
+        this.type = 'block';
+        this.id = uuidv4();
+        this.pos = pos;
+        this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
+
+        this.detail = {
+            name: 'block',
+        };
+
+        this.loadable = false;
+
+        this.perspective = false;
+
+        this.layer = new Layer(3);
+    }
+    clone() {
+        const cloneObject = new block();
+        cloneObject.unpackage(this.enpackage());
+        return cloneObject;
+    }
+    setPerspective(perspective) {
+        this.perspective = perspective;
+    }
+    detailFunction() {
+        return {
+            name: { type: 'text' },
+        };
+    }
+    enpackage() {
+        return {
+            type: this.type,
+            id: this.id,
+            gridPos: { x: this.gridPos.x, y: this.gridPos.y },
+
+            name: this.detail.name,
+        };
+    }
+    unpackage(objectSetting) {
+        this.type = objectSetting.type;
+        this.id = objectSetting.id;
+        this.gridPos = new Vec2(objectSetting.gridPos.x, objectSetting.gridPos.y);
+        this.pos = this.gridPos.mul(w).add(constant.mapStart).add(new Vec2(0.5 * w, 0.5 * w));
+
+        this.detail.name = objectSetting.name;
+
+        this.perspective = true;
+    }
+    collision(target) {
+        switch (target.type) {
+            case 'sphere':
+                if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(w, w) }, target)) return 'block';
+                return 'none';
+            default:
+                return 'none';
+        }
+    }
+    draw(ctx, layer = -1) {
+        ctx.save();
+        ctx.translate(this.pos.x, this.pos.y);
+        ctx.globalAlpha = (this.perspective) ? 0.4 : 1;
+
+        ctx.beginPath();
+        ctx.moveTo(-0.5 * w, -0.5 * w);
+        ctx.lineTo(0.5 * w, -0.5 * w);
+        ctx.lineTo(0.5 * w, 0.5 * w);
+        ctx.lineTo(-0.5 * w, 0.5 * w);
+        ctx.lineTo(-0.5 * w, -0.5 * w);
+        ctx.fillStyle = '#7B7B7B';
+        ctx.fill();
+        ctx.strokeStyle = 'black';
+        ctx.stroke();
+        ctx.closePath();
+
+        ctx.beginPath();
+        ctx.rect(-0.5 * w, -0.5 * w, w, w);
+        ctx.fillStyle = '#9D9D9D';
+        ctx.fill();
+        ctx.strokeStyle = 'black';
+        ctx.stroke();
+        ctx.closePath();
+
+        ctx.restore();
+    }
+    place(map, objects = null) {
+        this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
+        let gridPos = this.gridPos;
+        if (constant.typeLayerPairs[map[gridPos.y][gridPos.x].type].isOverlap(this.layer)) return false;
+        if (map[gridPos.y][gridPos.x].layer.isOverlap(this.layer)) return false;
+        map[gridPos.y][gridPos.x].layer.add(this.layer);
+        if (map[gridPos.y][gridPos.x].layer.status[2]) {
+            for (let i = 0; i < objects.length; i++) {
+                if (objects[i].gridPos.equal(gridPos) && objects[i].layer.top() === 2) {
+                    if (objects[i].loadable) {
+                        objects[i].loadObject = {
+                            id: this.id,
+                            object: this,
+                        };
+                    }
+                    break;
+                }
+            }
+        }
+        return true;
+    }
+    remove(map, objects = null) {
+        let gridPos = this.gridPos;
+        map[gridPos.y][gridPos.x].layer.sub(this.layer);
+        if (map[gridPos.y][gridPos.x].layer.status[2]) {
+            for (let i = 0; i < objects.length; i++) {
+                if (objects[i].gridPos.equal(gridPos) && objects[i].layer.top() === 2) {
+                    if (objects[i].loadable) objects[i].loadObject = null;
+                    break;
+                }
+            }
+        }
+    }
+}
+
+/* 移動平台-斜向 */
+export class movingPlatform_oblique {
+    constructor(pos = new Vec2(0, 0)) {
+        this.type = 'movingPlatform_oblique';
+        this.id = uuidv4();
+        this.pos = pos;
+        this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
+
+        this.detail = {
+            name: 'movingPlatform_oblique',
+            direction: 'right-up',
+            distance: 1,
+            speed: 'normal',
+        };
+
+        this.loadable = true;
+        this.loadObject = null;
+
+        this.lastRecord = Date.now();
+        this.active = false;
+        this.perspective = false;
+
+        this.layer = new Layer(0, 1);
+    }
+    clone() {
+        const cloneObject = new movingPlatform_oblique();
+        cloneObject.unpackage(this.enpackage());
+        return cloneObject;
+    }
+    setPerspective(perspective) {
+        this.perspective = perspective;
+    }
+    detailFunction() {
+        return {
+            name: { type: 'text' },
+            distance: { type: 'int', min: 1, max: 15 },
+            direction: { type: 'select', options: ['right-up', 'right-down', 'left-up', 'left-down'] },
+            speed: { type: 'select', options: ['super slow', 'slow', 'normal', 'fast', 'super fast'] }
+        };
+    }
+    enpackage() {
+        return {
+            type: this.type,
+            id: this.id,
+            gridPos: { x: this.gridPos.x, y: this.gridPos.y },
+
+            name: this.detail.name,
+            direction: this.detail.direction,
+            distance: this.detail.distance,
+            speed: this.detail.speed,
+        };
+    }
+    unpackage(objectSetting) {
+        this.type = objectSetting.type;
+        this.id = objectSetting.id;
+        this.gridPos = new Vec2(objectSetting.gridPos.x, objectSetting.gridPos.y);
+        this.pos = this.gridPos.mul(w).add(constant.mapStart).add(new Vec2(0.5 * w, 0.5 * w));
+
+        this.detail.name = objectSetting.name;
+        this.detail.direction = objectSetting.direction;
+        this.detail.distance = objectSetting.distance;
+        this.detail.speed = objectSetting.speed;
+
+        this.perspective = true;
+    }
+    update(objects = null) {
+        const parameters = {
+            'super slow': 5600, 'slow': 2800, 'normal': 1400, 'fast': 700, 'super fast': 280,
+        };
+        const dirVec = Vec2.direction(this.detail.direction).mul(this.detail.distance * w * Math.sqrt(2));
+        const originPos = this.gridPos.mul(w).add(constant.mapStart).add(new Vec2(0.5 * w, 0.5 * w));
+        if (~~((Date.now() - this.lastRecord) / parameters[this.detail.speed] / this.detail.distance) % 2 === 0) {
+            this.pos = originPos.add(dirVec.mul(((Date.now() - this.lastRecord) / parameters[this.detail.speed] / this.detail.distance) % 1));
+        } else {
+            this.pos = originPos.add(dirVec.mul(1 - ((Date.now() - this.lastRecord) / parameters[this.detail.speed] / this.detail.distance) % 1));
+        }
+        if (this.loadObject) this.loadObject.object.pos = this.pos;
+        return { type: 'none' };
+    }
+    collision(target) {
+        switch (target.type) {
+            case 'sphere':
+                if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.7 * w, 0.7 * w) }, target)) return 'movingPlatform';
+                return 'none';
+            default:
+                return 'none';
+        }
+    }
+    draw(ctx, layer = -1) {
+        ctx.save();
+        const originPos = this.gridPos.mul(w).add(constant.mapStart).add(new Vec2(0.5 * w, 0.5 * w));
+        if (this.active) ctx.translate(originPos.x, originPos.y);
+        else ctx.translate(this.pos.x, this.pos.y);
+        ctx.globalAlpha = (this.perspective) ? 0.8 : 1;
+
+        if (layer === -1 || layer === 0) {
+            ctx.save();
+            const dirVec = Vec2.direction(this.detail.direction).mul(this.detail.distance * w * Math.sqrt(2));
+
+            ctx.beginPath();
+            ctx.rect(-0.1 * w, -0.1 * w, 0.2 * w, 0.2 * w);
+            ctx.fillStyle = '#4F4F4F';
+            ctx.fill();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(dirVec.x, dirVec.y);
+            ctx.strokeStyle = '#4F4F4F';
+            ctx.stroke();
+            ctx.closePath();
+
+            ctx.save();
+            ctx.translate(dirVec.x, dirVec.y);
+            ctx.beginPath();
+            ctx.rect(-0.1 * w, -0.1 * w, 0.2 * w, 0.2 * w);
+            ctx.fillStyle = '#4F4F4F';
+            ctx.fill();
+            ctx.closePath();
+            ctx.restore();
+
+            ctx.restore();
+        }
+
+        if (layer === -1 || layer === 1) {
+            if (this.active) {
+                const relativePos = this.pos.sub(originPos);
+                ctx.translate(relativePos.x, relativePos.y);
+            }
+
+            ctx.beginPath();
+            ctx.moveTo(0, (-0.45) * w);
+            ctx.arcTo(0.45 * w, (-0.45) * w, 0.45 * w, 0.45 * w, 0.1 * w);
+            ctx.arcTo(0.45 * w, 0.45 * w, (-0.45) * w, 0.45 * w, 0.1 * w);
+            ctx.arcTo((-0.45) * w, 0.45 * w, (-0.45) * w, (-0.45) * w, 0.1 * w);
+            ctx.arcTo((-0.45) * w, (-0.45) * w, 0.45 * w, (-0.45) * w, 0.1 * w);
+            ctx.lineTo(0, (-0.45) * w);
+            ctx.fillStyle = '#ead48b';
+            ctx.fill();
+            ctx.strokeStyle = '#cb934d';
+            ctx.stroke();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.moveTo(0, (-0.35) * w);
+            ctx.arcTo(0.35 * w, (-0.35) * w, 0.35 * w, 0.35 * w, 0.1 * w);
+            ctx.arcTo(0.35 * w, 0.35 * w, (-0.35) * w, 0.35 * w, 0.1 * w);
+            ctx.arcTo((-0.35) * w, 0.35 * w, (-0.35) * w, (-0.35) * w, 0.1 * w);
+            ctx.arcTo((-0.35) * w, (-0.35) * w, 0.35 * w, (-0.35) * w, 0.1 * w);
+            ctx.lineTo(0, (-0.35) * w);
+            ctx.strokeStyle = '#f4f788';
+            ctx.stroke();
+            ctx.closePath();
+        }
+
+        ctx.restore();
+    }
+    place(map, objects) {
+        this.active = true;
+        this.lastRecord = Date.now();
+        this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
+        let gridPos = this.gridPos;
+        if (constant.typeLayerPairs[map[gridPos.y][gridPos.x].type].isOverlap(this.layer)) return false;
+        if (map[gridPos.y][gridPos.x].layer.isOverlap(this.layer)) return false;
+        map[gridPos.y][gridPos.x].layer.add(this.layer);
+        if (map[gridPos.y][gridPos.x].layer.status[2]) {
+            for (let i = 0; i < objects.length; i++) {
+                if (objects[i].gridPos.equal(gridPos) && objects[i].layer.top() === 2) {
+                    this.loadObject = {
+                        id: objects[i].id,
+                        object: objects[i],
+                    };
+                    break;
+                }
+            }
+        }
+        return true;
+    }
+    remove(map, objects = null) {
+        this.active = false;
+        let gridPos = this.gridPos;
+        map[gridPos.y][gridPos.x].layer.sub(this.layer);
+    }
+}
+
+/* 移動平台-矩形 */
+export class movingPlatform_rect {
+    constructor(pos = new Vec2(0, 0)) {
+        this.type = 'movingPlatform_rect';
+        this.id = uuidv4();
+        this.pos = pos;
+        this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
+
+        this.detail = {
+            name: 'movingPlatform_rect',
+            clockwise: 'clockwise',
+            width: 1,
+            height: 1,
+            speed: 'normal',
+        };
+
+        this.loadable = true;
+        this.loadObject = null;
+
+        this.lastRecord = Date.now();
+        this.active = false;
+        this.perspective = false;
+
+        this.layer = new Layer(0, 1);
+    }
+    clone() {
+        const cloneObject = new movingPlatform_rect();
+        cloneObject.unpackage(this.enpackage());
+        return cloneObject;
+    }
+    setPerspective(perspective) {
+        this.perspective = perspective;
+    }
+    detailFunction() {
+        return {
+            name: { type: 'text' },
+            clockwise: { type: 'select', options: ['clockwise', 'counterclockwise'] },
+            width: { type: 'int', min: 1, max: 31 },
+            height: { type: 'int', min: 1, max: 15 },
+            speed: { type: 'select', options: ['super slow', 'slow', 'normal', 'fast', 'super fast'] }
+        };
+    }
+    enpackage() {
+        return {
+            type: this.type,
+            id: this.id,
+            gridPos: { x: this.gridPos.x, y: this.gridPos.y },
+
+            name: this.detail.name,
+            start: this.detail.start,
+            width: this.detail.width,
+            height: this.detail.height,
+            speed: this.detail.speed,
+        };
+    }
+    unpackage(objectSetting) {
+        this.type = objectSetting.type;
+        this.id = objectSetting.id;
+        this.gridPos = new Vec2(objectSetting.gridPos.x, objectSetting.gridPos.y);
+        this.pos = this.gridPos.mul(w).add(constant.mapStart).add(new Vec2(0.5 * w, 0.5 * w));
+
+        this.detail.name = objectSetting.name;
+        this.detail.start = objectSetting.start;
+        this.detail.width = objectSetting.width;
+        this.detail.height = objectSetting.height;
+        this.detail.speed = objectSetting.speed;
+
+        this.perspective = true;
+    }
+    update(objects = null) {
+        const parameters = {
+            'super slow': 4000, 'slow': 2000, 'normal': 1000, 'fast': 500, 'super fast': 200,
+        };
+        const originPos = this.gridPos.mul(w).add(constant.mapStart).add(new Vec2(0.5 * w, 0.5 * w));
+        let totalDist = this.detail.width * 2 + this.detail.height * 2;
+        let cycleList = (this.detail.clockwise === 'clockwise') ?
+            [0, this.detail.height / totalDist, (this.detail.height + this.detail.width) / totalDist, (2 * this.detail.height + this.detail.width) / totalDist] :
+            [0, this.detail.width / totalDist, (this.detail.height + this.detail.width) / totalDist, (this.detail.height + 2 * this.detail.width) / totalDist];
+        let pointList = (this.detail.clockwise === 'clockwise') ?
+            [originPos, originPos.add(new Vec2(0, - this.detail.height * w)), originPos.add(new Vec2(this.detail.width * w, - this.detail.height * w)), originPos.add(new Vec2(this.detail.width * w, 0))] :
+            [originPos, originPos.add(new Vec2(this.detail.width * w, 0)), originPos.add(new Vec2(this.detail.width * w, - this.detail.height * w)), originPos.add(new Vec2(0, - this.detail.height * w))]  ;
+        let moveCycle = ((Date.now() - this.lastRecord) / parameters[this.detail.speed] / totalDist) % 1;
+        if (moveCycle >= cycleList[0] && moveCycle < cycleList[1]) {
+            this.pos = pointList[0].add(pointList[1].sub(pointList[0]).mul((moveCycle - cycleList[0]) / (cycleList[1] - cycleList[0])));
+        } else if (moveCycle >= cycleList[1] && moveCycle < cycleList[2]) {
+            this.pos = pointList[1].add(pointList[2].sub(pointList[1]).mul((moveCycle - cycleList[1]) / (cycleList[2] - cycleList[1])));
+        } else if (moveCycle >= cycleList[2] && moveCycle < cycleList[3]) {
+            this.pos = pointList[2].add(pointList[3].sub(pointList[2]).mul((moveCycle - cycleList[2]) / (cycleList[3] - cycleList[2])));
+        } else {
+            this.pos = pointList[3].add(pointList[0].sub(pointList[3]).mul((moveCycle - cycleList[3]) / (1 - cycleList[3])));
+        }
+        if (this.loadObject) this.loadObject.object.pos = this.pos;
+        return { type: 'none' };
+    }
+    collision(target) {
+        switch (target.type) {
+            case 'sphere':
+                if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.7 * w, 0.7 * w) }, target)) return 'movingPlatform';
+                return 'none';
+            default:
+                return 'none';
+        }
+    }
+    draw(ctx, layer = -1) {
+        ctx.save();
+        const originPos = this.gridPos.mul(w).add(constant.mapStart).add(new Vec2(0.5 * w, 0.5 * w));
+        if (this.active) ctx.translate(originPos.x, originPos.y);
+        else ctx.translate(this.pos.x, this.pos.y);
+        ctx.globalAlpha = (this.perspective) ? 0.8 : 1;
+
+        if (layer === -1 || layer === 0) {
+            ctx.save();
+
+            ctx.beginPath();
+            ctx.rect(0, - this.detail.height * w, this.detail.width * w, this.detail.height * w);
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = '#4F4F4F';
+            ctx.stroke();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.rect(-0.1 * w, -0.1 * w, 0.2 * w, 0.2 * w);
+            ctx.fillStyle = '#4F4F4F';
+            ctx.fill();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.rect(-0.1 * w, -0.1 * w - this.detail.height * w, 0.2 * w, 0.2 * w);
+            ctx.fillStyle = '#4F4F4F';
+            ctx.fill();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.rect(-0.1 * w + this.detail.width * w, -0.1 * w - this.detail.height * w, 0.2 * w, 0.2 * w);
+            ctx.fillStyle = '#4F4F4F';
+            ctx.fill();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.rect(-0.1 * w + this.detail.width * w, -0.1 * w, 0.2 * w, 0.2 * w);
+            ctx.fillStyle = '#4F4F4F';
+            ctx.fill();
+            ctx.closePath();
+
+            ctx.restore();
+        }
+
+        if (layer === -1 || layer === 1) {
+            if (this.active) {
+                const relativePos = this.pos.sub(originPos);
+                ctx.translate(relativePos.x, relativePos.y);
+            }
+
+            ctx.beginPath();
+            ctx.moveTo(0, (-0.45) * w);
+            ctx.arcTo(0.45 * w, (-0.45) * w, 0.45 * w, 0.45 * w, 0.1 * w);
+            ctx.arcTo(0.45 * w, 0.45 * w, (-0.45) * w, 0.45 * w, 0.1 * w);
+            ctx.arcTo((-0.45) * w, 0.45 * w, (-0.45) * w, (-0.45) * w, 0.1 * w);
+            ctx.arcTo((-0.45) * w, (-0.45) * w, 0.45 * w, (-0.45) * w, 0.1 * w);
+            ctx.lineTo(0, (-0.45) * w);
+            ctx.fillStyle = '#ead48b';
+            ctx.fill();
+            ctx.strokeStyle = '#cb934d';
+            ctx.stroke();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.moveTo(0, (-0.35) * w);
+            ctx.arcTo(0.35 * w, (-0.35) * w, 0.35 * w, 0.35 * w, 0.1 * w);
+            ctx.arcTo(0.35 * w, 0.35 * w, (-0.35) * w, 0.35 * w, 0.1 * w);
+            ctx.arcTo((-0.35) * w, 0.35 * w, (-0.35) * w, (-0.35) * w, 0.1 * w);
+            ctx.arcTo((-0.35) * w, (-0.35) * w, 0.35 * w, (-0.35) * w, 0.1 * w);
+            ctx.lineTo(0, (-0.35) * w);
+            ctx.strokeStyle = '#f4f788';
+            ctx.stroke();
+            ctx.closePath();
+        }
+
+        ctx.restore();
+    }
+    place(map, objects) {
+        this.active = true;
+        this.lastRecord = Date.now();
+        this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
+        let gridPos = this.gridPos;
+        if (constant.typeLayerPairs[map[gridPos.y][gridPos.x].type].isOverlap(this.layer)) return false;
+        if (map[gridPos.y][gridPos.x].layer.isOverlap(this.layer)) return false;
+        map[gridPos.y][gridPos.x].layer.add(this.layer);
+        if (map[gridPos.y][gridPos.x].layer.status[2]) {
+            for (let i = 0; i < objects.length; i++) {
+                if (objects[i].gridPos.equal(gridPos) && objects[i].layer.top() === 2) {
+                    this.loadObject = {
+                        id: objects[i].id,
+                        object: objects[i],
+                    };
+                    break;
+                }
+            }
+        }
+        return true;
+    }
+    remove(map, objects = null) {
+        this.active = false;
         let gridPos = this.gridPos;
         map[gridPos.y][gridPos.x].layer.sub(this.layer);
     }
