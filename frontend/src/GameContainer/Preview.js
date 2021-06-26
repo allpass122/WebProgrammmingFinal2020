@@ -16,7 +16,6 @@ const Preview = (props) => {
         ctx.restore();
 
         ctx.save();
-        //ctx.translate(-constant.mapStart.x, -constant.mapStart.y);
         ctx.scale(0.1, 0.1);
         ctx.translate(-constant.mapStart.x, -constant.mapStart.y);
         for (let i = 0; i < constant.maxLayer; i++) {

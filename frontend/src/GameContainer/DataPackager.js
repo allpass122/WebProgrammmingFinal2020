@@ -1,6 +1,6 @@
 import constant from './constant';
 import Layer from './Class/Layer';
-import { spikedBlock, platform, bow, movingPlatform, mucus, cymbal, ice, conveyor, portal, trapPlatform, missileBase, lockedWall, unlocker, block, movingPlatform_oblique, movingPlatform_rect } from './Class/GameObject';
+import { spikedBlock, platform, bow, movingPlatform, mucus, cymbal, ice, conveyor, portal, trapPlatform, missileBase, lockedWall, unlocker, block, movingPlatform_oblique, movingPlatform_rect, woodenBox } from './Class/GameObject';
 
 export function enpackage(setting) {
     const levelSetting = {
@@ -86,6 +86,9 @@ export function unpackage(levelSetting) {
                 break;
             case 'movingPlatform_rect':
                 setting.objects[i] = new movingPlatform_rect();
+                break;
+            case 'woodenBox':
+                setting.objects[i] = new woodenBox();
                 break;
             default:
                 break;

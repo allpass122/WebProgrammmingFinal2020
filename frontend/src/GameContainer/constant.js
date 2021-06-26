@@ -27,7 +27,7 @@ const constant = {
 	editObjectList: {
 		platform: ['platform', 'movingPlatform', 'movingPlatform_oblique', 'movingPlatform_rect', 'trapPlatform'],
 		covering: ['mucus', 'ice', 'conveyor'],
-		obstacle: ['block', 'spikedBlock', 'bow', 'cymbal', 'missileBase'],
+		obstacle: ['block', 'spikedBlock', 'woodenBox', 'bow', 'cymbal', 'missileBase'],
 		special: ['portal', 'lockedWall', 'unlocker'],
 	},
 	editFrame: {

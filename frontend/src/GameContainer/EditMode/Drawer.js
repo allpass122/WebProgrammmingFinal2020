@@ -173,6 +173,10 @@ function Drawer(ctx, setting, status) {
 					o = new GameObject.movingPlatform_rect(new Vec2(editObjectSpace.x * (i + 0.5) - 10, editObjectSpace.y * 0.5 + 10));
 					type = 'platform';
 					break;
+				case 'woodenBox':
+					o = new GameObject.woodenBox(new Vec2(editObjectSpace.x * (i + 0.5), editObjectSpace.y * 0.5));
+					type = 'obstacle';
+					break;
 			}
 		}
 		ctx.beginPath();
@@ -258,7 +262,7 @@ function Drawer(ctx, setting, status) {
 			o2.draw(ctx);
 			ctx.textAlign = "center";
 			ctx.textBaseline = 'middle';
-			ctx.font = "15px italic";
+			ctx.font = '15px  italic';
 			ctx.strokeStyle = 'white';
 			ctx.lineWidth = 2;
 			ctx.strokeText("special", editObjectSpace.x * (i + 0.5), editObjectSpace.y * 0.5 + 18);

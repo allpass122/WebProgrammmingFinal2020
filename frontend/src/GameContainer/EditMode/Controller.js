@@ -204,6 +204,12 @@ export default function Controller(scene, status, setStatus, setting, reset) {
 							newStatus.holdDetail = newStatus.holdObject.detailFunction();
 							newStatus.holdObject.setPerspective(true);
 							break;
+						case 'woodenBox':
+							newStatus.holding = true;
+							newStatus.holdObject = new GameObject.woodenBox(new Vec2(e.offsetX, e.offsetY));
+							newStatus.holdDetail = newStatus.holdObject.detailFunction();
+							newStatus.holdObject.setPerspective(true);
+							break;
 						default:
 							break;
 					}
