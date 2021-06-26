@@ -29,7 +29,7 @@ function Drawer(ctx, setting, status) {
 		ctx.save();
 		ctx.beginPath();
 		ctx.rect(luPos.x * w, luPos.y * w, range.x * w, range.y * w);
-		ctx.setLineDash([0.5, 0,5]);
+		ctx.setLineDash([0.5, 0, 5]);
 		ctx.strokeStyle = 'black';
 		ctx.stroke();
 		ctx.closePath();
@@ -173,6 +173,22 @@ function Drawer(ctx, setting, status) {
 					o = new GameObject.movingPlatform_rect(new Vec2(editObjectSpace.x * (i + 0.5) - 10, editObjectSpace.y * 0.5 + 10));
 					type = 'platform';
 					break;
+				case 'woodenBox':
+					o = new GameObject.woodenBox(new Vec2(editObjectSpace.x * (i + 0.5), editObjectSpace.y * 0.5));
+					type = 'obstacle';
+					break;
+				case 'magnet':
+					o = new GameObject.magnet(new Vec2(editObjectSpace.x * (i + 0.5), editObjectSpace.y * 0.5));
+					type = 'special';
+					break;
+				case 'brokenPlatform':
+					o = new GameObject.brokenPlatform(new Vec2(editObjectSpace.x * (i + 0.5), editObjectSpace.y * 0.5));
+					type = 'platform';
+					break;
+				case 'deathTotem':
+					o = new GameObject.deathTotem(new Vec2(editObjectSpace.x * (i + 0.5), editObjectSpace.y * 0.5));
+					type = 'covering';
+					break;
 			}
 		}
 		ctx.beginPath();
@@ -258,7 +274,7 @@ function Drawer(ctx, setting, status) {
 			o2.draw(ctx);
 			ctx.textAlign = "center";
 			ctx.textBaseline = 'middle';
-			ctx.font = "15px italic";
+			ctx.font = '15px  italic';
 			ctx.strokeStyle = 'white';
 			ctx.lineWidth = 2;
 			ctx.strokeText("special", editObjectSpace.x * (i + 0.5), editObjectSpace.y * 0.5 + 18);

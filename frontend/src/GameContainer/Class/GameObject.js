@@ -90,18 +90,13 @@ export class spikedBlock {
         this.perspective = true;
     }
     collision(target) {
-        switch (target.type) {
-            case 'sphere':
-                if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(w, w) }, target)) return 'block';
-                if ((this.detail.leftSpike && isCollision({ type: 'cube', pos: this.pos.add(new Vec2(-0.625 * w, 0)), size: new Vec2(0.25 * w, 0.75 * w) }, target)) ||
-                    (this.detail.rightSpike && isCollision({ type: 'cube', pos: this.pos.add(new Vec2(0.625 * w, 0)), size: new Vec2(0.25 * w, 0.75 * w) }, target)) ||
-                    (this.detail.upSpike && isCollision({ type: 'cube', pos: this.pos.add(new Vec2(0, -0.625 * w)), size: new Vec2(0.25 * w, 0.75 * w) }, target)) ||
-                    (this.detail.downSpike && isCollision({ type: 'cube', pos: this.pos.add(new Vec2(0, 0.625 * w)), size: new Vec2(0.25 * w, 0.75 * w) }, target)))
-                    return 'spike';
-                return 'none';
-            default:
-                return 'none';
-        }
+        if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(w, w) }, target)) return 'block';
+        if ((this.detail.leftSpike && isCollision({ type: 'cube', pos: this.pos.add(new Vec2(-0.625 * w, 0)), size: new Vec2(0.25 * w, 0.75 * w) }, target)) ||
+            (this.detail.rightSpike && isCollision({ type: 'cube', pos: this.pos.add(new Vec2(0.625 * w, 0)), size: new Vec2(0.25 * w, 0.75 * w) }, target)) ||
+            (this.detail.upSpike && isCollision({ type: 'cube', pos: this.pos.add(new Vec2(0, -0.625 * w)), size: new Vec2(0.25 * w, 0.75 * w) }, target)) ||
+            (this.detail.downSpike && isCollision({ type: 'cube', pos: this.pos.add(new Vec2(0, 0.625 * w)), size: new Vec2(0.25 * w, 0.75 * w) }, target)))
+            return 'spike';
+        return 'none';
     }
     draw(ctx, layer = -1) {
         ctx.save();
@@ -240,13 +235,8 @@ export class platform {
         this.perspective = true;
     }
     collision(target) {
-        switch (target.type) {
-            case 'sphere':
-                if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.7 * w, 0.7 * w) }, target)) return 'platform';
-                return 'none';
-            default:
-                return 'none';
-        }
+        if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.7 * w, 0.7 * w) }, target)) return 'platform';
+        return 'none';
     }
     draw(ctx, layer = -1) {
         ctx.save();
@@ -328,7 +318,7 @@ export class movingPlatform {
     detailFunction() {
         return {
             name: { type: 'text' },
-            distance: { type: 'int', min: 1, max: 31 },
+            distance: { type: 'int', min: 1, max: 15 },
             direction: { type: 'select', options: ['up', 'down', 'left', 'right'] },
             speed: { type: 'select', options: ['super slow', 'slow', 'normal', 'fast', 'super fast'] }
         };
@@ -358,7 +348,7 @@ export class movingPlatform {
 
         this.perspective = true;
     }
-    update(objects = null) {
+    update(objects, map) {
         const parameters = {
             'super slow': 4000, 'slow': 2000, 'normal': 1000, 'fast': 500, 'super fast': 200,
         };
@@ -373,13 +363,8 @@ export class movingPlatform {
         return { type: 'none' };
     }
     collision(target) {
-        switch (target.type) {
-            case 'sphere':
-                if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.7 * w, 0.7 * w) }, target)) return 'movingPlatform';
-                return 'none';
-            default:
-                return 'none';
-        }
+        if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.7 * w, 0.7 * w) }, target)) return 'movingPlatform';
+        return 'none';
     }
     draw(ctx, layer = -1) {
         ctx.save();
@@ -514,7 +499,7 @@ export class bow {
         return {
             name: { type: 'text' },
             direction: { type: 'select', options: ['up', 'down', 'left', 'right'] },
-            RoF: { type: 'select', options: ['slow', 'normal', 'fast'] }
+            RoF: { type: 'select', options: ['super slow', 'slow', 'normal', 'fast', 'super fast'] }
         };
     }
     enpackage() {
@@ -540,9 +525,9 @@ export class bow {
 
         this.perspective = true;
     }
-    update(objects = null) {
+    update(objects, map) {
         const parameters = {
-            slow: 5000, normal: 3000, fast: 1000
+            'super slow': 8000, slow: 5000, normal: 3000, fast: 1000, 'super fast': 500
         }
         this.lifeCycle = (this.active) ? (Date.now() - this.lastFire) / parameters[this.detail.RoF] : 0;
         this.lifeCycle = (this.lifeCycle > 0.5) ? (this.lifeCycle - 0.5) / 0.5 : 0;
@@ -659,15 +644,21 @@ export class arrow {
     setPerspective(perspective) {
         this.perspective = perspective;
     }
-    update(objects) {
+    update(objects, map) {
         if (!this.pos.between(constant.mapStart, constant.mapStart.add(constant.mapSize.mul(w)))) return { type: 'destory' };
         for (let i = 0; i < objects.length; i++) {
             if (objects[i].id !== this.id && objects[i].collision) {
                 let result = objects[i].collision({ type: 'sphere', pos: this.pos, r: 0.1 });
-                if (result === 'ice') this.speed *= 1.05;
+                console.log(result);
+                if (result === 'ice') this.speed *= 1.03;
                 // else if (result === 'conveyor') this.detail.direction = objects[i].detail.direction;
                 else if (result === 'portal') this.pos = objects[i].teleport(objects);
                 // else if (result === 'missileRay') objects[i].fire(this);
+                else if (result === 'woodenBox') {
+                    //objects[i].push(objects, map, this.pos);
+                    return { type: 'destory' };
+                }
+                else if (result === 'magneticField') this.pos = this.pos.add(objects[i].getDisplacement());
                 else if (result === 'unlocker') objects[i].unlock(objects);
                 else if (result === 'block' || result === 'lockedWall') return { type: 'destory' };
             }
@@ -678,13 +669,8 @@ export class arrow {
         return { type: 'none' };
     }
     collision(target) {
-        switch (target.type) {
-            case 'sphere':
-                if (isCollision({ type: 'sphere', pos: this.pos, r: 0.1 }, target)) return 'arrow';
-                return 'none';
-            default:
-                return 'none';
-        }
+        if (isCollision({ type: 'sphere', pos: this.pos, r: 0.1 }, target)) return 'arrow';
+        return 'none';
     }
     draw(ctx, layer = -1) {
         ctx.save();
@@ -782,18 +768,13 @@ export class mucus {
 
         this.perspective = true;
     }
-    update(objects = null) {
+    update(objects, map) {
         if (this.loadObject) this.loadObject.object.pos = this.pos.clone();
         return { type: 'none' };
     }
     collision(target) {
-        switch (target.type) {
-            case 'sphere':
-                if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.7 * w, 0.7 * w) }, target)) return 'mucus';
-                return 'none';
-            default:
-                return 'none';
-        }
+        if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.7 * w, 0.7 * w) }, target)) return 'mucus';
+        return 'none';
     }
     draw(ctx, layer = -1) {
         ctx.save();
@@ -863,6 +844,7 @@ export class mucus {
                 }
             }
         }
+        if (this.loadObject) this.loadObject = null;
     }
 }
 
@@ -929,7 +911,7 @@ export class cymbal {
 
         this.perspective = true;
     }
-    update(objects = null) {
+    update(objects, map) {
         const parameters = {
             slow: 12000, normal: 8000, fast: 4000
         }
@@ -947,13 +929,8 @@ export class cymbal {
         } else return { type: 'none' };
     }
     collision(target) {
-        switch (target.type) {
-            case 'sphere':
-                if (isCollision({ type: 'sphere', pos: this.pos, r: 0.48 * w }, target)) return 'cymbal';
-                return 'none';
-            default:
-                return 'none';
-        }
+        if (isCollision({ type: 'sphere', pos: this.pos, r: 0.48 * w }, target)) return 'cymbal';
+        return 'none';
     }
     draw(ctx, layer = -1) {
         ctx.save();
@@ -1060,7 +1037,7 @@ export class cymbalWave {
     setPerspective(perspective) {
         this.perspective = perspective;
     }
-    update(objects) {
+    update(objects, map) {
         const parameters = {
             small: 1.5, normal: 2.5, large: 3.5
         }
@@ -1069,13 +1046,8 @@ export class cymbalWave {
         return { type: 'none' };
     }
     collision(target) {
-        switch (target.type) {
-            case 'sphere':
-                if (isCollision({ type: 'sphere', pos: this.pos, r: this.r }, target)) return 'cymbalWave';
-                return 'none';
-            default:
-                return 'none';
-        }
+        if (isCollision({ type: 'sphere', pos: this.pos, r: this.r }, target)) return 'cymbalWave';
+        return 'none';
     }
     draw(ctx, layer = -1) {
         ctx.save();
@@ -1152,13 +1124,8 @@ export class ice {
         this.perspective = true;
     }
     collision(target) {
-        switch (target.type) {
-            case 'sphere':
-                if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.7 * w, 0.7 * w) }, target)) return 'ice';
-                return 'none';
-            default:
-                return 'none';
-        }
+        if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.7 * w, 0.7 * w) }, target)) return 'ice';
+        return 'none';
     }
     draw(ctx, layer = -1) {
         ctx.save();
@@ -1279,13 +1246,8 @@ export class conveyor {
         this.perspective = true;
     }
     collision(target) {
-        switch (target.type) {
-            case 'sphere':
-                if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.7 * w, 0.7 * w) }, target)) return 'conveyor';
-                return 'none';
-            default:
-                return 'none';
-        }
+        if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.7 * w, 0.7 * w) }, target)) return 'conveyor';
+        return 'none';
     }
     draw(ctx, layer = -1) {
         ctx.save();
@@ -1425,7 +1387,7 @@ export class portal {
 
         this.perspective = true;
     }
-    update(objects) {
+    update(objects, map) {
         if (this.cooldown) {
             if (Date.now() > this.lastClose + this.cooldownTime) {
                 this.cooldown = false;
@@ -1435,13 +1397,8 @@ export class portal {
         return { type: 'none' };
     }
     collision(target) {
-        switch (target.type) {
-            case 'sphere':
-                if (this.open && isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.6 * w, 0.6 * w) }, target)) return 'portal';
-                return 'none';
-            default:
-                return 'none';
-        }
+        if (this.open && isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.6 * w, 0.6 * w) }, target)) return 'portal';
+        return 'none';
     }
     teleport(objects) {
         this.open = false;
@@ -1650,7 +1607,7 @@ export class trapPlatform {
 
         this.perspective = true;
     }
-    update(objects) {
+    update(objects, map) {
         const parameters = {
             short: 3000, normal: 6000, long: 9000
         }
@@ -1672,14 +1629,9 @@ export class trapPlatform {
         return { type: 'none' };
     }
     collision(target) {
-        switch (target.type) {
-            case 'sphere':
-                if (this.open && isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.6 * w * this.openCycle, 0.7 * w) }, target)) return 'trap';
-                if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.7 * w, 0.7 * w) }, target)) return 'platform';
-                return 'none';
-            default:
-                return 'none';
-        }
+        if (this.open && isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.6 * w * this.openCycle, 0.7 * w) }, target)) return 'trap';
+        if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.7 * w, 0.7 * w) }, target)) return 'platform';
+        return 'none';
     }
     draw(ctx, layer = -1) {
         ctx.save();
@@ -1843,7 +1795,7 @@ export class missileBase {
 
         this.perspective = true;
     }
-    update(objects) {
+    update(objects, map) {
         this.unfoldCycle = (Date.now() - this.lastFire) / this.unfoldTime;
         this.unfoldCycle = (this.unfoldCycle > 1) ? 1 : this.unfoldCycle;
         this.rotateCycle = (this.unfoldCycle === 1 && this.detail.rotate) ? (Date.now() - this.lastFire - this.unfoldTime) / 1000 * this.rotateSpeed : 0;
@@ -1862,26 +1814,21 @@ export class missileBase {
         return { type: 'none' };
     }
     collision(target) {
-        switch (target.type) {
-            case 'sphere':
-                if (isCollision({ type: 'sphere', pos: this.pos, r: 0.35 * w }, target)) return 'missileBase';
-                if (!this.find && isCollision({ type: 'sphere', pos: this.pos, r: 2.5 * w }, target)) {
-                    const parameters = {
-                        up: 1.5, down: 0.5, left: 1, right: 0,
-                    }
-                    let radian = target.pos.sub(this.pos).radian();
-                    let minRadian = ((parameters[this.detail.direction] + 2 * this.rotateCycle - this.range * this.unfoldCycle) * Math.PI) % (2 * Math.PI);
-                    let maxRadian = ((parameters[this.detail.direction] + 2 * this.rotateCycle + this.range * this.unfoldCycle) * Math.PI) % (2 * Math.PI);
-                    if (maxRadian < minRadian) {
-                        maxRadian += 2 * Math.PI;
-                        if (radian < Math.PI) radian += 2 * Math.PI;
-                    }
-                    if (radian >= minRadian && radian <= maxRadian) return 'missileRay';
-                }
-                return 'none';
-            default:
-                return 'none';
+        if (isCollision({ type: 'sphere', pos: this.pos, r: 0.35 * w }, target)) return 'missileBase';
+        if (!this.find && isCollision({ type: 'sphere', pos: this.pos, r: 2.5 * w }, target)) {
+            const parameters = {
+                up: 1.5, down: 0.5, left: 1, right: 0,
+            }
+            let radian = target.pos.sub(this.pos).radian();
+            let minRadian = ((parameters[this.detail.direction] + 2 * this.rotateCycle - this.range * this.unfoldCycle) * Math.PI) % (2 * Math.PI);
+            let maxRadian = ((parameters[this.detail.direction] + 2 * this.rotateCycle + this.range * this.unfoldCycle) * Math.PI) % (2 * Math.PI);
+            if (maxRadian < minRadian) {
+                maxRadian += 2 * Math.PI;
+                if (radian < Math.PI) radian += 2 * Math.PI;
+            }
+            if (radian >= minRadian && radian <= maxRadian) return 'missileRay';
         }
+        return 'none';
     }
     fire(target) {
         this.find = true;
@@ -2013,7 +1960,7 @@ export class missile {
     setPerspective(perspective) {
         this.perspective = perspective;
     }
-    update(objects) {
+    update(objects, map) {
         if (!this.pos.between(constant.mapStart, constant.mapStart.add(constant.mapSize.mul(w)))) return { type: 'destory' };
         for (let i = 0; i < objects.length; i++) {
             if (objects[i].id !== this.id && objects[i].collision) {
@@ -2025,6 +1972,11 @@ export class missile {
                 else if (result === 'missile') return { type: 'destory' };
                 else if (result === 'block') return { type: 'destory' };
                 else if (result === 'lockedWall') return { type: 'destory' };
+                else if (result === 'woodenBox') {
+                    objects[i].push(objects, map, this.pos);
+                    return { type: 'destory' };
+                }
+                else if (result === 'magneticField') this.pos = this.pos.add(objects[i].getDisplacement());
             }
         }
         this.dirVec = this.target.pos.sub(this.pos).unit();
@@ -2033,13 +1985,8 @@ export class missile {
         return { type: 'none' };
     }
     collision(target) {
-        switch (target.type) {
-            case 'sphere':
-                if (isCollision({ type: 'sphere', pos: this.pos, r: 0.2 * w }, target)) return 'missile';
-                return 'none';
-            default:
-                return 'none';
-        }
+        if (isCollision({ type: 'sphere', pos: this.pos, r: 0.2 * w }, target)) return 'missile';
+        return 'none';
     }
     draw(ctx, layer = -1) {
         ctx.save();
@@ -2168,16 +2115,11 @@ export class lockedWall {
         this.perspective = true;
     }
     collision(target) {
-        switch (target.type) {
-            case 'sphere':
-                const parameters = {
-                    horizontal: new Vec2(w, 0.4 * w), vertical: new Vec2(0.4 * w, w),
-                };
-                if (this.locked && isCollision({ type: 'cube', pos: this.pos, size: parameters[this.detail.direction] }, target)) return 'lockedWall';
-                return 'none';
-            default:
-                return 'none';
-        }
+        const parameters = {
+            horizontal: new Vec2(w, 0.4 * w), vertical: new Vec2(0.4 * w, w),
+        };
+        if (this.locked && isCollision({ type: 'cube', pos: this.pos, size: parameters[this.detail.direction] }, target)) return 'lockedWall';
+        return 'none';
     }
     draw(ctx, layer = -1) {
         if (!this.locked) return;
@@ -2307,13 +2249,8 @@ export class unlocker {
         this.perspective = true;
     }
     collision(target) {
-        switch (target.type) {
-            case 'sphere':
-                if (!this.used && isCollision({ type: 'sphere', pos: this.pos, r: 0.35 * w }, target)) return 'unlocker';
-                return 'none';
-            default:
-                return 'none';
-        }
+        if (!this.used && isCollision({ type: 'sphere', pos: this.pos, r: 0.35 * w }, target)) return 'unlocker';
+        return 'none';
     }
     unlock(objects) {
         for (let i = 0; i < objects.length; i++) {
@@ -2440,13 +2377,8 @@ export class block {
         this.perspective = true;
     }
     collision(target) {
-        switch (target.type) {
-            case 'sphere':
-                if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(w, w) }, target)) return 'block';
-                return 'none';
-            default:
-                return 'none';
-        }
+        if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(w, w) }, target)) return 'block';
+        return 'none';
     }
     draw(ctx, layer = -1) {
         ctx.save();
@@ -2575,7 +2507,7 @@ export class movingPlatform_oblique {
 
         this.perspective = true;
     }
-    update(objects = null) {
+    update(objects, map) {
         const parameters = {
             'super slow': 5600, 'slow': 2800, 'normal': 1400, 'fast': 700, 'super fast': 280,
         };
@@ -2590,13 +2522,8 @@ export class movingPlatform_oblique {
         return { type: 'none' };
     }
     collision(target) {
-        switch (target.type) {
-            case 'sphere':
-                if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.7 * w, 0.7 * w) }, target)) return 'movingPlatform';
-                return 'none';
-            default:
-                return 'none';
-        }
+        if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.7 * w, 0.7 * w) }, target)) return 'movingPlatform';
+        return 'none';
     }
     draw(ctx, layer = -1) {
         ctx.save();
@@ -2705,7 +2632,7 @@ export class movingPlatform_rect {
 
         this.detail = {
             name: 'movingPlatform_rect',
-            clockwise: 'clockwise',
+            clock: 'clockwise',
             width: 1,
             height: 1,
             speed: 'normal',
@@ -2731,8 +2658,8 @@ export class movingPlatform_rect {
     detailFunction() {
         return {
             name: { type: 'text' },
-            clockwise: { type: 'select', options: ['clockwise', 'counterclockwise'] },
-            width: { type: 'int', min: 1, max: 31 },
+            clock: { type: 'select', options: ['clockwise', 'counterclockwise'] },
+            width: { type: 'int', min: 1, max: 15 },
             height: { type: 'int', min: 1, max: 15 },
             speed: { type: 'select', options: ['super slow', 'slow', 'normal', 'fast', 'super fast'] }
         };
@@ -2744,7 +2671,7 @@ export class movingPlatform_rect {
             gridPos: { x: this.gridPos.x, y: this.gridPos.y },
 
             name: this.detail.name,
-            start: this.detail.start,
+            clock: this.detail.clock,
             width: this.detail.width,
             height: this.detail.height,
             speed: this.detail.speed,
@@ -2764,7 +2691,7 @@ export class movingPlatform_rect {
 
         this.perspective = true;
     }
-    update(objects = null) {
+    update(objects, map) {
         const parameters = {
             'super slow': 4000, 'slow': 2000, 'normal': 1000, 'fast': 500, 'super fast': 200,
         };
@@ -2790,13 +2717,8 @@ export class movingPlatform_rect {
         return { type: 'none' };
     }
     collision(target) {
-        switch (target.type) {
-            case 'sphere':
-                if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.7 * w, 0.7 * w) }, target)) return 'movingPlatform';
-                return 'none';
-            default:
-                return 'none';
-        }
+        if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.7 * w, 0.7 * w) }, target)) return 'movingPlatform';
+        return 'none';
     }
     draw(ctx, layer = -1) {
         ctx.save();
@@ -2900,5 +2822,778 @@ export class movingPlatform_rect {
         this.active = false;
         let gridPos = this.gridPos;
         map[gridPos.y][gridPos.x].layer.sub(this.layer);
+    }
+}
+
+/* 木箱 */
+export class woodenBox {
+    constructor(pos = new Vec2(0, 0)) {
+        this.type = 'woodenBox';
+        this.id = uuidv4();
+        this.pos = pos;
+        this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
+
+        this.detail = {
+            name: 'woodenBox',
+        };
+
+        this.loadable = false;
+
+        this.perspective = false;
+
+        this.moveTo = 'none';
+        this.moveTime = 500;
+        this.moveCycle = 0;
+        this.lastRecord = 0;
+
+        this.layer = new Layer(3);
+    }
+    clone() {
+        const cloneObject = new woodenBox();
+        cloneObject.unpackage(this.enpackage());
+        return cloneObject;
+    }
+    setPerspective(perspective) {
+        this.perspective = perspective;
+    }
+    detailFunction() {
+        return {
+            name: { type: 'text' },
+        };
+    }
+    enpackage() {
+        return {
+            type: this.type,
+            id: this.id,
+            gridPos: { x: this.gridPos.x, y: this.gridPos.y },
+
+            name: this.detail.name,
+        };
+    }
+    unpackage(objectSetting) {
+        this.type = objectSetting.type;
+        this.id = objectSetting.id;
+        this.gridPos = new Vec2(objectSetting.gridPos.x, objectSetting.gridPos.y);
+        this.pos = this.gridPos.mul(w).add(constant.mapStart).add(new Vec2(0.5 * w, 0.5 * w));
+
+        this.detail.name = objectSetting.name;
+
+        this.perspective = true;
+    }
+    update(objects, map) {
+        if (this.moveTo !== 'none') {
+            let moveRate = (Date.now() - this.lastRecord) / this.moveTime;
+            this.moveCycle += moveRate;
+            this.lastRecord = Date.now();
+            this.pos = this.pos.add(Vec2.direction(this.moveTo).mul(w * moveRate));
+            if (this.moveCycle >= 1) {
+                this.moveTo = 'none';
+                this.pos = this.pos.sub(constant.mapStart).toGrid(w).mul(w).add(constant.mapStart).add(new Vec2(0.5 * w, 0.5 * w));
+            }
+        } else {
+            let gridPos = this.pos.sub(constant.mapStart).toGrid(w);
+            for (let i = 0; i < objects.length; i++) {
+                if (objects[i].id !== this.id && objects[i].collision) {
+                    let result = objects[i].collision({ type: 'sphere', pos: this.pos, r: 0.1 });
+                    if (result === 'brokenPlatform') objects[i].break();
+                    if (result === 'conveyor') {
+                        this.pos = objects[i].pos.clone();
+                        this.push(objects, map, this.pos.sub(Vec2.direction(objects[i].detail.direction)));
+                        break;
+                    } else if (result === 'magneticField') {
+                        this.push(objects, map, this.pos.sub(objects[i].getDisplacement()));
+                        break;
+                    } else if (result === 'mucus' && !objects[i].loadObject) {
+                        objects[i].loadObject = {
+                            id: this.id,
+                            object: this,
+                        };
+                        map[this.gridPos.y][this.gridPos.x].layer.status[3] = false;
+                    }
+                    
+                }
+            }
+        }
+        return { type: 'none' };
+    }
+    collision(target) {
+        if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(w, w) }, target)) return 'woodenBox';
+        return 'none';
+    }
+    push(objects, map, targetPos) {
+        if (this.moveTo !== 'none') return;
+        let gridPos = this.pos.sub(constant.mapStart).toGrid(w);
+        let radian = targetPos.sub(this.pos).radian();
+        if (radian >= 0.25 * Math.PI && radian < 0.75 * Math.PI) { // 上
+            if (gridPos.y === 0 || map[gridPos.y - 1][gridPos.x].type === 'block') return;
+            for (let i = 0; i < objects.length; i++) {
+                let searchGridPos = objects[i].pos.sub(constant.mapStart).toGrid(w);
+                if (searchGridPos.equal(new Vec2(gridPos.x, gridPos.y - 1)) && objects[i].layer.status[3]) return;
+            }
+            this.moveTo = 'up';
+        } else if (radian >= 1.75 * Math.PI || radian < 0.25 * Math.PI) { // 左
+            if (gridPos.x === 0 || map[gridPos.y][gridPos.x - 1].type === 'block') return;
+            for (let i = 0; i < objects.length; i++) {
+                let searchGridPos = objects[i].pos.sub(constant.mapStart).toGrid(w);
+                if (searchGridPos.equal(new Vec2(gridPos.x - 1, gridPos.y)) && objects[i].layer.status[3]) return;
+            }
+            this.moveTo = 'left';
+        } else if (radian >= 1.25 * Math.PI && radian < 1.75 * Math.PI) { // 下
+            if (gridPos.y === constant.mapSize.y - 1 || map[gridPos.y + 1][gridPos.x].type === 'block') return;
+            for (let i = 0; i < objects.length; i++) {
+                let searchGridPos = objects[i].pos.sub(constant.mapStart).toGrid(w);
+                if (searchGridPos.equal(new Vec2(gridPos.x, gridPos.y + 1)) && objects[i].layer.status[3]) return;
+            }
+            this.moveTo = 'down';
+        } else { // 右
+            if (gridPos.x === constant.mapSize.x - 1 || map[gridPos.y][gridPos.x + 1].type === 'block') return;
+            for (let i = 0; i < objects.length; i++) {
+                let searchGridPos = objects[i].pos.sub(constant.mapStart).toGrid(w);
+                if (searchGridPos.equal(new Vec2(gridPos.x + 1, gridPos.y)) && objects[i].layer.status[3]) return;
+            }
+            this.moveTo = 'right';
+        }
+        map[this.gridPos.y][this.gridPos.x].layer.status[3] = false;
+        for (let i = 0; i < objects.length; i++) {
+            if (objects[i].type === 'mucus') {
+                if (objects[i].loadObject && objects[i].loadObject.id === this.id) {
+                    objects[i].loadObject = null;
+                    this.pos = this.pos.sub(constant.mapStart).toGrid(w).mul(w).add(constant.mapStart).add(new Vec2(0.5 * w, 0.5 * w));
+                }
+            }
+        }
+        this.moveCycle = 0;
+        this.lastRecord = Date.now();
+    }
+    draw(ctx, layer = -1) {
+        ctx.save();
+        ctx.translate(this.pos.x, this.pos.y);
+        ctx.globalAlpha = (this.perspective) ? 0.7 : 1;
+        ctx.lineWidth = 1;
+
+        ctx.beginPath();
+        ctx.rect(-0.45 * w, -0.4 * w, 0.9 * w, 0.8 * w);
+        ctx.fillStyle = '#e4b95e';
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.beginPath();
+        ctx.rect(-0.5 * w, -0.5 * w, w, 0.1 * w);
+        ctx.fillStyle = '#dab25d';
+        ctx.fill();
+        ctx.strokeStyle = '#806938';
+        ctx.stroke();
+        ctx.closePath();
+
+        ctx.beginPath();
+        ctx.rect(-0.5 * w, 0.4 * w, w, 0.1 * w);
+        ctx.fillStyle = '#dab25d';
+        ctx.fill();
+        ctx.strokeStyle = '#806938';
+        ctx.stroke();
+        ctx.closePath();
+
+        for (let i = 0; i < 7; i++) {
+            ctx.beginPath();
+            ctx.moveTo((-0.45 + i * 0.15) * w, -0.4 * w);
+            ctx.lineTo((-0.45 + i * 0.15) * w, 0.4 * w);
+            ctx.strokeStyle = '#806938';
+            ctx.stroke();
+            ctx.closePath();
+        }
+
+        ctx.restore();
+    }
+    place(map, objects = null) {
+        this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
+        let gridPos = this.gridPos;
+        if (constant.typeLayerPairs[map[gridPos.y][gridPos.x].type].isOverlap(this.layer)) return false;
+        if (map[gridPos.y][gridPos.x].layer.isOverlap(this.layer)) return false;
+        map[gridPos.y][gridPos.x].layer.add(this.layer);
+        if (map[gridPos.y][gridPos.x].layer.status[2]) {
+            for (let i = 0; i < objects.length; i++) {
+                if (objects[i].gridPos.equal(gridPos) && objects[i].layer.top() === 2) {
+                    if (objects[i].loadable) {
+                        objects[i].loadObject = {
+                            id: this.id,
+                            object: this,
+                        };
+                    }
+                    break;
+                }
+            }
+        }
+        return true;
+    }
+    remove(map, objects = null) {
+        let gridPos = this.gridPos;
+        map[gridPos.y][gridPos.x].layer.sub(this.layer);
+        for (let i = 0; i < objects.length; i++) {
+            if (objects[i].layer.top() === 2) {
+                if (objects[i].loadObject && objects[i].loadObject.id === this.id) {
+                    objects[i].loadObject = null;
+                    break;
+                }
+            }
+        }
+    }
+}
+
+/* 磁鐵 */
+export class magnet {
+    constructor(pos = new Vec2(0, 0)) {
+        this.type = 'magnet';
+        this.id = uuidv4();
+        this.pos = pos;
+        this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
+
+        this.detail = {
+            name: 'magnet',
+            direction: 'up',
+            magneticField: 'attraction',
+            distance: 3,
+        };
+
+        this.loadable = false;
+
+        this.active = false;
+        this.perspective = false;
+
+        this.lastRecord = 0;
+
+        this.layer = new Layer(4);
+    }
+    clone() {
+        const cloneObject = new magnet();
+        cloneObject.unpackage(this.enpackage());
+        return cloneObject;
+    }
+    setPerspective(perspective) {
+        this.perspective = perspective;
+    }
+    detailFunction() {
+        return {
+            name: { type: 'text' },
+            direction: { type: 'select', options: ['up', 'down', 'left', 'right'] },
+            magneticField: { type: 'select', options: ['attraction', 'repulsion'] },
+            distance: { type: 'int', min: 1, max: 15 },
+        };
+    }
+    enpackage() {
+        return {
+            type: this.type,
+            id: this.id,
+            gridPos: { x: this.gridPos.x, y: this.gridPos.y },
+
+            name: this.detail.name,
+            direction: this.detail.direction,
+            magneticField: this.detail.magneticField,
+            distance: this.detail.distance,
+        };
+    }
+    unpackage(objectSetting) {
+        this.type = objectSetting.type;
+        this.id = objectSetting.id;
+        this.gridPos = new Vec2(objectSetting.gridPos.x, objectSetting.gridPos.y);
+        this.pos = this.gridPos.mul(w).add(constant.mapStart).add(new Vec2(0.5 * w, 0.5 * w));
+
+        this.detail.name = objectSetting.name;
+        this.detail.direction = objectSetting.direction;
+        this.detail.magneticField = objectSetting.magneticField;
+        this.detail.distance = objectSetting.distance;
+
+        this.perspective = true;
+    }
+    update(objects, map) {
+        if (Date.now() - this.lastRecord > 1000) this.lastRecord = Date.now();
+        return { type: 'none' };
+    }
+    collision(target) {
+        let dirVec = Vec2.direction(this.detail.direction).mul(w * this.detail.distance / 2);
+        let size = (this.detail.direction === 'up' || this.detail.direction === 'down') ? new Vec2(w, this.detail.distance * w + 0.5 * w) : new Vec2(this.detail.distance * w + 0.5 * w, w) ;
+        if (isCollision({ type: 'cube', pos: this.pos.add(dirVec), size: size }, target)) return 'magneticField';
+        return 'none';
+    }
+    getDisplacement() {
+        return Vec2.direction(this.detail.direction).mul((this.detail.magneticField === 'attraction')? -1: 1).mul(w * 0.01);
+    }
+    draw(ctx, layer = -1) {
+        ctx.save();
+        ctx.translate(this.pos.x, this.pos.y);
+        ctx.globalAlpha = (this.perspective) ? 0.8 : 1;
+        let dir = this.detail.direction;
+        ctx.rotate((dir === 'up') ? 0 : (dir === 'down') ? Math.PI : (dir === 'left') ? 1.5 * Math.PI : 0.5 * Math.PI);
+
+        ctx.beginPath();
+        ctx.moveTo(0.4 * w, -0.4 * w);
+        ctx.arc(0, 0, 0.4 * w, 0, Math.PI);
+        ctx.lineTo(-0.4 * w, -0.4 * w);
+        ctx.lineTo(-0.2 * w, -0.4 * w);
+        ctx.lineTo(-0.2 * w, 0);
+        ctx.arc(0, 0, 0.2 * w, Math.PI, 0, true);
+        ctx.lineTo(0.2 * w, -0.4 * w);
+        ctx.lineTo(0.4 * w, -0.4 * w);
+        ctx.fillStyle = '#43315e';
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.beginPath();
+        ctx.rect(-0.38 * w, -0.4 * w, 0.16 * w, 0.3 * w);
+        ctx.fillStyle = 'red';
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.textAlign = "center";
+        ctx.textBaseline = 'middle';
+        ctx.font = "5px italic";
+        ctx.fillStyle = 'white';
+        ctx.fillText("N", -0.3 * w, -0.25 * w);
+
+        ctx.beginPath();
+        ctx.rect(0.22 * w, -0.4 * w, 0.16 * w, 0.3 * w);
+        ctx.fillStyle = 'blue';
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.textAlign = "center";
+        ctx.textBaseline = 'middle';
+        ctx.font = "6px italic";
+        ctx.fillStyle = 'white';
+        ctx.fillText("S", 0.3 * w, -0.25 * w);
+
+        ctx.beginPath();
+        ctx.moveTo(0.4 * w, -0.4 * w);
+        ctx.arc(0, 0, 0.4 * w, 0, Math.PI);
+        ctx.lineTo(-0.4 * w, -0.4 * w);
+        ctx.lineTo(-0.2 * w, -0.4 * w);
+        ctx.lineTo(-0.2 * w, 0);
+        ctx.arc(0, 0, 0.2 * w, Math.PI, 0, true);
+        ctx.lineTo(0.2 * w, -0.4 * w);
+        ctx.lineTo(0.4 * w, -0.4 * w);
+        ctx.strokeStyle = 'black';
+        ctx.stroke();
+        ctx.closePath();
+
+        if (this.active) {
+            ctx.beginPath();
+            ctx.rect(-0.5 * w, -0.5 * w - w * this.detail.distance, w, w * this.detail.distance);
+            ctx.clip();
+            ctx.closePath();
+
+            ctx.globalAlpha = 0.3;
+            ctx.translate(0, w * (Date.now() - this.lastRecord) / 1000 * ((this.detail.magneticField == 'repulsion') ? -1 : 1));
+
+            ctx.beginPath();
+            ctx.moveTo(-0.3 * w, 0.5 * w);
+            ctx.lineTo(-0.3 * w, 0.5 * w - w * this.detail.distance - 2 * w);
+            ctx.setLineDash([0.5, 0, 5]);
+            ctx.strokeStyle = 'gray';
+            ctx.stroke();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.moveTo(0, 0.5 * w);
+            ctx.lineTo(0, 0.5 * w - w * this.detail.distance - 2 * w);
+            ctx.setLineDash([0.5, 0, 5]);
+            ctx.strokeStyle = 'gray';
+            ctx.stroke();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.moveTo(0.3 * w, 0.5 * w);
+            ctx.lineTo(0.3 * w, 0.5 * w - w * this.detail.distance - 2 * w);
+            ctx.setLineDash([0.5, 0, 5]);
+            ctx.strokeStyle = 'gray';
+            ctx.stroke();
+            ctx.closePath();
+        }
+
+        ctx.restore();
+    }
+    place(map, objects = null) {
+        this.active = true;
+        this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
+        let gridPos = this.gridPos;
+        if (constant.typeLayerPairs[map[gridPos.y][gridPos.x].type].isOverlap(this.layer)) return false;
+        if (map[gridPos.y][gridPos.x].layer.isOverlap(this.layer)) return false;
+        map[gridPos.y][gridPos.x].layer.add(this.layer);
+        this.lastRecord = Date.now();
+        return true;
+    }
+    remove(map, objects = null) {
+        this.active = false;
+        let gridPos = this.gridPos;
+        map[gridPos.y][gridPos.x].layer.sub(this.layer);
+    }
+}
+
+/* 破碎平台 */
+export class brokenPlatform {
+    constructor(pos = new Vec2(0, 0)) {
+        this.type = 'brokenPlatform';
+        this.id = uuidv4();
+        this.pos = pos;
+        this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
+
+        this.detail = {
+            name: 'brokenPlatform'
+        };
+
+        this.loadable = false;
+
+        this.perspective = false;
+
+        this.lastRecord = 0;
+        this.stage = 0;
+        this.count = 0;
+        this.stageCount = 200;
+
+        this.layer = new Layer(1, 2);
+    }
+    clone() {
+        const cloneObject = new brokenPlatform();
+        cloneObject.unpackage(this.enpackage());
+        return cloneObject;
+    }
+    setPerspective(perspective) {
+        this.perspective = perspective;
+    }
+    detailFunction() {
+        return {
+            name: { type: 'text' }
+        };
+    }
+    enpackage() {
+        return {
+            type: this.type,
+            id: this.id,
+            gridPos: { x: this.gridPos.x, y: this.gridPos.y },
+
+            name: this.detail.name,
+        };
+    }
+    unpackage(objectSetting) {
+        this.type = objectSetting.type;
+        this.id = objectSetting.id;
+        this.gridPos = new Vec2(objectSetting.gridPos.x, objectSetting.gridPos.y);
+        this.pos = this.gridPos.mul(w).add(constant.mapStart).add(new Vec2(0.5 * w, 0.5 * w));
+
+        this.detail.name = objectSetting.name;
+
+        this.perspective = true;
+    }
+    update(objects, map) {
+        if (this.count >= this.stageCount && this.stage < 4) {
+            this.count = 0;
+            this.stage += 1;
+        }
+        return { type: 'none' };
+    }
+    collision(target) {
+        if (this.stage < 4 && isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.7 * w, 0.7 * w) }, target)) return 'brokenPlatform';
+        return 'none';
+    }
+    break() {
+        this.count += 1;
+    }
+    draw(ctx, layer = -1) {
+        if (this.stage === 4) return;
+
+        ctx.save();
+        ctx.translate(this.pos.x, this.pos.y);
+        ctx.globalAlpha = (this.perspective) ? 0.8 : 1;
+
+        ctx.beginPath();
+        ctx.moveTo(0, (-0.45) * w);
+        ctx.arcTo(0.45 * w, (-0.45) * w, 0.45 * w, 0.45 * w, 0.1 * w);
+        ctx.arcTo(0.45 * w, 0.45 * w, (-0.45) * w, 0.45 * w, 0.1 * w);
+        ctx.arcTo((-0.45) * w, 0.45 * w, (-0.45) * w, (-0.45) * w, 0.1 * w);
+        ctx.arcTo((-0.45) * w, (-0.45) * w, 0.45 * w, (-0.45) * w, 0.1 * w);
+        ctx.lineTo(0, (-0.45) * w);
+        ctx.fillStyle = '#D0D0D0';
+        ctx.fill();
+        ctx.strokeStyle = '#ADADAD';
+        ctx.stroke();
+        ctx.closePath();
+
+        ctx.beginPath();
+        ctx.moveTo(0, (-0.35) * w);
+        ctx.arcTo(0.35 * w, (-0.35) * w, 0.35 * w, 0.35 * w, 0.1 * w);
+        ctx.arcTo(0.35 * w, 0.35 * w, (-0.35) * w, 0.35 * w, 0.1 * w);
+        ctx.arcTo((-0.35) * w, 0.35 * w, (-0.35) * w, (-0.35) * w, 0.1 * w);
+        ctx.arcTo((-0.35) * w, (-0.35) * w, 0.35 * w, (-0.35) * w, 0.1 * w);
+        ctx.lineTo(0, (-0.35) * w);
+        ctx.strokeStyle = '#F0F0F0';
+        ctx.stroke();
+        ctx.closePath();
+
+        if (this.stage > 0) {
+            ctx.strokeStyle = '#ADADAD';
+            ctx.lineWidth = 2;
+
+            ctx.beginPath();
+            ctx.moveTo(0.1 * w, -0.45 * w);
+            ctx.lineTo(0.05 * w, -0.35 * w);
+            ctx.lineTo(0.15 * w, -0.25 * w);
+            ctx.stroke();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.moveTo(-0.45 * w, 0.15 * w);
+            ctx.lineTo(-0.35 * w, -0.05 * w);
+            ctx.lineTo(-0.25 * w, 0.05 * w);
+            ctx.lineTo(-0.15 * w, -0.15 * w);
+            ctx.stroke();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.moveTo(0.15 * w, 0.45 * w);
+            ctx.lineTo(0.25 * w, 0.4 * w);
+            ctx.lineTo(0.2 * w, 0.3 * w);
+            ctx.lineTo(0.35 * w, 0.1 * w);
+            ctx.stroke();
+            ctx.closePath();
+        }
+
+        if (this.stage > 1) {
+            ctx.strokeStyle = '#ADADAD';
+
+            ctx.beginPath();
+            ctx.moveTo(-0.15 * w, 0.45 * w);
+            ctx.lineTo(0 * w, 0.35 * w);
+            ctx.lineTo(-0.1 * w, 0.25 * w);
+            ctx.stroke();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.moveTo(0.45 * w, -0.3 * w);
+            ctx.lineTo(0.35 * w, -0.2 * w);
+            ctx.lineTo(0.3 * w, -0.05 * w);
+            ctx.lineTo(0.1 * w, -0.15 * w);
+            ctx.lineTo(-0.1 * w, 0.05 * w);
+            ctx.stroke();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.moveTo(-0.35 * w, -0.45 * w);
+            ctx.lineTo(-0.2 * w, -0.3 * w);
+            ctx.stroke();
+            ctx.closePath();
+        }
+
+        if (this.stage > 2) {
+            ctx.strokeStyle = '#ADADAD';
+
+            ctx.beginPath();
+            ctx.moveTo(-0.45 * w, 0.37 * w);
+            ctx.lineTo(-0.36 * w, 0.3 * w);
+            ctx.lineTo(-0.23 * w, 0.35 * w);
+            ctx.lineTo(-0.01 * w, 0.09 * w);
+            ctx.lineTo(0.23 * w, 0.21 * w);
+            ctx.stroke();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.moveTo(-0.45 * w, 0.21 * w);
+            ctx.lineTo(-0.2 * w, 0.16 * w);
+            ctx.lineTo(-0.02 * w, -0.02 * w);
+            ctx.stroke();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.moveTo(-0.05 * w, -0.45 * w);
+            ctx.lineTo(-0.18 * w, -0.36 * w);
+            ctx.lineTo(0.03 * w, -0.28 * w);
+            ctx.lineTo(-0.28 * w, -0.16 * w);
+            ctx.lineTo(-0.38 * w, -0.25 * w);
+            ctx.stroke();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.moveTo(0.34 * w, -0.45 * w);
+            ctx.lineTo(0.27 * w, -0.32 * w);
+            ctx.lineTo(0.3 * w, -0.09 * w);
+            ctx.stroke();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.moveTo(0.45 * w, 0.31 * w);
+            ctx.lineTo(0.4 * w, 0.14 * w);
+            ctx.lineTo(0.3 * w, 0.22 * w);
+            ctx.stroke();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.moveTo(0.45 * w, 0.01 * w);
+            ctx.lineTo(0.2 * w, 0.03 * w);
+            ctx.stroke();
+            ctx.closePath();
+        }
+
+        ctx.restore();
+    }
+    place(map, objects = null) {
+        this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
+        let gridPos = this.gridPos;
+        if (constant.typeLayerPairs[map[gridPos.y][gridPos.x].type].isOverlap(this.layer)) return false;
+        if (map[gridPos.y][gridPos.x].layer.isOverlap(this.layer)) return false;
+        map[gridPos.y][gridPos.x].layer.add(this.layer);
+        return true;
+    }
+    remove(map, objects = null) {
+        let gridPos = this.gridPos;
+        map[gridPos.y][gridPos.x].layer.sub(this.layer);
+    }
+}
+
+/* 死亡圖騰 */
+export class deathTotem {
+    constructor(pos = new Vec2(0, 0)) {
+        this.type = 'deathTotem';
+        this.id = uuidv4();
+        this.pos = pos;
+        this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
+
+        this.detail = {
+            name: 'deathTotem'
+        };
+
+        this.loadable = false;
+
+        this.perspective = false;
+
+        this.layer = new Layer(2);
+    }
+    clone() {
+        const cloneObject = new deathTotem();
+        cloneObject.unpackage(this.enpackage());
+        return cloneObject;
+    }
+    setPerspective(perspective) {
+        this.perspective = perspective;
+    }
+    detailFunction() {
+        return {
+            name: { type: 'text' }
+        };
+    }
+    enpackage() {
+        return {
+            type: this.type,
+            id: this.id,
+            gridPos: { x: this.gridPos.x, y: this.gridPos.y },
+
+            name: this.detail.name,
+        };
+    }
+    unpackage(objectSetting) {
+        this.type = objectSetting.type;
+        this.id = objectSetting.id;
+        this.gridPos = new Vec2(objectSetting.gridPos.x, objectSetting.gridPos.y);
+        this.pos = this.gridPos.mul(w).add(constant.mapStart).add(new Vec2(0.5 * w, 0.5 * w));
+
+        this.detail.name = objectSetting.name;
+
+        this.perspective = true;
+    }
+    collision(target) {
+        if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.7 * w, 0.7 * w) }, target)) return 'deathTotem';
+        return 'none';
+    }
+    draw(ctx, layer = -1) {
+        ctx.save();
+        ctx.translate(this.pos.x, this.pos.y);
+        ctx.globalAlpha = (this.perspective) ? 0.8 : 1;
+
+        ctx.beginPath();
+        ctx.moveTo(0, (-0.35) * w);
+        ctx.arcTo(0.35 * w, (-0.35) * w, 0.35 * w, 0.35 * w, 0.1 * w);
+        ctx.arcTo(0.35 * w, 0.35 * w, (-0.35) * w, 0.35 * w, 0.1 * w);
+        ctx.arcTo((-0.35) * w, 0.35 * w, (-0.35) * w, (-0.35) * w, 0.1 * w);
+        ctx.arcTo((-0.35) * w, (-0.35) * w, 0.35 * w, (-0.35) * w, 0.1 * w);
+        ctx.lineTo(0, (-0.35) * w);
+        let grd = ctx.createRadialGradient(0, 0, 0, 0, 0, 0.45 * w);
+        grd.addColorStop(0, '#E800E8');
+        grd.addColorStop(1, '#5E005E');
+        ctx.fillStyle = grd;
+        ctx.fill();
+        ctx.strokeStyle = '#460046';
+        ctx.stroke();
+        ctx.closePath();
+
+        ctx.globalAlpha = 1;
+        ctx.scale(0.8, 0.8);
+        
+        ctx.beginPath();
+        ctx.arc(0, 0, 0.25 * w, 0.25 * Math.PI, 0.75 * Math.PI, true);
+        ctx.lineTo(-0.1 * w, 0.3 * w);
+        ctx.lineTo(0.1 * w, 0.3 * w);
+        let grd2 = ctx.createRadialGradient(0, 0, 0, 0, 0, 0.2 * w);
+        grd2.addColorStop(0, 'white');
+        grd2.addColorStop(1, '#E0E0E0');
+        ctx.fillStyle = grd2;
+        ctx.fill();
+        ctx.closePath();
+
+        for (let i = 0; i < 3; i++) {
+            ctx.beginPath();
+            ctx.moveTo(-0.08 * w + 0.08 * i * w, 0.31 * w);
+            ctx.lineTo(-0.08 * w + 0.08 * i * w, 0.24 * w);
+            ctx.strokeStyle = grd;
+            ctx.stroke();
+            ctx.closePath();
+        }
+
+        for (let i = 0; i < 2; i++) {
+            ctx.beginPath();
+            ctx.arc(-0.1 * w, -0.01 * w, 0.08 * w, 0.16 * Math.PI, 1.16 * Math.PI);
+            ctx.fillStyle = grd;
+            ctx.fill();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.moveTo(-0.02 * w, 0.1 * w);
+            ctx.lineTo(-0.045 * w, 0.16 * w);
+            ctx.strokeStyle = grd;
+            ctx.stroke();
+            ctx.closePath();
+
+            ctx.scale(-1, 1);
+        }
+
+        ctx.restore();
+    }
+    place(map, objects) {
+        this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
+        let gridPos = this.gridPos;
+        if (constant.typeLayerPairs[map[gridPos.y][gridPos.x].type].isOverlap(this.layer)) return false;
+        if (map[gridPos.y][gridPos.x].layer.isOverlap(this.layer)) return false;
+        map[gridPos.y][gridPos.x].layer.add(this.layer);
+        if (map[gridPos.y][gridPos.x].layer.status[1]) {
+            for (let i = 0; i < objects.length; i++) {
+                if (objects[i].gridPos.equal(gridPos) && objects[i].layer.top() === 1) {
+                    if (objects[i].loadable) {
+                        objects[i].loadObject = {
+                            id: this.id,
+                            object: this,
+                        };
+                    }
+                    break;
+                }
+            }
+        }
+        return true;
+    }
+    remove(map, objects) {
+        let gridPos = this.gridPos;
+        map[gridPos.y][gridPos.x].layer.sub(this.layer);
+        if (map[gridPos.y][gridPos.x].layer.status[1]) {
+            for (let i = 0; i < objects.length; i++) {
+                if (objects[i].gridPos.equal(gridPos) && objects[i].layer.top() === 1) {
+                    if (objects[i].loadable) objects[i].loadObject = null;
+                    break;
+                }
+            }
+        }
     }
 }

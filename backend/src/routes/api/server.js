@@ -69,7 +69,7 @@ router.post("/upload", async function (req, res) {
 
   // use setting and public to decide a unique hash id
   // let id = hash({ setting: settingPack, publish: publish });
-  let id = hash({time: Date.now()});
+  let id = hash({ time: Date.now() });
   const existing = await userSchema
     .find({ uuid: uuid })
     .exec(function (error, result) {
@@ -110,7 +110,7 @@ router.post("/upload", async function (req, res) {
           return;
         } else {
           console.log(`user.mapIDs.push`);
-          user.mapIDs.push({ id: id, title: title, description: description });
+          user.mapIDs.push(id);
           userSchema
             .updateOne({ uuid: uuid }, { $set: { mapIDs: user.mapIDs } })
             .catch((err) => {
@@ -138,7 +138,7 @@ router.post("/upload", async function (req, res) {
     passPeople: [],
   });
   const exist = await mapSchema.findOne({ id: id });
-  if (publish || (!exist && id0 === 0) ) {
+  if (publish || (!exist && id0 === 0)) {
     await newMap.save();
     console.log(`Created map ${newMap}`);
     // res.send({ success: true, errorCode: 0 });
@@ -159,24 +159,40 @@ router.post("/getUserData", async function (req, res) {
       } else {
         res.send({
           success: true,
-          mapIDs: result[0]["mapIDs"],
+          mapIDs: result[0].mapIDs,
         });
       }
     });
 });
-router.post("/getMap", async function (req, res) {
-  const { id } = req.body;
+router.post("/getAllMaps", async function (req, res) {
+  console.log(`getAllMaps`);
+  const { mapIDs } = req.body;
+  console.log(mapIDs);
   const existing = await mapSchema
-    .find({ id: id })
+    .find({ id: { $in: mapIDs } })
     .exec(function (error, result) {
+      console.log(result);
+
       if (!result.length) {
         res.send({ success: false, errorCode: 1 });
       } else {
-        res.send({
-          success: true,
-          errorCode: 0,
-          map: result[0],
-        });
+        res.send({ success: true, errorCode: 0, maps: result });
+      }
+    });
+});
+router.post("/getMap", async function (req, res) {
+  console.log(`getMap`);
+  const { id } = req.body;
+  console.log(id);
+  const existing = await mapSchema
+    .find({ id: id })
+    .exec(function (error, result) {
+      console.log(result);
+
+      if (!result.length) {
+        res.send({ success: false, errorCode: 1 });
+      } else {
+        res.send({ success: true, errorCode: 0, map: result[0] });
       }
     });
 });

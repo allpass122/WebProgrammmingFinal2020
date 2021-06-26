@@ -29,6 +29,7 @@ export default function Controller(scene, status, setStatus, setting, reset) {
 			if (mousePos.between(mapStart, mapEnd)) {
 				/* 在地圖內按下滑鼠左鍵 */
 				if (status.holding) {
+					status.holdObject.pos = mousePos.sub(mapStart).toGrid(w).mul(w).add(mapStart.add(new Vec2(0.5 * w, 0.5 * w)));
 					/* 嘗試把物件放在地圖上 */
 					let newStatus = { ...status };
 					newStatus.holding = copyable(e, status.holdObject);
@@ -201,6 +202,30 @@ export default function Controller(scene, status, setStatus, setting, reset) {
 						case 'movingPlatform_rect':
 							newStatus.holding = true;
 							newStatus.holdObject = new GameObject.movingPlatform_rect(new Vec2(e.offsetX, e.offsetY));
+							newStatus.holdDetail = newStatus.holdObject.detailFunction();
+							newStatus.holdObject.setPerspective(true);
+							break;
+						case 'woodenBox':
+							newStatus.holding = true;
+							newStatus.holdObject = new GameObject.woodenBox(new Vec2(e.offsetX, e.offsetY));
+							newStatus.holdDetail = newStatus.holdObject.detailFunction();
+							newStatus.holdObject.setPerspective(true);
+							break;
+						case 'magnet':
+							newStatus.holding = true;
+							newStatus.holdObject = new GameObject.magnet(new Vec2(e.offsetX, e.offsetY));
+							newStatus.holdDetail = newStatus.holdObject.detailFunction();
+							newStatus.holdObject.setPerspective(true);
+							break;
+						case 'brokenPlatform':
+							newStatus.holding = true;
+							newStatus.holdObject = new GameObject.brokenPlatform(new Vec2(e.offsetX, e.offsetY));
+							newStatus.holdDetail = newStatus.holdObject.detailFunction();
+							newStatus.holdObject.setPerspective(true);
+							break;
+						case 'deathTotem':
+							newStatus.holding = true;
+							newStatus.holdObject = new GameObject.deathTotem(new Vec2(e.offsetX, e.offsetY));
 							newStatus.holdDetail = newStatus.holdObject.detailFunction();
 							newStatus.holdObject.setPerspective(true);
 							break;

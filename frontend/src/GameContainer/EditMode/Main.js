@@ -27,6 +27,71 @@ import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Slider from "@material-ui/core/Slider";
 
+const EtC = {
+    name: '名稱',
+    platform: '平台',
+    movingPlatform: '移動平台(直行)',
+    movingPlatform_oblique: '移動平台(斜向)',
+    movingPlatform_rect: '移動平台(矩形)',
+    trapPlatform: '陷阱平台',
+    mucus: '黏液',
+    ice: '冰層',
+    conveyor: '傳輸帶',
+    block: '方塊',
+    spikedBlock: '尖刺方塊',
+    bow: '弓箭座',
+    cymbal: '音鈸',
+    missileBase: '追蹤導彈發射台',
+    portal: '傳送門',
+    lockedWall: '上鎖的牆',
+    unlocker: '鑰匙',
+    woodenBox: '木箱',
+    magnet: '磁鐵',
+    brokenPlatform: '破碎平台',
+    deathTotem: '死亡圖騰',
+
+    direction: '方向',
+    up: '上',
+    down: '下',
+    left: '左',
+    right: '右',
+    'left-up': '左上',
+    'left-down': '左下',
+    'right-up': '右上',
+    'right-down': '右下',
+    horizontal: '水平',
+    vertical: '重直',
+    speed: '速度',
+    'super slow': '超級慢',
+    slow: '慢',
+    normal: '普通',
+    fast: '快',
+    'super fast': '超級快',
+    clock: '旋轉方向',
+    clockwise: '順時鐘',
+    counterclockwise: '逆時鐘',
+    duration: '間隔',
+    short: '短',
+    long: '長',
+    RoF: '射速',
+    range: '範圍',
+    large: '大',
+    small: '小',
+    magneticField: '磁場',
+    attraction: '吸引',
+    repulsion: '排斥',
+
+    distance: '距離',
+    width: '寬',
+    height: '高',
+
+    upSpike: '上方有刺',
+    downSpike: '下方有刺',
+    leftSpike: '左方有刺',
+    rightSpike: '右方有刺',
+    rotate: '旋轉',
+}
+
 const useStyles = makeStyles((theme) => ({
     formControl: {
         margin: theme.spacing(1),
@@ -82,7 +147,7 @@ const EditGameMode = forwardRef((props, ref) => {
         let requestId;
         const update = () => {
             /* �C�@��(fps = 60)�i�檺��s */
-            if (status.active) Engine(setting.objects);
+            if (status.active) Engine(setting.objects, setting.map);
             Drawer(ctx, setting, status);
             requestId = requestAnimationFrame(update);
         };
@@ -143,6 +208,7 @@ const EditGameMode = forwardRef((props, ref) => {
     return (
         <>
             <div>
+                <meta charset="utf-8" />
                 <canvas
                     id="EditModeCanvas"
                     ref={canvasRef}
@@ -189,12 +255,12 @@ const EditGameMode = forwardRef((props, ref) => {
                                                         display: "inline-block",
                                                         float: "left",
                                                         backgroundColor: "inherit",
-                                                        marginRight: "1cm",
+                                                        marginRight: "0.5cm",
                                                     }}
                                                 >
                                                     <TextField
-                                                        label="Name"
-                                                        value={status.holdObject.detail[p]}
+                                                        label={EtC[p] ? EtC[p] : p}
+                                                        value={EtC[status.holdObject.detail[p]] ? EtC[status.holdObject.detail[p]] : status.holdObject.detail[p]}
                                                         onChange={(e) => {
                                                             let newStatus = { ...status };
                                                             let newDetail = { ...status.holdObject.detail };
@@ -212,14 +278,14 @@ const EditGameMode = forwardRef((props, ref) => {
                                                         display: "inline-block",
                                                         float: "left",
                                                         backgroundColor: "inherit",
-                                                        marginRight: "1cm",
+                                                        marginRight: "0.5cm",
                                                     }}
                                                 >
                                                     <FormControl
                                                         variant="outlined"
                                                         className={classes.formControl}
                                                     >
-                                                        <InputLabel>{p}</InputLabel>
+                                                        <InputLabel>{EtC[p] ? EtC[p] : p}</InputLabel>
                                                         <Select
                                                             value={status.holdObject.detail[p]}
                                                             onChange={(e) => {
@@ -229,10 +295,10 @@ const EditGameMode = forwardRef((props, ref) => {
                                                                 newStatus.holdObject.detail = newDetail;
                                                                 setStatus(newStatus);
                                                             }}
-                                                            label={p}
+                                                            label={EtC[p] ? EtC[p] : p}
                                                         >
                                                             {status.holdDetail[p].options.map((o) => (
-                                                                <MenuItem value={o}>{o}</MenuItem>
+                                                                <MenuItem value={o}>{EtC[o] ? EtC[o]: o}</MenuItem>
                                                             ))}
                                                         </Select>
                                                     </FormControl>
@@ -245,14 +311,14 @@ const EditGameMode = forwardRef((props, ref) => {
                                                         display: "inline-block",
                                                         float: "left",
                                                         backgroundColor: "inherit",
-                                                        marginRight: "1cm",
+                                                        marginRight: "0.5cm",
                                                     }}
                                                 >
                                                     <Typography id="discrete-slider" gutterBottom>
-                                                        {p}
+                                                        {EtC[p] ? EtC[p] : p}
                           </Typography>
                                                     <Slider
-                                                        style={{ minWidth: 300 }}
+                                                        style={{ minWidth: 200 }}
                                                         value={status.holdObject.detail[p]}
                                                         aria-labelledby="discrete-slider"
                                                         valueLabelDisplay="auto"
@@ -277,7 +343,7 @@ const EditGameMode = forwardRef((props, ref) => {
                                                         display: "inline-block",
                                                         float: "left",
                                                         backgroundColor: "inherit",
-                                                        marginRight: "1cm",
+                                                        marginRight: "0.5cm",
                                                     }}
                                                 >
                                                     <FormControlLabel
@@ -295,7 +361,7 @@ const EditGameMode = forwardRef((props, ref) => {
                                                                 }}
                                                             />
                                                         }
-                                                        label={p}
+                                                        label={EtC[p] ? EtC[p] : p}
                                                     />
                                                 </div>
                                             );
