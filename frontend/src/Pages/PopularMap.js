@@ -30,6 +30,7 @@ import FiberNewIcon from "@material-ui/icons/FiberNew";
 import AccessibleForwardIcon from "@material-ui/icons/AccessibleForward";
 import ArrowBackRoundedIcon from "@material-ui/icons/ArrowBackRounded";
 import TextField from "@material-ui/core/TextField";
+import GradeIcon from "@material-ui/icons/Grade";
 
 import Orders from "./PageComponent/Orders";
 
@@ -237,6 +238,30 @@ function PopularMap(props) {
     arr = arr.reverse();
     setAllMaps(arr);
   };
+  const computeScore = (arr) => {
+    let totalScore = 0;
+    let totalPeople = 0;
+    arr.forEach((ele) => {
+      totalScore += ele.rate;
+      totalPeople += 1;
+    });
+    return [
+      totalScore,
+      totalPeople,
+      totalPeople === 0 ? 0 : totalScore / totalPeople,
+    ];
+  };
+  const handlerGrade = () => {
+    console.log(`Handler3`);
+    let arr = [...newestMaps];
+    arr.sort((a, b) => {
+      return (
+        computeScore(b.rateRec)[2].toFixed(2) -
+        computeScore(a.rateRec)[2].toFixed(2)
+      );
+    });
+    setAllMaps(arr);
+  };
   const handlerSearch = (w) => {
     console.log(`HandlerSearch`);
     let arr = [...newestMaps];
@@ -245,6 +270,7 @@ function PopularMap(props) {
     });
     setAllMaps(arr);
   };
+
   // const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   // console.log("Render");
   return (
@@ -315,6 +341,12 @@ function PopularMap(props) {
                 <DashboardIcon />
               </ListItemIcon>
               <ListItemText primary="All Maps" />
+            </ListItem>
+            <ListItem button onClick={handlerGrade}>
+              <ListItemIcon>
+                <GradeIcon />
+              </ListItemIcon>
+              <ListItemText primary="High Rate Maps" />
             </ListItem>
             <ListItem button onClick={handler2}>
               <ListItemIcon>
