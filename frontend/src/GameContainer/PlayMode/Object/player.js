@@ -1,17 +1,20 @@
-import ObjectClass from './object';
+// import ObjectClass from './object';
 import Vec2 from '../../Class/Vec2';
 const PUSH_FORCE = 800
 const FRICTION = 0.08
-const MAX_VELOCITY = 300
+const MAX_VELOCITY = 150
 
-export default class Player extends ObjectClass {
+export default class Player {
   constructor(id, username, x, y) {
-    super(id, x, y, new Vec2(0, 0));
+    this.id = id;
+    this.loc = new Vec2(x, y);
+    this.velocity = new Vec2(0, 0);
     this.username = username;
     this.score = 0;
     this.pos = new Vec2(0, 0)
 
     this.friction = FRICTION
+    this.lastFriction = 0
     this.m = 1
     this.force = new Vec2(0, 0)
     this.acceleration = new Vec2(0, 0)
@@ -38,12 +41,17 @@ export default class Player extends ObjectClass {
     // velocity change
     this.velocity = this.velocity.add(this.acceleration.mul(dt))
     // somthing cause velocity exceed
-    if (this.velocity.length() > MAX_VELOCITY)
-      this.velocity = this.velocity.unit().mul(MAX_VELOCITY)
+    this.checkVelocity()
 
     // location change
-    super.update(dt);
+    // super.update(dt);
+    this.loc = this.loc.add( this.velocity.mul(dt) )
     this.force = new Vec2(0, 0)
+  }
+
+  checkVelocity() {
+    if (this.velocity.length() > MAX_VELOCITY)
+    this.velocity = this.velocity.unit().mul(MAX_VELOCITY)
   }
 
   moveTo(x, y) {
@@ -116,7 +124,8 @@ export default class Player extends ObjectClass {
     const reflectLineTheta = Math.atan2(normal.y, normal.x) + 0.5 * Math.PI
     const newVelocityX = Math.cos(2 * reflectLineTheta) * this.velocity.x + Math.sin(2 * reflectLineTheta) * this.velocity.y
     const newVelocityY = Math.sin(2 * reflectLineTheta) * this.velocity.x - Math.cos(2 * reflectLineTheta) * this.velocity.y
-    this.velocity = new Vec2(newVelocityX, newVelocityY).mul(4)
+    this.velocity = new Vec2(newVelocityX, newVelocityY).mul(3)
+    this.checkVelocity()
   }
 
 
@@ -125,9 +134,14 @@ export default class Player extends ObjectClass {
   }
 
   setFriction(ratio) {
+    this.lastFriction = this.friction
     this.friction = this.friction * ratio
   }
-  resetFriction(ratio) {
+  setLastFriction() {
+    this.friction = this.lastFriction
+  }
+  resetFriction() {
+    this.lastFriction = this.friction
     this.friction = FRICTION 
   }
 
@@ -137,6 +151,7 @@ export default class Player extends ObjectClass {
 
   push(vec) {
     this.force = vec.mul(PUSH_FORCE)
+    // this.force = this.force.add( vec.mul(PUSH_FORCE) )
   }
 
 
@@ -144,7 +159,12 @@ export default class Player extends ObjectClass {
     // console.log('v= ',this.velocity)
     // console.log('loc= ',this.loc)
     return {
-      ...(super.serializeForUpdate()),
+      // ...(super.serializeForUpdate()),
+      id: this.id,
+      loc: this.loc,
+      x: this.loc.x,
+      y: this.loc.y,
+      velocity: this.velocity
     };
   }
 }
