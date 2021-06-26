@@ -25,8 +25,8 @@ const constant = {
 	},
 	maxLayer: 5, // 最大佔據層數
 	editObjectList: {
-		platform: ['platform', 'movingPlatform', 'movingPlatform_oblique', 'movingPlatform_rect', 'trapPlatform'],
-		covering: ['mucus', 'ice', 'conveyor'],
+		platform: ['platform', 'movingPlatform', 'movingPlatform_oblique', 'movingPlatform_rect', 'trapPlatform', 'brokenPlatform'],
+		covering: ['mucus', 'ice', 'conveyor', 'deathTotem'],
 		obstacle: ['block', 'spikedBlock', 'woodenBox', 'bow', 'cymbal', 'missileBase'],
 		special: ['portal', 'lockedWall', 'unlocker', 'magnet'],
 	},

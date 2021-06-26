@@ -217,6 +217,18 @@ export default function Controller(scene, status, setStatus, setting, reset) {
 							newStatus.holdDetail = newStatus.holdObject.detailFunction();
 							newStatus.holdObject.setPerspective(true);
 							break;
+						case 'brokenPlatform':
+							newStatus.holding = true;
+							newStatus.holdObject = new GameObject.brokenPlatform(new Vec2(e.offsetX, e.offsetY));
+							newStatus.holdDetail = newStatus.holdObject.detailFunction();
+							newStatus.holdObject.setPerspective(true);
+							break;
+						case 'deathTotem':
+							newStatus.holding = true;
+							newStatus.holdObject = new GameObject.deathTotem(new Vec2(e.offsetX, e.offsetY));
+							newStatus.holdDetail = newStatus.holdObject.detailFunction();
+							newStatus.holdObject.setPerspective(true);
+							break;
 						default:
 							break;
 					}

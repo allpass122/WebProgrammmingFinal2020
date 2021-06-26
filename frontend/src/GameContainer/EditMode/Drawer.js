@@ -181,6 +181,14 @@ function Drawer(ctx, setting, status) {
 					o = new GameObject.magnet(new Vec2(editObjectSpace.x * (i + 0.5), editObjectSpace.y * 0.5));
 					type = 'special';
 					break;
+				case 'brokenPlatform':
+					o = new GameObject.brokenPlatform(new Vec2(editObjectSpace.x * (i + 0.5), editObjectSpace.y * 0.5));
+					type = 'platform';
+					break;
+				case 'deathTotem':
+					o = new GameObject.deathTotem(new Vec2(editObjectSpace.x * (i + 0.5), editObjectSpace.y * 0.5));
+					type = 'covering';
+					break;
 			}
 		}
 		ctx.beginPath();

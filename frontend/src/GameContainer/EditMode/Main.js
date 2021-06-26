@@ -47,6 +47,8 @@ const EtC = {
     unlocker: '鑰匙',
     woodenBox: '木箱',
     magnet: '磁鐵',
+    brokenPlatform: '破碎平台',
+    deathTotem: '死亡圖騰',
 
     direction: '方向',
     up: '上',
