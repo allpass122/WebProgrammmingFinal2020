@@ -1,5 +1,6 @@
 // tribute to https://github.com/vzhou842/example-.io-game 
 
+// svg source: https://www.flaticon.com/
 const ASSET_NAMES = [
   'seal.svg',
   'lion.svg',
