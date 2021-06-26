@@ -1,4 +1,4 @@
-/* ¤Gºû¦V¶q class ©w¸q */
+ï»¿/* äºŒç¶­å‘é‡ class å®šç¾© */
 export default class Vec2 {
     constructor(x = 0, y = 0) {
         this.x = x;
@@ -33,29 +33,29 @@ export default class Vec2 {
     length() { 
         return Math.sqrt(this.x * this.x + this.y * this.y);
     }
-    unit() { // ¦^¶Ç³æ¦ì¦V¶q
+    unit() { // å›å‚³å–®ä½å‘é‡
         if (this.length() === 0) return this;
         return this.div(this.length());
     }
-    dot(v) { // ­pºâ¤º¿n
+    dot(v) { // è¨ˆç®—å…§ç©
         return this.x * v.x + this.y * v.y;
     }
-    cross(v) { // ­pºâ¥~¿n
+    cross(v) { // è¨ˆç®—å¤–ç©
         return this.x * v.y - this.y * v.x;
     }
-    ortho(v) { // Àò±o¦¹¦V¶q¦b v ¤Wªº¥¿®g¼v¤ñ­È
+    ortho(v) { // ç²å¾—æ­¤å‘é‡åœ¨ v ä¸Šçš„æ­£å°„å½±æ¯”å€¼
         if (v.length() === 0) return 0;
         return this.dot(v) / v.length() / v.length();
     }
-    radian() { // ¦^¶Ç©·«×¨¤
+    radian() { // å›å‚³å¼§åº¦è§’
         if (this.x === 0) return (this.y > 0) ? 0.5 * Math.PI : 1.5 * Math.PI;
         if (this.x > 0) return (this.y > 0) ? Math.atan(this.y / this.x) : 2 * Math.PI + Math.atan(this.y / this.x);
         return Math.PI + Math.atan(this.y / this.x);
     }
-    between(v1, v2) { // ¦b¨âÂI³ò¥Xªº¯x§ÎªÅ¶¡¤º
+    between(v1, v2) { // åœ¨å…©é»åœå‡ºçš„çŸ©å½¢ç©ºé–“å…§
         return this.x >= Math.min(v1.x, v2.x) && this.x <= Math.max(v1.x, v2.x) && this.y >= Math.min(v1.y, v2.y) && this.y <= Math.max(v1.y, v2.y);
     }
-    toGrid(w) { // ¦^¶Ç±N®y¼Ğ¥H w ¬°¼e«×³æ¦ìÂà¦¨ºô®æ®y¼Ğ
+    toGrid(w) { // å›å‚³å°‡åº§æ¨™ä»¥ w ç‚ºå¯¬åº¦å–®ä½è½‰æˆç¶²æ ¼åº§æ¨™
         return new Vec2(~~(this.x / w), ~~(this.y / w));
     }
     static up() {
@@ -75,10 +75,10 @@ export default class Vec2 {
                (dir === 'right-up') ? Vec2.up().add(Vec2.right()).unit() : (dir === 'right-down') ? Vec2.down().add(Vec2.right()).unit() :
                (dir === 'left-up') ? Vec2.up().add(Vec2.left()).unit() : (dir === 'left-down') ? Vec2.down().add(Vec2.left()).unit() : new Vec2(0, 0);
     }
-    static leftUp(v1, v2) { // ¦^¶Ç¨âÂI³ò¦¨ªº¯x§Îªº¥ª¤W®y¼Ğ
+    static leftUp(v1, v2) { // å›å‚³å…©é»åœæˆçš„çŸ©å½¢çš„å·¦ä¸Šåº§æ¨™
         return new Vec2(Math.min(v1.x, v2.x), Math.min(v1.y, v2.y));
     }
-    static rightDown(v1, v2) { // ¦^¶Ç¨âÂI³ò¦¨ªº¯x§Îªº¥k¤U®y¼Ğ
+    static rightDown(v1, v2) { // å›å‚³å…©é»åœæˆçš„çŸ©å½¢çš„å³ä¸‹åº§æ¨™
         return new Vec2(Math.max(v1.x, v2.x), Math.max(v1.y, v2.y));
     }
 }

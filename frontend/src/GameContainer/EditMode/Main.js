@@ -1,4 +1,4 @@
-import React, {
+﻿import React, {
     useState,
     useEffect,
     useRef,
@@ -107,16 +107,6 @@ const EditGameMode = forwardRef((props, ref) => {
     const [value, setValue] = useState(1);
 
     let setting = props.setting;
-    /* 
-           select: �ثe�O�_����l�Q���
-           selecting: �ثe�O�_���b��ܮ�l
-           selectPair: �Q��ܪ��h�Ӯ�l����ӹ﨤����l
-           hold: �ثe�O�_������Q�ޱ�(�Ƚվ�Ѽ�)
-           holding: �ثe�O�_�����󥿦b�Q�ޱ�(���ʨåB�վ�Ѽ�)
-           holdObject: �Q�ޱ�������
-           holdDetail: �Q�ޱ�������Ӹ`�C��
-           ctrl: ctrl��O�_�Q���U
-          */
     const [status, setStatus] = useState({
         select: false,
         selecting: false,
@@ -125,8 +115,10 @@ const EditGameMode = forwardRef((props, ref) => {
         holding: false,
         holdObject: null,
         holdDetail: {},
-        active: true,
+        clear: false,
+        active: false,
         opt: 0,
+        message: { text: '', lastPost: 0 },
     });
     const reset = () => {
         props.save(setting);
@@ -149,6 +141,11 @@ const EditGameMode = forwardRef((props, ref) => {
             /* �C�@��(fps = 60)�i�檺��s */
             if (status.active) Engine(setting.objects, setting.map);
             Drawer(ctx, setting, status);
+
+            if (status.message.text !== '' && Date.now() > status.message.lastPost + 3000) {
+                status.message.text = '';
+            }
+
             requestId = requestAnimationFrame(update);
         };
         update();
@@ -192,6 +189,7 @@ const EditGameMode = forwardRef((props, ref) => {
                     setting.map[luPos.y + j][luPos.x + i].type = oldTypes.shift();
                 }
             }
+            status.message = { text: '地圖上至少必須包含一格起點和一格終點', lastPost: Date.now() };
         }
     };
     /* ��l�ݩʦC�� */
@@ -260,7 +258,7 @@ const EditGameMode = forwardRef((props, ref) => {
                                                 >
                                                     <TextField
                                                         label={EtC[p] ? EtC[p] : p}
-                                                        value={EtC[status.holdObject.detail[p]] ? EtC[status.holdObject.detail[p]] : status.holdObject.detail[p]}
+                                                        value={status.holdObject.detail[p]}
                                                         onChange={(e) => {
                                                             let newStatus = { ...status };
                                                             let newDetail = { ...status.holdObject.detail };

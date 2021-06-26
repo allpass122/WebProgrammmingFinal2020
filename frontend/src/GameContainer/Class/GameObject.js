@@ -1,4 +1,4 @@
-import Vec2 from './Vec2';
+ï»¿import Vec2 from './Vec2';
 import constant from '../constant';
 import Layer from './Layer';
 
@@ -23,7 +23,7 @@ const isCollision = (obj1, obj2) => {
 };
 const colorList = ['#FF0000', '#FFA042', '#F9F900', '#02DF82', '#6A6AFF', '#D0D0D0', '#E800E8', '#984B4B'];
 
-/* ¦y¨ë¤è¶ô */
+/* å°–åˆºæ–¹å¡Š */
 export class spikedBlock {
     constructor(pos = new Vec2(0, 0)) {
         this.type = 'spikedBlock';
@@ -32,7 +32,7 @@ export class spikedBlock {
         this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
 
         this.detail = {
-            name: 'spikedBlock',
+            name: 'å°–åˆºæ–¹å¡Š',
             upSpike: true,
             downSpike: true,
             leftSpike: true,
@@ -184,7 +184,7 @@ export class spikedBlock {
     }
 }
 
-/* ¥­¥x */
+/* å¹³å° */
 export class platform {
     constructor(pos = new Vec2(0, 0)) {
         this.type = 'platform';
@@ -193,7 +193,7 @@ export class platform {
         this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
 
         this.detail = {
-            name: 'platform'
+            name: 'å¹³å°'
         };
 
         this.loadable = false;
@@ -283,7 +283,7 @@ export class platform {
     }
 }
 
-/* ²¾°Ê¥­¥x */
+/* ç§»å‹•å¹³å° */
 export class movingPlatform {
     constructor(pos = new Vec2(0, 0)) {
         this.type = 'movingPlatform';
@@ -292,7 +292,7 @@ export class movingPlatform {
         this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
 
         this.detail = {
-            name: 'movingPlatform',
+            name: 'ç§»å‹•å¹³å°(ç›´è¡Œ)',
             direction: 'up',
             distance: 1,
             speed: 'normal',
@@ -464,7 +464,7 @@ export class movingPlatform {
     }
 }
 
-/* ¤} */
+/* å¼“ */
 export class bow {
     constructor(pos = new Vec2(0, 0)) {
         this.type = 'bow';
@@ -473,7 +473,7 @@ export class bow {
         this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
 
         this.detail = {
-            name: 'bow',
+            name: 'å¼“ç®­åº§',
             direction: 'up',
             RoF: 'normal'
         };
@@ -615,7 +615,7 @@ export class bow {
     }
 }
 
-/* ½b */
+/* ç®­ */
 export class arrow {
     constructor(pos = new Vec2(0, 0)) {
         this.type = 'arrow';
@@ -624,7 +624,7 @@ export class arrow {
         this.gridPos = new Vec2(-1, -1);
 
         this.detail = {
-            name: 'arrow',
+            name: 'ç®­',
             direction: 'up',
         };
 
@@ -659,7 +659,7 @@ export class arrow {
                     return { type: 'destory' };
                 }
                 else if (result === 'magneticField') this.pos = this.pos.add(objects[i].getDisplacement());
-                else if (result === 'unlocker') objects[i].unlock(objects);
+                // else if (result === 'unlocker') objects[i].unlock(objects);
                 else if (result === 'block' || result === 'lockedWall') return { type: 'destory' };
             }
         }
@@ -717,7 +717,7 @@ export class arrow {
     }
 }
 
-/* ÂH²G */
+/* é»æ¶² */
 export class mucus {
     constructor(pos = new Vec2(0, 0)) {
         this.type = 'mucus';
@@ -726,7 +726,7 @@ export class mucus {
         this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
 
         this.detail = {
-            name: 'mucus'
+            name: 'é»æ¶²'
         };
 
         this.loadable = true;
@@ -848,7 +848,7 @@ export class mucus {
     }
 }
 
-/* ­µ¹Y */
+/* éŸ³éˆ¸ */
 export class cymbal {
     constructor(pos = new Vec2(0, 0)) {
         this.type = 'cymbal';
@@ -857,7 +857,7 @@ export class cymbal {
         this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
 
         this.detail = {
-            name: 'cymbal',
+            name: 'éŸ³éˆ¸',
             RoF: 'normal',
             range: 'normal',
         };
@@ -1008,7 +1008,7 @@ export class cymbal {
     }
 }
 
-/* ­µªi */
+/* éŸ³æ³¢ */
 export class cymbalWave {
     constructor(pos = new Vec2(0, 0)) {
         this.type = 'cymbalWave';
@@ -1017,7 +1017,7 @@ export class cymbalWave {
         this.gridPos = new Vec2(-1, -1);
 
         this.detail = {
-            name: 'cymbalWave',
+            name: 'éŸ³æ³¢',
             range: 'normal',
         };
 
@@ -1073,7 +1073,7 @@ export class cymbalWave {
     }
 }
 
-/* ¦B­± */
+/* å†°é¢ */
 export class ice {
     constructor(pos = new Vec2(0, 0)) {
         this.type = 'ice';
@@ -1082,7 +1082,7 @@ export class ice {
         this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
 
         this.detail = {
-            name: 'ice'
+            name: 'å†°å±¤'
         };
 
         this.loadable = false;
@@ -1191,7 +1191,7 @@ export class ice {
     }
 }
 
-/* ¶Ç¿é±a */
+/* å‚³è¼¸å¸¶ */
 export class conveyor {
     constructor(pos = new Vec2(0, 0)) {
         this.type = 'conveyor';
@@ -1200,7 +1200,7 @@ export class conveyor {
         this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
 
         this.detail = {
-            name: 'conveyor',
+            name: 'å‚³è¼¸å¸¶',
             direction: 'right',
         };
 
@@ -1325,7 +1325,7 @@ export class conveyor {
     }
 }
 
-/* ¶Ç°eªù */
+/* å‚³é€é–€ */
 export class portal {
     constructor(pos = new Vec2(0, 0)) {
         this.type = 'portal';
@@ -1334,7 +1334,7 @@ export class portal {
         this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
 
         this.detail = {
-            name: 'portal'
+            name: 'å‚³é€é–€'
         };
 
         this.loadable = false;
@@ -1549,7 +1549,7 @@ export class portal {
     }
 }
 
-/* ³´¨À¥­¥x */
+/* é™·é˜±å¹³å° */
 export class trapPlatform {
     constructor(pos = new Vec2(0, 0)) {
         this.type = 'trapPlatform';
@@ -1558,7 +1558,7 @@ export class trapPlatform {
         this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
 
         this.detail = {
-            name: 'trapPlatform',
+            name: 'é™·é˜±å¹³å°',
             duration: 'normal',
         };
 
@@ -1722,7 +1722,7 @@ export class trapPlatform {
     }
 }
 
-/* °lÂÜ¾É¼u®y */
+/* è¿½è¹¤å°å½ˆåº§ */
 export class missileBase {
     constructor(pos = new Vec2(0, 0)) {
         this.type = 'missileBase';
@@ -1731,7 +1731,7 @@ export class missileBase {
         this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
 
         this.detail = {
-            name: 'missileBase',
+            name: 'è¿½è¹¤å°å½ˆç™¼å°„å°',
             direction: 'up',
             rotate: true,
         };
@@ -1745,7 +1745,7 @@ export class missileBase {
         this.lastFire = Date.now();
         this.unfoldTime = 500;
         this.unfoldCycle = 0;
-        this.rotateSpeed = 0.2; // 1¬í´X°é
+        this.rotateSpeed = 0.2; // 1ç§’å¹¾åœˆ
         this.rotateCycle = 0;
         this.find = false;
         this.findTarget = null;
@@ -1930,7 +1930,7 @@ export class missileBase {
     }
 }
 
-/* °lÂÜ¾É¼u */
+/* è¿½è¹¤å°å½ˆ */
 export class missile {
     constructor(pos = new Vec2(0, 0)) {
         this.type = 'missile';
@@ -1939,7 +1939,7 @@ export class missile {
         this.gridPos = new Vec2(-1, -1);
 
         this.detail = {
-            name: 'missile',
+            name: 'è¿½è¹¤å°å½ˆ',
         };
 
         this.loadable = false;
@@ -2053,7 +2053,7 @@ export class missile {
     }
 }
 
-/* ÂêÀğ */
+/* é–ç‰† */
 export class lockedWall {
     constructor(pos = new Vec2(0, 0)) {
         this.type = 'lockedWall';
@@ -2062,7 +2062,7 @@ export class lockedWall {
         this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
 
         this.detail = {
-            name: 'lockedWall',
+            name: 'ä¸Šé–çš„ç‰†',
             direction: 'horizontal',
         };
 
@@ -2191,7 +2191,7 @@ export class lockedWall {
     }
 }
 
-/* Æ_°Í */
+/* é‘°åŒ™ */
 export class unlocker {
     constructor(pos = new Vec2(0, 0)) {
         this.type = 'unlocker';
@@ -2200,7 +2200,7 @@ export class unlocker {
         this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
 
         this.detail = {
-            name: 'unlocker'
+            name: 'é‘°åŒ™'
         };
 
         this.loadable = false;
@@ -2326,7 +2326,7 @@ export class unlocker {
     }
 }
 
-/* ¤è¶ô */
+/* æ–¹å¡Š */
 export class block {
     constructor(pos = new Vec2(0, 0)) {
         this.type = 'block';
@@ -2335,7 +2335,7 @@ export class block {
         this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
 
         this.detail = {
-            name: 'block',
+            name: 'æ–¹å¡Š',
         };
 
         this.loadable = false;
@@ -2442,7 +2442,7 @@ export class block {
     }
 }
 
-/* ²¾°Ê¥­¥x-±×¦V */
+/* ç§»å‹•å¹³å°-æ–œå‘ */
 export class movingPlatform_oblique {
     constructor(pos = new Vec2(0, 0)) {
         this.type = 'movingPlatform_oblique';
@@ -2451,7 +2451,7 @@ export class movingPlatform_oblique {
         this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
 
         this.detail = {
-            name: 'movingPlatform_oblique',
+            name: 'ç§»å‹•å¹³å°(æ–œå‘)',
             direction: 'right-up',
             distance: 1,
             speed: 'normal',
@@ -2622,7 +2622,7 @@ export class movingPlatform_oblique {
     }
 }
 
-/* ²¾°Ê¥­¥x-¯x§Î */
+/* ç§»å‹•å¹³å°-çŸ©å½¢ */
 export class movingPlatform_rect {
     constructor(pos = new Vec2(0, 0)) {
         this.type = 'movingPlatform_rect';
@@ -2631,7 +2631,7 @@ export class movingPlatform_rect {
         this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
 
         this.detail = {
-            name: 'movingPlatform_rect',
+            name: 'ç§»å‹•å¹³å°(çŸ©å½¢)',
             clock: 'clockwise',
             width: 1,
             height: 1,
@@ -2825,7 +2825,7 @@ export class movingPlatform_rect {
     }
 }
 
-/* ¤ì½c */
+/* æœ¨ç®± */
 export class woodenBox {
     constructor(pos = new Vec2(0, 0)) {
         this.type = 'woodenBox';
@@ -2834,7 +2834,7 @@ export class woodenBox {
         this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
 
         this.detail = {
-            name: 'woodenBox',
+            name: 'æœ¨ç®±',
         };
 
         this.loadable = false;
@@ -2924,28 +2924,28 @@ export class woodenBox {
         if (this.moveTo !== 'none') return;
         let gridPos = this.pos.sub(constant.mapStart).toGrid(w);
         let radian = targetPos.sub(this.pos).radian();
-        if (radian >= 0.25 * Math.PI && radian < 0.75 * Math.PI) { // ¤W
+        if (radian >= 0.25 * Math.PI && radian < 0.75 * Math.PI) { // ä¸Š
             if (gridPos.y === 0 || map[gridPos.y - 1][gridPos.x].type === 'block') return;
             for (let i = 0; i < objects.length; i++) {
                 let searchGridPos = objects[i].pos.sub(constant.mapStart).toGrid(w);
                 if (searchGridPos.equal(new Vec2(gridPos.x, gridPos.y - 1)) && objects[i].layer.status[3]) return;
             }
             this.moveTo = 'up';
-        } else if (radian >= 1.75 * Math.PI || radian < 0.25 * Math.PI) { // ¥ª
+        } else if (radian >= 1.75 * Math.PI || radian < 0.25 * Math.PI) { // å·¦
             if (gridPos.x === 0 || map[gridPos.y][gridPos.x - 1].type === 'block') return;
             for (let i = 0; i < objects.length; i++) {
                 let searchGridPos = objects[i].pos.sub(constant.mapStart).toGrid(w);
                 if (searchGridPos.equal(new Vec2(gridPos.x - 1, gridPos.y)) && objects[i].layer.status[3]) return;
             }
             this.moveTo = 'left';
-        } else if (radian >= 1.25 * Math.PI && radian < 1.75 * Math.PI) { // ¤U
+        } else if (radian >= 1.25 * Math.PI && radian < 1.75 * Math.PI) { // ä¸‹
             if (gridPos.y === constant.mapSize.y - 1 || map[gridPos.y + 1][gridPos.x].type === 'block') return;
             for (let i = 0; i < objects.length; i++) {
                 let searchGridPos = objects[i].pos.sub(constant.mapStart).toGrid(w);
                 if (searchGridPos.equal(new Vec2(gridPos.x, gridPos.y + 1)) && objects[i].layer.status[3]) return;
             }
             this.moveTo = 'down';
-        } else { // ¥k
+        } else { // å³
             if (gridPos.x === constant.mapSize.x - 1 || map[gridPos.y][gridPos.x + 1].type === 'block') return;
             for (let i = 0; i < objects.length; i++) {
                 let searchGridPos = objects[i].pos.sub(constant.mapStart).toGrid(w);
@@ -3039,7 +3039,7 @@ export class woodenBox {
     }
 }
 
-/* ºÏÅK */
+/* ç£éµ */
 export class magnet {
     constructor(pos = new Vec2(0, 0)) {
         this.type = 'magnet';
@@ -3048,7 +3048,7 @@ export class magnet {
         this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
 
         this.detail = {
-            name: 'magnet',
+            name: 'ç£éµ',
             direction: 'up',
             magneticField: 'attraction',
             distance: 3,
@@ -3227,7 +3227,7 @@ export class magnet {
     }
 }
 
-/* ¯}¸H¥­¥x */
+/* ç ´ç¢å¹³å° */
 export class brokenPlatform {
     constructor(pos = new Vec2(0, 0)) {
         this.type = 'brokenPlatform';
@@ -3236,7 +3236,7 @@ export class brokenPlatform {
         this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
 
         this.detail = {
-            name: 'brokenPlatform'
+            name: 'ç ´ç¢å¹³å°'
         };
 
         this.loadable = false;
@@ -3446,7 +3446,7 @@ export class brokenPlatform {
     }
 }
 
-/* ¦º¤`¹ÏÄË */
+/* æ­»äº¡åœ–é¨° */
 export class deathTotem {
     constructor(pos = new Vec2(0, 0)) {
         this.type = 'deathTotem';
@@ -3455,7 +3455,7 @@ export class deathTotem {
         this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
 
         this.detail = {
-            name: 'deathTotem'
+            name: 'æ­»äº¡åœ–é¨°'
         };
 
         this.loadable = false;

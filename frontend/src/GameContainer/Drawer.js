@@ -1,4 +1,4 @@
-import Vec2 from './Class/Vec2';
+ï»¿import Vec2 from './Class/Vec2';
 import constant from './constant';
 
 export function clear(ctx, pos = { x: 0, y: 0 }, size = { x: ctx.canvas.width, y: ctx.canvas.height }) {
@@ -67,7 +67,7 @@ export function drawMap(ctx, map, auxiliary = true) {
 				ctx.closePath();
 			}
 
-			/* Ã¸»s¾î¦V®æ½u */
+			/* ç¹ªè£½æ©«å‘æ ¼ç·š */
 			if (y !== 0) {
 				let r = relation(new Vec2(x, y - 1), new Vec2(x, y));
 				if (r === 'n_b') {
@@ -80,7 +80,7 @@ export function drawMap(ctx, map, auxiliary = true) {
 				}
 			}
 
-			/* Ã¸»sÁa¦V®æ½u */
+			/* ç¹ªè£½ç¸±å‘æ ¼ç·š */
 			if (x !== 0) {
 				let r = relation(new Vec2(x - 1, y), new Vec2(x, y));
 				if (r === 'n_b') {

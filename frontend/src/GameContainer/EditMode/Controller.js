@@ -1,4 +1,4 @@
-import Vec2 from '../Class/Vec2';
+ï»¿import Vec2 from '../Class/Vec2';
 import * as GameObject from '../Class/GameObject';
 import constant from '../constant';
 
@@ -11,13 +11,13 @@ export default function Controller(scene, status, setStatus, setting, reset) {
 	const mouseMoveHandler = (e) => {
 		const mousePos = new Vec2(e.offsetX, e.offsetY);
 		if (!status.holding && status.selecting && mousePos.between(mapStart, mapEnd)) {
-			/* ·í¨Ï¥ÎªÌ¨S¦³¾Ş±±ª«¥ó®É¨Ã¥B¥¿¦b¿ï¾Ü®æ¤lªº®É­Ô¡A¦b¦a¹ÏªÅ¶¡¤º§Y®É§ó·s¿ï¾Ü½d³ò */
+			/* ç•¶ä½¿ç”¨è€…æ²’æœ‰æ“æ§ç‰©ä»¶æ™‚ä¸¦ä¸”æ­£åœ¨é¸æ“‡æ ¼å­çš„æ™‚å€™ï¼Œåœ¨åœ°åœ–ç©ºé–“å…§å³æ™‚æ›´æ–°é¸æ“‡ç¯„åœ */
 			let selectGridPos = mousePos.sub(mapStart).toGrid(w);
 			status.selectPair[1] = selectGridPos;
 		} else if (status.holding) {
-			/* ·í¨Ï¥ÎªÌ¥¿¦b¾Ş±±ª«¥ó®É¡A§ó·sª«¥ó¦ì¤l¨ì·Æ¹«¦ì¤l */
-			if (mousePos.between(mapStart, mapEnd)) {
-				/* ª«¥ó¦b¦a¹Ï¤º®É¥²¶·§Y®É®Õ¥¿¦ì¤l */
+			/* ç•¶ä½¿ç”¨è€…æ­£åœ¨æ“æ§ç‰©ä»¶æ™‚ï¼Œæ›´æ–°ç‰©ä»¶ä½å­åˆ°æ»‘é¼ ä½å­ */
+			if (mousePos.between(mapStart, mapEnd) && !status.clear) {
+				/* ç‰©ä»¶åœ¨åœ°åœ–å…§æ™‚å¿…é ˆå³æ™‚æ ¡æ­£ä½å­ */
 				status.holdObject.pos = mousePos.sub(mapStart).toGrid(w).mul(w).add(mapStart.add(new Vec2(0.5 * w, 0.5 * w)));
 			} else status.holdObject.pos = mousePos.clone();
 		}
@@ -27,59 +27,84 @@ export default function Controller(scene, status, setStatus, setting, reset) {
 		const mousePos = new Vec2(e.offsetX, e.offsetY);
 		if (e.button === 0) {
 			if (mousePos.between(mapStart, mapEnd)) {
-				/* ¦b¦a¹Ï¤º«ö¤U·Æ¹«¥ªÁä */
-				if (status.holding) {
-					status.holdObject.pos = mousePos.sub(mapStart).toGrid(w).mul(w).add(mapStart.add(new Vec2(0.5 * w, 0.5 * w)));
-					/* ¹Á¸Õ§âª«¥ó©ñ¦b¦a¹Ï¤W */
-					let newStatus = { ...status };
-					newStatus.holding = copyable(e, status.holdObject);
-					if (status.holdObject.place(setting.map, setting.objects)) {
-						setting.objects.push(status.holdObject);
-					}
-					newStatus.holdObject = (copyable(e, status.holdObject)) ? status.holdObject.clone() : null;
-					setStatus(newStatus);
-				} else {
-					/* ¦pªG¨S¦³¦b¾Ş±±ª«¥ó«h¶}©l¿ï¾Ü®æ¤l©Î¬O¿ï¨ú¦b¦a¹Ï¤Wªºª«¥ó */
-					let newStatus = { ...status };
+				console.log(status.clear);
+				if (status.clear) {
 					let gridPos = mousePos.sub(mapStart).toGrid(w);
 					let topLayer = setting.map[gridPos.y][gridPos.x].layer.top();
-					if (topLayer !== -1) { // ¥Nªí¦³ª«¥óÅ|¦b®æ¤l¤W(Àu¥ı³B²zª«¥ó¾Ş±±)
+					if (topLayer !== -1) { // ä»£è¡¨æœ‰ç‰©ä»¶ç–Šåœ¨æ ¼å­ä¸Š(è™•ç†ç‰©ä»¶æ¸…é™¤)
 						for (let i = 0; i < setting.objects.length; i++) {
-							if (setting.objects[i].gridPos.equal(gridPos) && setting.objects[i].layer.top() === topLayer) {
-								newStatus.holding = true;
-								newStatus.hold = false;
-								newStatus.select = false;
-								newStatus.selecting = false;
-								if (!copyable(e, setting.objects[i])) setting.objects[i].remove(setting.map, setting.objects);
-								newStatus.holdObject = (copyable(e, setting.objects[i])) ? setting.objects[i].clone() : setting.objects[i];
-								newStatus.holdObject.pos = mousePos.sub(mapStart).toGrid(w).mul(w).add(mapStart.add(new Vec2(0.5 * w, 0.5 * w)));
-								newStatus.holdDetail = setting.objects[i].detailFunction();
-								console.log(newStatus.holdDetail);
-								if (!copyable(e, setting.objects[i])) setting.objects.splice(i, 1);
-								break;
+							if (setting.objects[i].gridPos.equal(gridPos)) {
+								if (e.ctrlKey || setting.objects[i].layer.top() === topLayer) {
+									setting.objects[i].remove(setting.map, setting.objects);
+									setting.objects.splice(i--, 1);
+								} 
 							}
 						}
-					} else {
-						newStatus.select = true;
-						newStatus.selecting = true;
-						newStatus.selectPair = [gridPos, gridPos];
 					}
-					setStatus(newStatus);
+				} else {
+					/* åœ¨åœ°åœ–å…§æŒ‰ä¸‹æ»‘é¼ å·¦éµ */
+					if (status.holding) {
+						status.holdObject.pos = mousePos.sub(mapStart).toGrid(w).mul(w).add(mapStart.add(new Vec2(0.5 * w, 0.5 * w)));
+						/* å˜—è©¦æŠŠç‰©ä»¶æ”¾åœ¨åœ°åœ–ä¸Š */
+						let newStatus = { ...status };
+						if (e.ctrlKey && !copyable(e, status.holdObject)) {
+							newStatus.message = { text: 'é€™å€‹ç‰©ä»¶ç„¡æ³•è¢«è¤‡è£½', lastPost: Date.now() };
+						}
+						newStatus.holding = copyable(e, status.holdObject);
+						if (status.holdObject.place(setting.map, setting.objects)) {
+							setting.objects.push(status.holdObject);
+						} else {
+							newStatus.message = { text: 'é€™å€‹æ ¼å­å·²ç¶“è¢«å…¶ä»–åŒç¨®çš„ç‰©ä»¶ä½”æ“š', lastPost: Date.now() };
+						}
+						newStatus.holdObject = (copyable(e, status.holdObject)) ? status.holdObject.clone() : null;
+						setStatus(newStatus);
+					} else {
+						/* å¦‚æœæ²’æœ‰åœ¨æ“æ§ç‰©ä»¶å‰‡é–‹å§‹é¸æ“‡æ ¼å­æˆ–æ˜¯é¸å–åœ¨åœ°åœ–ä¸Šçš„ç‰©ä»¶ */
+						let newStatus = { ...status };
+						let gridPos = mousePos.sub(mapStart).toGrid(w);
+						let topLayer = setting.map[gridPos.y][gridPos.x].layer.top();
+						if (topLayer !== -1) { // ä»£è¡¨æœ‰ç‰©ä»¶ç–Šåœ¨æ ¼å­ä¸Š(å„ªå…ˆè™•ç†ç‰©ä»¶æ“æ§)
+							for (let i = 0; i < setting.objects.length; i++) {
+								if (setting.objects[i].gridPos.equal(gridPos) && setting.objects[i].layer.top() === topLayer) {
+									newStatus.holding = true;
+									newStatus.hold = false;
+									newStatus.select = false;
+									newStatus.selecting = false;
+									if (e.ctrlKey && !copyable(e, setting.objects[i])) {
+										newStatus.message = { text: 'é€™å€‹ç‰©ä»¶ç„¡æ³•è¢«è¤‡è£½', lastPost: Date.now() };
+									}
+									if (!copyable(e, setting.objects[i])) setting.objects[i].remove(setting.map, setting.objects);
+									newStatus.holdObject = (copyable(e, setting.objects[i])) ? setting.objects[i].clone() : setting.objects[i];
+									newStatus.holdObject.pos = mousePos.sub(mapStart).toGrid(w).mul(w).add(mapStart.add(new Vec2(0.5 * w, 0.5 * w)));
+									newStatus.holdDetail = setting.objects[i].detailFunction();
+									if (!copyable(e, setting.objects[i])) setting.objects.splice(i, 1);
+									break;
+								}
+							}
+						} else {
+							newStatus.select = true;
+							newStatus.selecting = true;
+							newStatus.selectPair = [gridPos, gridPos];
+						}
+						setStatus(newStatus);
+					}
 				}
 			} else {
-				/* ¥ªÁäÂI¨ì¦a¹Ï¥~«h±N¤@¤Áª¬ºA¸Ñ°£(ÂI¨ìª«¥ó½s¿è®w¨Ò¥~) */
+				/* å·¦éµé»åˆ°åœ°åœ–å¤–å‰‡å°‡ä¸€åˆ‡ç‹€æ…‹è§£é™¤(é»åˆ°ç‰©ä»¶ç·¨è¼¯åº«ä¾‹å¤–) */
 				let newStatus = { ...status };
 				newStatus.select = false;
 				newStatus.selecting = false;
 				newStatus.holding = false;
 				newStatus.hold = false;
 				newStatus.holdObject = null;
+				newStatus.clear = false;
 				setStatus(newStatus);
 				if (mousePos.between(new Vec2(88, 516), new Vec2(1112, 580))) {
-					/* ¦bª«¥ó½s¿è®w¤ºÂIÀ»«hÀò±o¤@­Ó·sª«¥ó¶i¦æ¾Ş±± */
+					/* åœ¨ç‰©ä»¶ç·¨è¼¯åº«å…§é»æ“Šå‰‡ç²å¾—ä¸€å€‹æ–°ç‰©ä»¶é€²è¡Œæ“æ§ */
 					let objectIndex = ~~((e.offsetX - 88) / 64);
 					let result = '';
 					if (objectIndex === 0) result = 'stoporplay';
+					else if (objectIndex === 15) result = 'clear';
 					else {
 						const objectList = [];
 						objectList.push('class platform');
@@ -91,11 +116,25 @@ export default function Controller(scene, status, setStatus, setting, reset) {
 						objectList.push('class special');
 						if (status.opt === 4) objectList.push(...constant.editObjectList.special);
 						result = (objectList[objectIndex - 1]) ? objectList[objectIndex - 1] : '';
-                    }
+					}
+					let count = 0;
 					switch (result) {
 						case 'stoporplay':
+							newStatus.clear = false;
 							newStatus.active = !newStatus.active;
+							if (newStatus.active) {
+								newStatus.message = { text: 'å»ºè­°åœ¨éœæ­¢ç‹€æ…‹ä¸‹ç·¨è¼¯ç‰©ä»¶', lastPost: Date.now(), color: 'green'};
+                            }
 							reset();
+							break;
+						case 'clear':
+							newStatus.clear = !newStatus.clear;
+							if (newStatus.clear) {
+								newStatus.message = { text: 'æ³¨æ„ï¼ä½ ç¾åœ¨è™•æ–¼æ¸…é™¤ç‰©ä»¶çš„ç‹€æ…‹', lastPost: Date.now(), color: 'green' };
+								newStatus.holding = true;
+								newStatus.holdObject = { type: 'trashCan', pos: new Vec2(e.offsetX, e.offsetY)};
+								newStatus.holdDetail = {};
+                            }
 							break;
 						case 'class platform':
 							newStatus.opt = (status.opt === 1) ? 0 : 1;
@@ -158,10 +197,19 @@ export default function Controller(scene, status, setStatus, setting, reset) {
 							newStatus.holdObject.setPerspective(true);
 							break;
 						case 'portal':
-							newStatus.holding = true;
-							newStatus.holdObject = new GameObject.portal(new Vec2(e.offsetX, e.offsetY));
-							newStatus.holdDetail = newStatus.holdObject.detailFunction();
-							newStatus.holdObject.setPerspective(true);
+							count = 0;
+							for (let i = 0; i < setting.objects.length; i++) {
+								if (setting.objects[i].type === 'portal') count++;
+							}
+							if (count < 16) {
+								newStatus.holding = true;
+								newStatus.holdObject = new GameObject.portal(new Vec2(e.offsetX, e.offsetY));
+								newStatus.holdDetail = newStatus.holdObject.detailFunction();
+								newStatus.holdObject.setPerspective(true);
+							} else {
+								newStatus.holding = false;
+								newStatus.message = { text: 'å‚³é€é–€æœ€å¤šåªèƒ½æ”¾ç½® 16 å€‹', lastPost: Date.now() };
+                            }
 							break;
 						case 'trapPlatform':
 							newStatus.holding = true;
@@ -176,16 +224,34 @@ export default function Controller(scene, status, setStatus, setting, reset) {
 							newStatus.holdObject.setPerspective(true);
 							break;
 						case 'lockedWall':
-							newStatus.holding = true;
-							newStatus.holdObject = new GameObject.lockedWall(new Vec2(e.offsetX, e.offsetY));
-							newStatus.holdDetail = newStatus.holdObject.detailFunction();
-							newStatus.holdObject.setPerspective(true);
+							count = 0;
+							for (let i = 0; i < setting.objects.length; i++) {
+								if (setting.objects[i].type === 'lockedWall') count++;
+							}
+							if (count < 8) {
+								newStatus.holding = true;
+								newStatus.holdObject = new GameObject.lockedWall(new Vec2(e.offsetX, e.offsetY));
+								newStatus.holdDetail = newStatus.holdObject.detailFunction();
+								newStatus.holdObject.setPerspective(true);
+							} else {
+								newStatus.holding = false;
+								newStatus.message = { text: 'ä¸Šé–çš„ç‰†æœ€å¤šåªèƒ½æ”¾ç½® 8 å€‹', lastPost: Date.now() };
+                            }
 							break;
 						case 'unlocker':
-							newStatus.holding = true;
-							newStatus.holdObject = new GameObject.unlocker(new Vec2(e.offsetX, e.offsetY));
-							newStatus.holdDetail = newStatus.holdObject.detailFunction();
-							newStatus.holdObject.setPerspective(true);
+							count = 0;
+							for (let i = 0; i < setting.objects.length; i++) {
+								if (setting.objects[i].type === 'unlocker') count++;
+							}
+							if (count < 8) {
+								newStatus.holding = true;
+								newStatus.holdObject = new GameObject.unlocker(new Vec2(e.offsetX, e.offsetY));
+								newStatus.holdDetail = newStatus.holdObject.detailFunction();
+								newStatus.holdObject.setPerspective(true);
+							} else {
+								newStatus.holding = false;
+								newStatus.message = { text: 'é‘°åŒ™æœ€å¤šåªèƒ½æ”¾ç½® 8 å€‹', lastPost: Date.now() };
+                            }
 							break;
 						case 'block':
 							newStatus.holding = true;
@@ -232,6 +298,7 @@ export default function Controller(scene, status, setStatus, setting, reset) {
 						default:
 							break;
 					}
+					if (result !== 'clear') newStatus.clear = false;
 					setStatus(newStatus);
 				}
 			}
@@ -241,14 +308,14 @@ export default function Controller(scene, status, setStatus, setting, reset) {
 	const mouseUpHandler = (e) => {
 		const mousePos = new Vec2(e.offsetX, e.offsetY);
 		if (e.button === 0 && status.select && status.selecting && mousePos.between(mapStart, mapEnd)) {
-			/* ¦b¥¿¦b¿ï¾Üªºª¬ºA¤U©ñ¶}¥ªÁä½T©w¿ï¾Ü®æ¤lªº½d³ò«á¸Ñ°£¥¿¦b¿ï¾Üªºª¬ºA */
+			/* åœ¨æ­£åœ¨é¸æ“‡çš„ç‹€æ…‹ä¸‹æ”¾é–‹å·¦éµç¢ºå®šé¸æ“‡æ ¼å­çš„ç¯„åœå¾Œè§£é™¤æ­£åœ¨é¸æ“‡çš„ç‹€æ…‹ */
 			let newStatus = { ...status };
 			newStatus.selecting = false;
 			let selectGridPos = mousePos.sub(mapStart).toGrid(w);
 			newStatus.selectPair[1] = selectGridPos;
 			setStatus(newStatus);
 		} else {
-			/* §_«h¦b¥ô¦ó¨ä¥Lª¬ªp³£ª½±µ¸Ñ°£¿ï¾Ü/¥¿¦b¿ï¾Üªºª¬ºA */
+			/* å¦å‰‡åœ¨ä»»ä½•å…¶ä»–ç‹€æ³éƒ½ç›´æ¥è§£é™¤é¸æ“‡/æ­£åœ¨é¸æ“‡çš„ç‹€æ…‹ */
 			let newStatus = { ...status };
 			newStatus.select = false;
 			newStatus.selecting = false;

@@ -1,4 +1,4 @@
-import constant from './constant';
+ï»¿import constant from './constant';
 import Layer from './Class/Layer';
 import { spikedBlock, platform, bow, movingPlatform, mucus, cymbal, ice, conveyor, portal, trapPlatform, missileBase, lockedWall, unlocker, block, movingPlatform_oblique, movingPlatform_rect, woodenBox, magnet, brokenPlatform, deathTotem } from './Class/GameObject';
 
@@ -7,7 +7,7 @@ export function enpackage(setting) {
         map: [],
         objects: [],
     };
-    /* ¦a¹Ï¥´¥] */
+    /* åœ°åœ–æ‰“åŒ… */
     for (let i = 0; i < constant.mapSize.y; i++) {
         let types = [];
         for (let j = 0; j < constant.mapSize.x; j++) {
@@ -15,7 +15,7 @@ export function enpackage(setting) {
         }
         levelSetting.map[i] = types;
     } 
-    /* ª«¥ó¥´¥] */
+    /* ç‰©ä»¶æ‰“åŒ… */
     let count = 0;
     for (let i = 0; i < setting.objects.length; i++) {
         if (setting.objects[i].enpackage) levelSetting.objects[count++] = setting.objects[i].enpackage();
@@ -28,7 +28,7 @@ export function unpackage(levelSetting) {
         map: [],
         objects: [],
     } 
-    /* ¦a¹Ï©î¥] */
+    /* åœ°åœ–æ‹†åŒ… */
     for (let i = 0; i < constant.mapSize.y; i++) {
         let types = [];
         for (let j = 0; j < constant.mapSize.x; j++) {
@@ -36,7 +36,7 @@ export function unpackage(levelSetting) {
         }
         setting.map[i] = types;
     }
-    /* ª«¥ó©î¥] */
+    /* ç‰©ä»¶æ‹†åŒ… */
     for (let i = 0; i < levelSetting.objects.length; i++) {
         switch (levelSetting.objects[i].type) {
             case 'spikedBlock':

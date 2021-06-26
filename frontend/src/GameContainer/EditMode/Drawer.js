@@ -1,4 +1,4 @@
-import * as api from '../Drawer';
+﻿import * as api from '../Drawer';
 import Vec2 from '../Class/Vec2';
 import constant from '../constant';
 import * as GameObject from '../Class/GameObject';
@@ -8,19 +8,20 @@ function Drawer(ctx, setting, status) {
 	let objects = setting.objects;
 	const w = constant.gridWidth;
 
-	/* �M�ŵe�� */
+
+	/* 清空畫布 */
 	api.clear(ctx);
 
 	ctx.save();
 	ctx.rect(constant.mapStart.x, constant.mapStart.y, constant.mapSize.x * w, constant.mapSize.y * w);
 	ctx.clip();
 
-	/* ø�s�a�� */
+	/* 繪製地圖 */
 	ctx.save();
 	ctx.translate(constant.mapStart.x, constant.mapStart.y);
 	api.drawMap(ctx, map);
 
-	/* ø�s��ܮ� */
+	/* 繪製選擇格 */
 	if (status.select) {
 		let luPos = Vec2.leftUp(status.selectPair[0], status.selectPair[1]);
 		let rdPos = Vec2.rightDown(status.selectPair[0], status.selectPair[1]);
@@ -38,7 +39,7 @@ function Drawer(ctx, setting, status) {
 
 	ctx.restore();
 
-	/* ø�s���� */
+	/* 繪製物件 */
 	for (let i = 0; i < constant.maxLayer; i++) {
 		for (let j = 0; j < objects.length; j++) {
 			if (objects[j].layer.status[i]) objects[j].draw(ctx, i);
@@ -47,7 +48,7 @@ function Drawer(ctx, setting, status) {
 
 	ctx.restore();
 
-	/* ø�s�s�誫��w */
+	/* 繪製編輯物件庫 */
 	ctx.save();
 	const editObjectSpace = new Vec2(64, 64);
 	const objectList = [];
@@ -224,9 +225,9 @@ function Drawer(ctx, setting, status) {
 			ctx.font = "15px italic";
 			ctx.strokeStyle = 'white';
 			ctx.lineWidth = 2;
-			ctx.strokeText("platform", editObjectSpace.x * (i + 0.5), editObjectSpace.y * 0.5 + 18);
+			ctx.strokeText("平台類", editObjectSpace.x * (i + 0.5), editObjectSpace.y * 0.5 + 20);
 			ctx.fillStyle = 'black';
-			ctx.fillText("platform", editObjectSpace.x * (i + 0.5), editObjectSpace.y * 0.5 + 18);
+			ctx.fillText("平台類", editObjectSpace.x * (i + 0.5), editObjectSpace.y * 0.5 + 20);
 		} else if (objectList[i - 1] === 'class covering') {
 			let o1 = new GameObject.mucus(new Vec2(editObjectSpace.x * (i + 0.5) - 10, editObjectSpace.y * 0.5 - 10));
 			o1.draw(ctx);
@@ -239,9 +240,9 @@ function Drawer(ctx, setting, status) {
 			ctx.font = "15px italic";
 			ctx.strokeStyle = 'white';
 			ctx.lineWidth = 2;
-			ctx.strokeText("covering", editObjectSpace.x * (i + 0.5), editObjectSpace.y * 0.5 + 18);
+			ctx.strokeText("覆蓋類", editObjectSpace.x * (i + 0.5), editObjectSpace.y * 0.5 + 20);
 			ctx.fillStyle = 'black';
-			ctx.fillText("covering", editObjectSpace.x * (i + 0.5), editObjectSpace.y * 0.5 + 18);
+			ctx.fillText("覆蓋類", editObjectSpace.x * (i + 0.5), editObjectSpace.y * 0.5 + 20);
 		} else if (objectList[i - 1] === 'class obstacle') {
 			let o1 = new GameObject.spikedBlock(new Vec2(editObjectSpace.x * (i + 0.5) - 3, editObjectSpace.y * 0.5 - 6));
 			ctx.save();
@@ -262,9 +263,9 @@ function Drawer(ctx, setting, status) {
 			ctx.font = "15px italic";
 			ctx.strokeStyle = 'white';
 			ctx.lineWidth = 2;
-			ctx.strokeText("obstacle", editObjectSpace.x * (i + 0.5), editObjectSpace.y * 0.5 + 18);
+			ctx.strokeText("障礙類", editObjectSpace.x * (i + 0.5), editObjectSpace.y * 0.5 + 20);
 			ctx.fillStyle = 'black';
-			ctx.fillText("obstacle", editObjectSpace.x * (i + 0.5), editObjectSpace.y * 0.5 + 18);
+			ctx.fillText("障礙類", editObjectSpace.x * (i + 0.5), editObjectSpace.y * 0.5 + 20);
 		} else if (objectList[i - 1] === 'class special') {
 			let o1 = new GameObject.portal(new Vec2(editObjectSpace.x * (i + 0.5) - 2, editObjectSpace.y * 0.5 - 7));
 			o1.index = 1;
@@ -274,19 +275,56 @@ function Drawer(ctx, setting, status) {
 			o2.draw(ctx);
 			ctx.textAlign = "center";
 			ctx.textBaseline = 'middle';
-			ctx.font = '15px  italic';
+			ctx.font = '15px  sans-serif';
 			ctx.strokeStyle = 'white';
-			ctx.lineWidth = 2;
-			ctx.strokeText("special", editObjectSpace.x * (i + 0.5), editObjectSpace.y * 0.5 + 18);
+			ctx.strokeText("特殊類", editObjectSpace.x * (i + 0.5), editObjectSpace.y * 0.5 + 20);
 			ctx.fillStyle = 'black';
-			ctx.fillText("special", editObjectSpace.x * (i + 0.5), editObjectSpace.y * 0.5 + 18);
+			ctx.fillText("特殊類", editObjectSpace.x * (i + 0.5), editObjectSpace.y * 0.5 + 20);
 		}
     }
 	ctx.restore();
 
-	if (status.holding || status.hold) {
-		status.holdObject.draw(ctx);
-	}
+	/* 繪製手中的物件 */
+	if (status.clear) {
+		ctx.save();
+		ctx.translate(status.holdObject.pos.x, status.holdObject.pos.y);
+		api.drawTrashCan(ctx, 0.5 * w);
+		ctx.restore();
+	} else {
+		if (status.holding || status.hold) {
+			status.holdObject.draw(ctx);
+		}
+    }
+
+
+	/* 繪製訊息 */
+	if (status.message.text !== '') {
+		ctx.save();
+
+		let messageCycle = ((Date.now() - status.message.lastPost) / 3000);
+		messageCycle = (messageCycle < 0.05) ? messageCycle / 0.05 :
+					   (messageCycle > 0.9) ? Math.max((1 - messageCycle), 0) / 0.1: 1 ;
+		ctx.globalAlpha = messageCycle;
+
+		ctx.translate(constant.mapStart.x, constant.mapStart.y);
+		ctx.globalAlpha *= 0.2;
+
+		ctx.beginPath();
+		ctx.rect(constant.mapSize.x * w * 0.3, 0, constant.mapSize.x * w * 0.4, w);
+		ctx.fillStyle = 'white';
+		ctx.fill();
+		ctx.closePath();
+
+		ctx.globalAlpha *= 5;
+		ctx.textAlign = "center";
+		ctx.textBaseline = 'middle';
+		ctx.font = "15px italic";
+		ctx.lineWidth = 2;
+		ctx.fillStyle = (status.message.color) ? status.message.color: 'red';
+		ctx.fillText(status.message.text, constant.mapSize.x * w * 0.5, 0.5 * w);
+
+		ctx.restore();
+    }
 }
 
 export default Drawer;

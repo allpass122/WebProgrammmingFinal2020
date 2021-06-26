@@ -1,11 +1,11 @@
-const maxLayer = 5;
+ï»¿const maxLayer = 5;
 
 export default class Layer {
-    constructor(...status) { // new Layer(0, 1, 3) ³Ğ³y¦û¾Ú¼h¼Æ 0, 1, 3 ªºª«¥ó
+    constructor(...status) { // new Layer(0, 1, 3) å‰µé€ ä½”æ“šå±¤æ•¸ 0, 1, 3 çš„ç‰©ä»¶
         this.status = [false, false, false, false, false];
         if (status.length !== 0) this.fill(...status);
     }
-    fill(...targets) { // fill(2, 4) §â¼h¼Æ 2, 4 ¦û¾Ú (¹w³]¬°¥ş³¡¶ñº¡) * Äİ±j¨îÂĞ»\
+    fill(...targets) { // fill(2, 4) æŠŠå±¤æ•¸ 2, 4 ä½”æ“š (é è¨­ç‚ºå…¨éƒ¨å¡«æ»¿) * å±¬å¼·åˆ¶è¦†è“‹
         if (targets.length !== 0) {
             for (let i = 0; i < targets.length; i++) {
                 if (targets[i] < maxLayer && targets[i] >= 0) {
@@ -14,7 +14,7 @@ export default class Layer {
             }
         } else this.status = [true, true, true, true, true];
     }
-    clear(...targets) { // claer(0, 1, 3) §â¼h¼Æ 0, 1, 3 ¸Ñ°£¦û¾Ú (¹w³]¬°¥ş³¡²MªÅ) * Äİ±j¨î²MªÅ
+    clear(...targets) { // claer(0, 1, 3) æŠŠå±¤æ•¸ 0, 1, 3 è§£é™¤ä½”æ“š (é è¨­ç‚ºå…¨éƒ¨æ¸…ç©º) * å±¬å¼·åˆ¶æ¸…ç©º
         if (targets.length !== 0) {
             for (let i = 0; i < targets.length; i++) {
                 if (targets[i] < maxLayer && targets[i] >= 0) {
@@ -23,20 +23,20 @@ export default class Layer {
             }
         } else this.status = [false, false, false, false, false];
     }
-    isOverlap(that) { // ½T»{¬O§_¨â­Ó¼h¼Æª«¥ó¬O§_­«Å|
+    isOverlap(that) { // ç¢ºèªæ˜¯å¦å…©å€‹å±¤æ•¸ç‰©ä»¶æ˜¯å¦é‡ç–Š
         for (let i = 0; i < maxLayer; i++) {
             if (this.status[i] && that.status[i]) return true;
         }
         return false;
     }
-    add(that) { // ±Nª«¥óªº¼h¼ÆÅ|¥[ * ¥²¶·Äİ©ó«D­«Å|ª«¥ó¤~¥i¥HÅ|¥[
+    add(that) { // å°‡ç‰©ä»¶çš„å±¤æ•¸ç–ŠåŠ  * å¿…é ˆå±¬æ–¼éé‡ç–Šç‰©ä»¶æ‰å¯ä»¥ç–ŠåŠ 
         if (this.isOverlap(that)) return false;
         for (let i = 0; i < maxLayer; i++) {
             if (that.status[i]) this.status[i] = true;
         }
         return true;
     }
-    sub(that) { // ±Nª«¥óªº¼h¼Æ®ø°£
+    sub(that) { // å°‡ç‰©ä»¶çš„å±¤æ•¸æ¶ˆé™¤
         for (let i = 0; i < maxLayer; i++) {
             if (that.status[i]) this.status[i] = false;
         }
@@ -48,13 +48,13 @@ export default class Layer {
         }
         return new Layer(...status);
     }
-    top() { // ¦^¶Ç³Q¦û¾Ú³Ì°ª¼h©Ò¦b¼h¼Æ
+    top() { // å›å‚³è¢«ä½”æ“šæœ€é«˜å±¤æ‰€åœ¨å±¤æ•¸
         for (let i = 0; i < maxLayer; i++) {
             if (this.status[maxLayer - 1 - i]) return maxLayer - 1 - i;
         }
         return -1;
     }
-    bottom() { // ¦^¶Ç³Q¦û¾Ú³Ì©³¼h©Ò¦b¼h¼Æ
+    bottom() { // å›å‚³è¢«ä½”æ“šæœ€åº•å±¤æ‰€åœ¨å±¤æ•¸
         for (let i = 0; i < maxLayer; i++) {
             if (this.status[i]) return i;
         }

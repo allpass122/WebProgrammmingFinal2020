@@ -1,20 +1,20 @@
-import Vec2 from './Class/Vec2';
+ï»¿import Vec2 from './Class/Vec2';
 import Layer from './Class/Layer';
 
 const constant = {
-	mapStart: new Vec2(88, 0), // ¦a¹Ïªº°_©lÂI¦ì¤l(¥ª¤W®y¼Ğ)
-	mapSize: new Vec2(32, 16), // ¦a¹Ïªººô®æ®æ§½
-	gridWidth: 32, // ¦a¹Ïªº¨C®æ¼e«×
-	blockColor: '#E0E0E0', // ³õ¥~®æ¤l©³¦â
-	startColor: '#DFFFDF', // °_ÂI®æ¤l©³¦â
-	endColor: '#FFD2D2', // ²×ÂI®æ¤l©³¦â
-	noneColor: '#FFFFFF', // ªÅ¦a®æ¤l©³¦â
-	deadColor: '#EBD3E8', // ¬r­±®æ¤l©³¦â
-	iceColor: '#D9FFFF', // ¦B­±®æ¤l©³¦â
-	muddyColor: "#D6D6AD", // ªd­±®æ¤l©³¦â
-	boundaryColor: '#0080FF', // Ãä¬É®æ½uÃC¦â
-	auxiliaryColor: '#D2E9FF', // »²§U®æ½uÃC¦â
-	typeLayerPairs: { // ¦UÃş®æ¤l¦û¾Úªº¼h¼Æ
+	mapStart: new Vec2(88, 0), // åœ°åœ–çš„èµ·å§‹é»ä½å­(å·¦ä¸Šåº§æ¨™)
+	mapSize: new Vec2(32, 16), // åœ°åœ–çš„ç¶²æ ¼æ ¼å±€
+	gridWidth: 32, // åœ°åœ–çš„æ¯æ ¼å¯¬åº¦
+	blockColor: '#E0E0E0', // å ´å¤–æ ¼å­åº•è‰²
+	startColor: '#DFFFDF', // èµ·é»æ ¼å­åº•è‰²
+	endColor: '#FFD2D2', // çµ‚é»æ ¼å­åº•è‰²
+	noneColor: '#FFFFFF', // ç©ºåœ°æ ¼å­åº•è‰²
+	deadColor: '#EBD3E8', // æ¯’é¢æ ¼å­åº•è‰²
+	iceColor: '#D9FFFF', // å†°é¢æ ¼å­åº•è‰²
+	muddyColor: "#D6D6AD", // æ³¥é¢æ ¼å­åº•è‰²
+	boundaryColor: '#0080FF', // é‚Šç•Œæ ¼ç·šé¡è‰²
+	auxiliaryColor: '#D2E9FF', // è¼”åŠ©æ ¼ç·šé¡è‰²
+	typeLayerPairs: { // å„é¡æ ¼å­ä½”æ“šçš„å±¤æ•¸
 		'none': new Layer(),
 		'block': new Layer(),
 		'start': new Layer(0, 1, 2, 3),
@@ -23,7 +23,7 @@ const constant = {
 		'ice': new Layer(),
 		'muddy': new Layer()
 	},
-	maxLayer: 5, // ³Ì¤j¦û¾Ú¼h¼Æ
+	maxLayer: 5, // æœ€å¤§ä½”æ“šå±¤æ•¸
 	editObjectList: {
 		platform: ['platform', 'movingPlatform', 'movingPlatform_oblique', 'movingPlatform_rect', 'trapPlatform', 'brokenPlatform'],
 		covering: ['mucus', 'ice', 'conveyor', 'deathTotem'],

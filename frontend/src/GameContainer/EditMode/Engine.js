@@ -1,4 +1,4 @@
-import constant from '../constant';
+﻿import constant from '../constant';
 
 export default function Engine(objects, map) {
     for (let i = 0; i < constant.maxLayer; i++) {
