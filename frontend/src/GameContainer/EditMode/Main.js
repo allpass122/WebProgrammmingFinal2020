@@ -45,6 +45,8 @@ const EtC = {
     portal: '傳送門',
     lockedWall: '上鎖的牆',
     unlocker: '鑰匙',
+    woodenBox: '木箱',
+    magnet: '磁鐵',
 
     direction: '方向',
     up: '上',
@@ -73,6 +75,9 @@ const EtC = {
     range: '範圍',
     large: '大',
     small: '小',
+    magneticField: '磁場',
+    attraction: '吸引',
+    repulsion: '排斥',
 
     distance: '距離',
     width: '寬',

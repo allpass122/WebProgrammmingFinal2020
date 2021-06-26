@@ -649,6 +649,7 @@ export class arrow {
         for (let i = 0; i < objects.length; i++) {
             if (objects[i].id !== this.id && objects[i].collision) {
                 let result = objects[i].collision({ type: 'sphere', pos: this.pos, r: 0.1 });
+                console.log(result);
                 if (result === 'ice') this.speed *= 1.05;
                 // else if (result === 'conveyor') this.detail.direction = objects[i].detail.direction;
                 else if (result === 'portal') this.pos = objects[i].teleport(objects);
@@ -657,6 +658,7 @@ export class arrow {
                     //objects[i].push(objects, map, this.pos);
                     return { type: 'destory' };
                 }
+                else if (result === 'magneticField') this.pos = this.pos.add(objects[i].getDisplacement());
                 else if (result === 'unlocker') objects[i].unlock(objects);
                 else if (result === 'block' || result === 'lockedWall') return { type: 'destory' };
             }
@@ -1974,6 +1976,7 @@ export class missile {
                     objects[i].push(objects, map, this.pos);
                     return { type: 'destory' };
                 }
+                else if (result === 'magneticField') this.pos = this.pos.add(objects[i].getDisplacement());
             }
         }
         this.dirVec = this.target.pos.sub(this.pos).unit();
@@ -2896,6 +2899,9 @@ export class woodenBox {
                         this.pos = objects[i].pos.clone();
                         this.push(objects, map, this.pos.sub(Vec2.direction(objects[i].detail.direction)));
                         break;
+                    } else if (result === 'magneticField') {
+                        this.push(objects, map, this.pos.sub(objects[i].getDisplacement()));
+                        break;
                     } else if (result === 'mucus' && !objects[i].loadObject) {
                         objects[i].loadObject = {
                             id: this.id,
@@ -2919,15 +2925,31 @@ export class woodenBox {
         let radian = targetPos.sub(this.pos).radian();
         if (radian >= 0.25 * Math.PI && radian < 0.75 * Math.PI) { // ¤W
             if (gridPos.y === 0 || map[gridPos.y - 1][gridPos.x].layer.status[3] || map[gridPos.y - 1][gridPos.x].type === 'block') return;
+            for (let i = 0; i < objects.length; i++) {
+                let searchGridPos = objects[i].pos.sub(constant.mapStart).toGrid(w);
+                if (searchGridPos.equal(new Vec2(gridPos.x, gridPos.y - 1)) && objects[i].type === 'woodenBox') return;
+            }
             this.moveTo = 'up';
         } else if (radian >= 1.75 * Math.PI || radian < 0.25 * Math.PI) { // ¥ª
             if (gridPos.x === 0 || map[gridPos.y][gridPos.x - 1].layer.status[3] || map[gridPos.y][gridPos.x - 1].type === 'block') return;
+            for (let i = 0; i < objects.length; i++) {
+                let searchGridPos = objects[i].pos.sub(constant.mapStart).toGrid(w);
+                if (searchGridPos.equal(new Vec2(gridPos.x - 1, gridPos.y)) && objects[i].type === 'woodenBox') return;
+            }
             this.moveTo = 'left';
         } else if (radian >= 1.25 * Math.PI && radian < 1.75 * Math.PI) { // ¤U
             if (gridPos.y === constant.mapSize.y - 1 || map[gridPos.y + 1][gridPos.x].layer.status[3] || map[gridPos.y + 1][gridPos.x].type === 'block') return;
+            for (let i = 0; i < objects.length; i++) {
+                let searchGridPos = objects[i].pos.sub(constant.mapStart).toGrid(w);
+                if (searchGridPos.equal(new Vec2(gridPos.x, gridPos.y + 1)) && objects[i].type === 'woodenBox') return;
+            }
             this.moveTo = 'down';
         } else { // ¥k
             if (gridPos.x === constant.mapSize.x - 1 || map[gridPos.y][gridPos.x + 1].layer.status[3] || map[gridPos.y][gridPos.x + 1].type === 'block') return;
+            for (let i = 0; i < objects.length; i++) {
+                let searchGridPos = objects[i].pos.sub(constant.mapStart).toGrid(w);
+                if (searchGridPos.equal(new Vec2(gridPos.x + 1, gridPos.y)) && objects[i].type === 'woodenBox') return;
+            }
             this.moveTo = 'right';
         }
         map[this.gridPos.y][this.gridPos.x].layer.status[3] = false;
@@ -3013,5 +3035,193 @@ export class woodenBox {
                 }
             }
         }
+    }
+}
+
+/* ºÏÅK */
+export class magnet {
+    constructor(pos = new Vec2(0, 0)) {
+        this.type = 'magnet';
+        this.id = uuidv4();
+        this.pos = pos;
+        this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
+
+        this.detail = {
+            name: 'magnet',
+            direction: 'up',
+            magneticField: 'attraction',
+            distance: 3,
+        };
+
+        this.loadable = false;
+
+        this.active = false;
+        this.perspective = false;
+
+        this.lastRecord = 0;
+
+        this.layer = new Layer(4);
+    }
+    clone() {
+        const cloneObject = new magnet();
+        cloneObject.unpackage(this.enpackage());
+        return cloneObject;
+    }
+    setPerspective(perspective) {
+        this.perspective = perspective;
+    }
+    detailFunction() {
+        return {
+            name: { type: 'text' },
+            direction: { type: 'select', options: ['up', 'down', 'left', 'right'] },
+            magneticField: { type: 'select', options: ['attraction', 'repulsion'] },
+            distance: { type: 'int', min: 1, max: 15 },
+        };
+    }
+    enpackage() {
+        return {
+            type: this.type,
+            id: this.id,
+            gridPos: { x: this.gridPos.x, y: this.gridPos.y },
+
+            name: this.detail.name,
+            direction: this.detail.direction,
+            magneticField: this.detail.magneticField,
+            distance: this.detail.distance,
+        };
+    }
+    unpackage(objectSetting) {
+        this.type = objectSetting.type;
+        this.id = objectSetting.id;
+        this.gridPos = new Vec2(objectSetting.gridPos.x, objectSetting.gridPos.y);
+        this.pos = this.gridPos.mul(w).add(constant.mapStart).add(new Vec2(0.5 * w, 0.5 * w));
+
+        this.detail.name = objectSetting.name;
+        this.detail.direction = objectSetting.direction;
+        this.detail.magneticField = objectSetting.magneticField;
+        this.detail.distance = objectSetting.distance;
+
+        this.perspective = true;
+    }
+    update(objects, map) {
+        if (Date.now() - this.lastRecord > 1000) this.lastRecord = Date.now();
+        return { type: 'none' };
+    }
+    collision(target) {
+        let dirVec = Vec2.direction(this.detail.direction).mul(w * this.detail.distance / 2);
+        let size = (this.detail.direction === 'up' || this.detail.direction === 'down') ? new Vec2(w, this.detail.distance * w + 0.5 * w) : new Vec2(this.detail.distance * w + 0.5 * w, w) ;
+        if (isCollision({ type: 'cube', pos: this.pos.add(dirVec), size: size }, target)) return 'magneticField';
+        return 'none';
+    }
+    getDisplacement() {
+        return Vec2.direction(this.detail.direction).mul((this.detail.magneticField === 'attraction')? -1: 1).mul(w * 0.01);
+    }
+    draw(ctx, layer = -1) {
+        ctx.save();
+        ctx.translate(this.pos.x, this.pos.y);
+        ctx.globalAlpha = (this.perspective) ? 0.8 : 1;
+        let dir = this.detail.direction;
+        ctx.rotate((dir === 'up') ? 0 : (dir === 'down') ? Math.PI : (dir === 'left') ? 1.5 * Math.PI : 0.5 * Math.PI);
+
+        ctx.beginPath();
+        ctx.moveTo(0.4 * w, -0.4 * w);
+        ctx.arc(0, 0, 0.4 * w, 0, Math.PI);
+        ctx.lineTo(-0.4 * w, -0.4 * w);
+        ctx.lineTo(-0.2 * w, -0.4 * w);
+        ctx.lineTo(-0.2 * w, 0);
+        ctx.arc(0, 0, 0.2 * w, Math.PI, 0, true);
+        ctx.lineTo(0.2 * w, -0.4 * w);
+        ctx.lineTo(0.4 * w, -0.4 * w);
+        ctx.fillStyle = '#43315e';
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.beginPath();
+        ctx.rect(-0.38 * w, -0.4 * w, 0.16 * w, 0.3 * w);
+        ctx.fillStyle = 'red';
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.textAlign = "center";
+        ctx.textBaseline = 'middle';
+        ctx.font = "5px italic";
+        ctx.fillStyle = 'white';
+        ctx.fillText("N", -0.3 * w, -0.25 * w);
+
+        ctx.beginPath();
+        ctx.rect(0.22 * w, -0.4 * w, 0.16 * w, 0.3 * w);
+        ctx.fillStyle = 'blue';
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.textAlign = "center";
+        ctx.textBaseline = 'middle';
+        ctx.font = "6px italic";
+        ctx.fillStyle = 'white';
+        ctx.fillText("S", 0.3 * w, -0.25 * w);
+
+        ctx.beginPath();
+        ctx.moveTo(0.4 * w, -0.4 * w);
+        ctx.arc(0, 0, 0.4 * w, 0, Math.PI);
+        ctx.lineTo(-0.4 * w, -0.4 * w);
+        ctx.lineTo(-0.2 * w, -0.4 * w);
+        ctx.lineTo(-0.2 * w, 0);
+        ctx.arc(0, 0, 0.2 * w, Math.PI, 0, true);
+        ctx.lineTo(0.2 * w, -0.4 * w);
+        ctx.lineTo(0.4 * w, -0.4 * w);
+        ctx.strokeStyle = 'black';
+        ctx.stroke();
+        ctx.closePath();
+
+        if (this.active) {
+            ctx.beginPath();
+            ctx.rect(-0.5 * w, -0.5 * w - w * this.detail.distance, w, w * this.detail.distance);
+            ctx.clip();
+            ctx.closePath();
+
+            ctx.globalAlpha = 0.3;
+            ctx.translate(0, w * (Date.now() - this.lastRecord) / 1000 * ((this.detail.magneticField == 'repulsion') ? -1 : 1));
+
+            ctx.beginPath();
+            ctx.moveTo(-0.3 * w, 0.5 * w);
+            ctx.lineTo(-0.3 * w, 0.5 * w - w * this.detail.distance - 2 * w);
+            ctx.setLineDash([0.5, 0, 5]);
+            ctx.strokeStyle = 'gray';
+            ctx.stroke();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.moveTo(0, 0.5 * w);
+            ctx.lineTo(0, 0.5 * w - w * this.detail.distance - 2 * w);
+            ctx.setLineDash([0.5, 0, 5]);
+            ctx.strokeStyle = 'gray';
+            ctx.stroke();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.moveTo(0.3 * w, 0.5 * w);
+            ctx.lineTo(0.3 * w, 0.5 * w - w * this.detail.distance - 2 * w);
+            ctx.setLineDash([0.5, 0, 5]);
+            ctx.strokeStyle = 'gray';
+            ctx.stroke();
+            ctx.closePath();
+        }
+
+        ctx.restore();
+    }
+    place(map, objects = null) {
+        this.active = true;
+        this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
+        let gridPos = this.gridPos;
+        if (constant.typeLayerPairs[map[gridPos.y][gridPos.x].type].isOverlap(this.layer)) return false;
+        if (map[gridPos.y][gridPos.x].layer.isOverlap(this.layer)) return false;
+        map[gridPos.y][gridPos.x].layer.add(this.layer);
+        this.lastRecord = Date.now();
+        return true;
+    }
+    remove(map, objects = null) {
+        this.active = false;
+        let gridPos = this.gridPos;
+        map[gridPos.y][gridPos.x].layer.sub(this.layer);
     }
 }

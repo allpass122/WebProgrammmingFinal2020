@@ -28,7 +28,7 @@ const constant = {
 		platform: ['platform', 'movingPlatform', 'movingPlatform_oblique', 'movingPlatform_rect', 'trapPlatform'],
 		covering: ['mucus', 'ice', 'conveyor'],
 		obstacle: ['block', 'spikedBlock', 'woodenBox', 'bow', 'cymbal', 'missileBase'],
-		special: ['portal', 'lockedWall', 'unlocker'],
+		special: ['portal', 'lockedWall', 'unlocker', 'magnet'],
 	},
 	editFrame: {
 		default: { fColor: '#F0F0F0', sColor: '#BEBEBE' },

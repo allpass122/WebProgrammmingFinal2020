@@ -29,7 +29,7 @@ function Drawer(ctx, setting, status) {
 		ctx.save();
 		ctx.beginPath();
 		ctx.rect(luPos.x * w, luPos.y * w, range.x * w, range.y * w);
-		ctx.setLineDash([0.5, 0,5]);
+		ctx.setLineDash([0.5, 0, 5]);
 		ctx.strokeStyle = 'black';
 		ctx.stroke();
 		ctx.closePath();
@@ -176,6 +176,10 @@ function Drawer(ctx, setting, status) {
 				case 'woodenBox':
 					o = new GameObject.woodenBox(new Vec2(editObjectSpace.x * (i + 0.5), editObjectSpace.y * 0.5));
 					type = 'obstacle';
+					break;
+				case 'magnet':
+					o = new GameObject.magnet(new Vec2(editObjectSpace.x * (i + 0.5), editObjectSpace.y * 0.5));
+					type = 'special';
 					break;
 			}
 		}
