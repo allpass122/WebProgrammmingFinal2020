@@ -192,7 +192,9 @@ function Edit(props) {
           variant="contained"
           color="secondary"
           onClick={() => {
-            childRef.current.returnSetting();
+            if (childRef.current) {
+              childRef.current.returnSetting();
+            }
             if (!title || !description) {
               setOpen(true);
             } else {
