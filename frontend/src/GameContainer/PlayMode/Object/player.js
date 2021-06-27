@@ -34,7 +34,6 @@ export default class Player {
 
   updateFAV(dt) {
     // acceleration change  a = (F + f*v*v) / m
-    // const v2 = new Vec2(this.velocity.x * Math.abs(this.velocity.x), this.velocity.y * Math.abs(this.velocity.y))
     const v2 = this.velocity.unit().mul( Math.pow(this.velocity.length(),2))
     this.acceleration = this.force.sub(v2.mul(this.friction)).div(this.m)
 
@@ -44,7 +43,6 @@ export default class Player {
     this.checkVelocity()
 
     // location change
-    // super.update(dt);
     this.loc = this.loc.add( this.velocity.mul(dt) )
     this.force = new Vec2(0, 0)
   }
