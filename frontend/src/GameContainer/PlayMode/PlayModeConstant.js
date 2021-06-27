@@ -1,5 +1,5 @@
 
-const constant = {
+export const CONSTANT = {
 	gridWidth: 32,
 	blockColor: '#E0E0E0',
 	canvasLeft: 150,
@@ -15,4 +15,16 @@ const constant = {
 
 };
 
-export default constant;
+export const Msg = {
+	spike:"被刺到了",
+	arrow: "冷箭難防QQ",
+	cymbalWave: "音波！",
+	missile: "來自北緯39°的飛彈",
+	deathTotem: "死亡圖騰！！",
+	
+	// floor
+	dead: "紫色有毒 ~",
+	end: "逃出來惹"
+}
+
+// export default constant;

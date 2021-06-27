@@ -1,9 +1,7 @@
 import {clear, drawMap} from '../Drawer'
 import constant from '../constant';
-import CONSTANT from './PlayModeConstant';
-
+import {CONSTANT} from './PlayModeConstant'
 import { getAsset } from './assets';
-import { createContext } from 'react';
 
 let FOCUS_PLAYER = true
 
@@ -24,7 +22,7 @@ function Drawer(ctx, setting, status) {
 	ctx.save();
 	ctx.translate(constant.mapStart.x, constant.mapStart.y); 
 	focusPlayer(ctx, me)
-	drawMap(ctx, map);
+	drawMap(ctx, map, true);
 	ctx.restore();
 
 	/* ø�s���� */

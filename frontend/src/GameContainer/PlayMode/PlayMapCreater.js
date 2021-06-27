@@ -1,13 +1,13 @@
-import React, { useRef, useEffect, useState, useImperativeHandle, forwardRef, } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import DrawMap from './Drawer';
 import Engine from '../EditMode/Engine';
 import Controller from './Controller';
 import { initState, updateState } from './state'
 import { getAsset, getAssetNames, downloadAssets } from './assets';
-import { enpackage, unpackage, show } from "../DataPackager";
+import { enpackage, unpackage } from "../DataPackager";
 
 
-import CONSTANT from './PlayModeConstant'
+import {CONSTANT} from './PlayModeConstant'
 import Player from './Object/player'
 
 import "./PlayMode.css"
@@ -30,6 +30,7 @@ const PlayMapCreater = (props) => {
         playTime: 0,
         gameState: 'start',
         head: 'seal.svg',
+        msg: "Happy",
         pressDown: false,
         pressRight: false,
         pressLeft: false,
@@ -147,6 +148,7 @@ const PlayMapCreater = (props) => {
             {/* Game Over form */}
             <div className="form-popup" id="gameForm">
                 <span>{status.gameState}</span>
+                <p>{status.msg}</p>
                 <span>{toTimeFormate(status.playTime)}</span>
                 <button className='gameButton' onClick={() => { closeForm("gameForm") }}>Try Again</button>
             </div>

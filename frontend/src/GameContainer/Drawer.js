@@ -5,7 +5,7 @@ export function clear(ctx, pos = { x: 0, y: 0 }, size = { x: ctx.canvas.width, y
 	ctx.clearRect(pos.x, pos.y, size.x, size.y);
 }
 
-export function drawMap(ctx, map, auxiliary = true) {
+export function drawMap(ctx, map, playMode = false) {
 	const mapSize = constant.mapSize;
 	const w = constant.gridWidth; 
 	const blockColor = constant.blockColor;
@@ -40,22 +40,24 @@ export function drawMap(ctx, map, auxiliary = true) {
 			ctx.restore();
 		}
 	}
-	for (let y = 1; y < mapSize.y; y++) {
-		ctx.beginPath();
-		ctx.moveTo(0, y * w);
-		ctx.lineTo(mapSize.x * w, y * w);
-		ctx.strokeStyle = auxiliaryColor;
-		ctx.stroke();
-		ctx.closePath();
+	if (!playMode) {
+		for (let y = 1; y < mapSize.y; y++) {
+			ctx.beginPath();
+			ctx.moveTo(0, y * w);
+			ctx.lineTo(mapSize.x * w, y * w);
+			ctx.strokeStyle = auxiliaryColor;
+			ctx.stroke();
+			ctx.closePath();
+		}
+		for (let x = 0; x < mapSize.x; x++) {
+			ctx.beginPath();
+			ctx.moveTo(x * w, 0);
+			ctx.lineTo(x * w, mapSize.y * w);
+			ctx.strokeStyle = auxiliaryColor;
+			ctx.stroke();
+			ctx.closePath();
+		}
 	}
-	for (let x = 0; x < mapSize.x; x++) {
-		ctx.beginPath();
-		ctx.moveTo(x * w, 0);
-		ctx.lineTo(x * w, mapSize.y * w);
-		ctx.strokeStyle = auxiliaryColor;
-		ctx.stroke();
-		ctx.closePath();
-    }
 	for (let y = 0; y < mapSize.y; y++) {
 		for (let x = 0; x < mapSize.x; x++) {
 			ctx.save();

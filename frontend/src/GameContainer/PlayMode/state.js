@@ -1,6 +1,6 @@
 import Vec2 from "../Class/Vec2";
 import constant from "../constant"
-import CONSTANT from "./PlayModeConstant";
+import {CONSTANT, Msg} from "./PlayModeConstant"
 
 const w = constant.gridWidth;
 let blockArea = []
@@ -104,10 +104,10 @@ function checkLocation(status, map, setStatus) {
   else if (floorType.includes('ice'))
     status.me.setFriction(0.5)
   else if (floorType.includes('dead'))
-    setStatus( () => ({...status, gameState: CONSTANT.GameOver, endTime: Date.now(), playTime:Date.now()-status.startTime })) 
+    setStatus( () => ({...status, gameState: CONSTANT.GameOver,msg:`${Msg["dead"]}`, endTime: Date.now(), playTime:Date.now()-status.startTime })) 
   
   if (floorType.includes('end'))
-    setStatus( () => ({...status, gameState: CONSTANT.WIN, endTime: Date.now(), playTime:Date.now()-status.startTime })) 
+    setStatus( () => ({...status, gameState: CONSTANT.WIN, msg:`${Msg["end"]}`, endTime: Date.now(), playTime:Date.now()-status.startTime })) 
 
   status.me.updateLastLoc()
 }
@@ -147,9 +147,11 @@ function checkEncounter(status, objects, setStatus) {
         touchConveyor++
       } else if (result === 'missileRay') objects[i].fire(me);
       else if (result === 'trap') me.setLastFriction()
-      else if ( result === 'spike' || result === 'arrow' ||  result === 'cymbalWave' || result === 'missile' ){
-        console.log('dead', result)
-        setStatus( () => ({...status, gameState: CONSTANT.GameOver, endTime: Date.now(), playTime:Date.now()-status.startTime})) 
+      else if (result === 'magneticField') me.loc = me.loc.add(objects[i].getDisplacement())
+      else if (result === 'brokenPlatform') objects[i].break();
+      
+      else if ( result === 'spike' || result === 'arrow' ||  result === 'cymbalWave' || result === 'missile' || result === 'deathTotem' ){
+        setStatus( () => ({...status, gameState: CONSTANT.GameOver, msg: `${Msg[result]}`,endTime: Date.now(), playTime:Date.now()-status.startTime})) 
       }
 
       // floor 
