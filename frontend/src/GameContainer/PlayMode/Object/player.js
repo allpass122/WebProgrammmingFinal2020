@@ -2,7 +2,7 @@
 import Vec2 from '../../Class/Vec2';
 const PUSH_FORCE = 800
 const FRICTION = 0.08
-const MAX_VELOCITY = 150
+const MAX_VELOCITY = 160
 
 export default class Player {
   constructor(id, username, x, y) {
@@ -102,7 +102,6 @@ export default class Player {
   squareRebound(target) {
     const vector = (new Vec2(this.loc.x - target.x, this.loc.y - target.y))
     const Theta = Math.atan2(vector.y, vector.x)
-    // console.log(Theta)
     // bound lower, left, upper, right in order
     if (-3 / 4 * Math.PI < Theta && Theta < -1 / 4 * Math.PI)
       this.rebound(new Vec2(this.loc.x, 999))
@@ -116,16 +115,25 @@ export default class Player {
       console.log("why? no bound")
   }
 
+  /* reflect by this.velocity, but have bug */
+  // rebound(target) {
+  //   const normal = (new Vec2(this.loc.x - target.x, this.loc.y - target.y))
+  //   const reflectLineTheta = Math.atan2(normal.y, normal.x) + 0.5 * Math.PI
+  //   const newVelocityX = Math.cos(2 * reflectLineTheta) * this.velocity.x + Math.sin(2 * reflectLineTheta) * this.velocity.y
+  //   const newVelocityY = Math.sin(2 * reflectLineTheta) * this.velocity.x - Math.cos(2 * reflectLineTheta) * this.velocity.y
+  //   this.velocity = new Vec2(newVelocityX, newVelocityY).mul(4)
+  //   this.checkVelocity()
+  // }
+
   rebound(target) {
-    // console.log('rebound', target)
-    const normal = (new Vec2(this.loc.x - target.x, this.loc.y - target.y))
+    const normal = new Vec2(this.loc.x - target.x, this.loc.y - target.y)
     const reflectLineTheta = Math.atan2(normal.y, normal.x) + 0.5 * Math.PI
-    const newVelocityX = Math.cos(2 * reflectLineTheta) * this.velocity.x + Math.sin(2 * reflectLineTheta) * this.velocity.y
-    const newVelocityY = Math.sin(2 * reflectLineTheta) * this.velocity.x - Math.cos(2 * reflectLineTheta) * this.velocity.y
-    this.velocity = new Vec2(newVelocityX, newVelocityY).mul(3)
+    const vec = normal.mul(-1).unit()
+    const newVelocityX = Math.cos(2 * reflectLineTheta) * vec.x + Math.sin(2 * reflectLineTheta) * vec.y
+    const newVelocityY = Math.sin(2 * reflectLineTheta) * vec.x - Math.cos(2 * reflectLineTheta) * vec.y
+    this.velocity = new Vec2(newVelocityX, newVelocityY).mul(50)
     this.checkVelocity()
   }
-
 
   returnLastLoc(dt) {
     this.loc = this.lastLoc
@@ -149,15 +157,11 @@ export default class Player {
 
   push(vec) {
     this.force = vec.mul(PUSH_FORCE)
-    // this.force = this.force.add( vec.mul(PUSH_FORCE) )
   }
 
 
   serializeForUpdate() {
-    // console.log('v= ',this.velocity)
-    // console.log('loc= ',this.loc)
     return {
-      // ...(super.serializeForUpdate()),
       id: this.id,
       loc: this.loc,
       x: this.loc.x,

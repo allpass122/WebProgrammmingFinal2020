@@ -93,7 +93,7 @@ const PlayMapCreater = (props) => {
             elapsed = now - then;
             if (elapsed > fpsInterval) {
                 then = now - (elapsed % fpsInterval);
-                Engine(setting.objects);
+                Engine(setting.objects, setting.map);
                 DrawMap(ctx, setting, status);
             }
         };
