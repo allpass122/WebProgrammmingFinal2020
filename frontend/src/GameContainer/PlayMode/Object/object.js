@@ -1,6 +1,6 @@
 import Vec2 from "../../Class/Vec2";
 
-export default class Object {
+export default class ObjectClass {
   constructor(id, x, y, velocity) {
     this.id = id;
     this.loc = new Vec2(x, y)

@@ -119,7 +119,10 @@ function checkEncounter(status, objects, setStatus) {
   let onPlatform = false
   let platformID, platformPos
   let platformDistance = Math.MAX_SAFE_INTEGER
-
+  let beBlocked = false
+  let touchConveyor = 0
+  console.log('checkEncounter')
+  
   for (let i = 0; i < objects.length; i++) {
     if (objects[i].collision) {
       const result = objects[i].collision({ type: 'sphere', pos: me.loc, r: CONSTANT.PlayerR });
@@ -127,6 +130,7 @@ function checkEncounter(status, objects, setStatus) {
       me.resetFriction()
       console.log('result', result)
       if (result === 'block' || result === 'lockedWall'){
+        beBlocked = true
         me.returnLastLoc() 
         me.squareRebound(objects[i].pos)
       }
@@ -135,22 +139,27 @@ function checkEncounter(status, objects, setStatus) {
         platformDistance =  me.loc.length( objects[i].pos)
         platformID = i
         platformPos = objects[i].pos
-        status.me.setFriction(5)
+        status.me.setFriction(3)
       } else if (result === 'unlocker') objects[i].unlock(objects)
       else if (result === 'portal') me.moveTo(objects[i].teleport(objects)) 
-      else if (result === 'conveyor') me.addVelocity(objects[i].detail.direction, 80)
-      else if (result === 'missileRay') objects[i].fire(me);
-      else if ( result === 'spike' || result === 'arrow' || result === 'trap' ||  result === 'cymbalWave' || result === 'missile' )
-       setStatus( () => ({...status, gameState: CONSTANT.GameOver, endTime: Date.now(), playTime:Date.now()-status.startTime})) 
+      else if (result === 'conveyor' && touchConveyor < 0.99 ) {
+        me.addVelocity(objects[i].detail.direction, 12)
+        touchConveyor++
+      } else if (result === 'missileRay') objects[i].fire(me);
+      else if (result === 'trap') me.setLastFriction()
+      else if ( result === 'spike' || result === 'arrow' ||  result === 'cymbalWave' || result === 'missile' ){
+        console.log('dead', result)
+        setStatus( () => ({...status, gameState: CONSTANT.GameOver, endTime: Date.now(), playTime:Date.now()-status.startTime})) 
+      }
 
       // floor 
       if (result === 'mucus')
         status.me.setFriction(10)
       else if (result === 'ice')
-        status.me.setFriction(0.5)
+        status.me.setFriction(0.4)
     }
   }
-  if (onPlatform){
+  if (onPlatform && !beBlocked){
     me.moveOnPlatform(platformID , platformPos)
   }else me.leavePlatform()
 }
