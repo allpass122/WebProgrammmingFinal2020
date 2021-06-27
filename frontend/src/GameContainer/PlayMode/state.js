@@ -31,12 +31,12 @@ export function initState(status, setting) {
 }
 
 export function updateState(status, setting, setStatus) {
-  const { map, objects } = setting
+  const { map } = setting
 
   const dt = Date.now() - status.lastUpdateTime
 
   checkLocation(status, map, setStatus)
-  checkEncounter(status, objects, setStatus)
+  checkEncounter(status, setting, setStatus)
   status.lastUpdateTime = Date.now()
   push(status)
 
@@ -58,10 +58,10 @@ function push(status){
 function checkLocation(status, map, setStatus) {
   let { x, y } = status.me.serializeForUpdate()
   let {me} = status.me 
-  const LeftBound = constant.mapStart.x + 0.5 * w
-  const RightBound = constant.mapStart.x + constant.mapSize.x * w - 0.5 * w
-  const UpperBound = constant.mapStart.y + 0.5 * w
-  const LowerBound = constant.mapStart.y + constant.mapSize.y * w - 0.5 * w
+  const LeftBound = constant.mapStart.x + CONSTANT.PlayerR
+  const RightBound = constant.mapStart.x + constant.mapSize.x * w - CONSTANT.PlayerR
+  const UpperBound = constant.mapStart.y + CONSTANT.PlayerR
+  const LowerBound = constant.mapStart.y + constant.mapSize.y * w - CONSTANT.PlayerR
 
   // canvas 4 sides rebound
   if (x < LeftBound || x > RightBound || y < UpperBound || y > LowerBound) {
@@ -103,9 +103,9 @@ function checkLocation(status, map, setStatus) {
     status.me.setFriction(5)
   else if (floorType.includes('ice'))
     status.me.setFriction(0.5)
-  else if (floorType.includes('dead'))
+  else if (floorType.includes('dead')) 
     setStatus( () => ({...status, gameState: CONSTANT.GameOver,msg:`${Msg["dead"]}`, endTime: Date.now(), playTime:Date.now()-status.startTime })) 
-  
+
   if (floorType.includes('end'))
     setStatus( () => ({...status, gameState: CONSTANT.WIN, msg:`${Msg["end"]}`, endTime: Date.now(), playTime:Date.now()-status.startTime })) 
 
@@ -114,21 +114,22 @@ function checkLocation(status, map, setStatus) {
 
 
 // check Live: Code from EditMode/Engine
-function checkEncounter(status, objects, setStatus) {
-  let { me, gameState } = status
+function checkEncounter(status, setting, setStatus) {
+  let {objects, map} = setting
+  let { me } = status
   let onPlatform = false
   let platformID, platformPos
   let platformDistance = Math.MAX_SAFE_INTEGER
   let beBlocked = false
   let touchConveyor = 0
-  console.log('checkEncounter')
+  // console.log('checkEncounter')
   
   for (let i = 0; i < objects.length; i++) {
     if (objects[i].collision) {
       const result = objects[i].collision({ type: 'sphere', pos: me.loc, r: CONSTANT.PlayerR });
       if (result.includes('none')) continue
       me.resetFriction()
-      console.log('result', result)
+      // console.log('result', result)
       if (result === 'block' || result === 'lockedWall'){
         beBlocked = true
         me.returnLastLoc() 
@@ -149,6 +150,7 @@ function checkEncounter(status, objects, setStatus) {
       else if (result === 'trap') me.setLastFriction()
       else if (result === 'magneticField') me.loc = me.loc.add(objects[i].getDisplacement())
       else if (result === 'brokenPlatform') objects[i].break();
+      else if (result === 'woodenBox') objects[i].push(objects, map, me.pos);
       
       else if ( result === 'spike' || result === 'arrow' ||  result === 'cymbalWave' || result === 'missile' || result === 'deathTotem' ){
         setStatus( () => ({...status, gameState: CONSTANT.GameOver, msg: `${Msg[result]}`,endTime: Date.now(), playTime:Date.now()-status.startTime})) 

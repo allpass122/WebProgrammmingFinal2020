@@ -7,7 +7,7 @@ import { getAsset, getAssetNames, downloadAssets } from './assets';
 import { enpackage, unpackage } from "../DataPackager";
 
 
-import {CONSTANT} from './PlayModeConstant'
+import {CONSTANT, Link} from './PlayModeConstant'
 import Player from './Object/player'
 
 import "./PlayMode.css"
@@ -31,6 +31,7 @@ const PlayMapCreater = (props) => {
         gameState: 'start',
         head: 'seal.svg',
         msg: "Happy",
+        FOCUS_PLAYER: false,
         pressDown: false,
         pressRight: false,
         pressLeft: false,
@@ -50,7 +51,8 @@ const PlayMapCreater = (props) => {
                 status.endTime - status.startTime,
                 status.gameState === CONSTANT.WIN
             );
-            openForm("gameForm");
+
+            openForm("gameForm")
             setSetting( ()=> unpackage(enpackage(setting)) )
         }
     }, [status]);
@@ -58,7 +60,11 @@ const PlayMapCreater = (props) => {
 
     function closeForm(form) {
         document.getElementById(form).style.display = "none";
-        setStatus(() => ({ ...defaultState, head: status.head , gameState: 'playing' }))
+        startPlay()
+    }
+
+    function startPlay(){
+        setStatus(() => ({ ...defaultState, head: status.head , gameState: 'playing', FOCUS_PLAYER: true }))
     }
 
     function openForm(form) {
@@ -71,18 +77,13 @@ const PlayMapCreater = (props) => {
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
 
-        ctx.restore()
-        ctx.save()
-        ctx.scale(CONSTANT.scale.w, CONSTANT.scale.h);
-        ctx.translate(CONSTANT.translate.x, CONSTANT.translate.y);
-        
+        let cancelController;
+        let requestId;      
+        cancelController = Controller(canvas, status, setStatus, setting);
+
         initState(status, setting)
 
-        let cancelController;
-        let requestId;
-
-        cancelController = Controller(canvas, status, setStatus, setting);
-        let fps, fpsInterval, startTime, now, then, elapsed;
+        let fpsInterval, startTime, now, then, elapsed;
 
         function update() {
             requestId = requestAnimationFrame(update);
@@ -105,8 +106,7 @@ const PlayMapCreater = (props) => {
         }
         startAnimating(30)
 
-        // if (status.gameState !== 'playing')
-        //     cancelAnimationFrame(requestId)
+
         if (status.gameState === CONSTANT.GameOver || status.gameState === 'start'){
             cancelController()
         }
@@ -136,6 +136,11 @@ const PlayMapCreater = (props) => {
         return <img src={img.src}/>
     }
 
+    
+      const githubButton = 
+        <div><button className='githubButton' onClick={() => { window.open(Link.github, "_blank"); }}>
+            <img src={getAsset('star.svg').src} /> Star
+            </button></div>
 
     return (
         <>
@@ -143,7 +148,7 @@ const PlayMapCreater = (props) => {
                 <canvas ref={canvasRef} id='PlayModeCanvas'
                     width={CONSTANT.CanvasWidth}
                     height={CONSTANT.CanvasHeight}
-                    style={{ position: "absolute", left: CONSTANT.canvasLeft, top: CONSTANT.canvasTop, zIndex: 0 }} ></canvas>
+                ></canvas>
             </div>
             {/* Game Over form */}
             <div className="form-popup" id="gameForm">
@@ -151,6 +156,7 @@ const PlayMapCreater = (props) => {
                 <p>{status.msg}</p>
                 <span>{toTimeFormate(status.playTime)}</span>
                 <button className='gameButton' onClick={() => { closeForm("gameForm") }}>Try Again</button>
+                {githubButton}
             </div>
             {/* select player form */}
             <div className="form-popup" id="startForm">
@@ -164,11 +170,9 @@ const PlayMapCreater = (props) => {
                         </label>
                     )) : <></>}
                 </div>
-                <button className='gameButton' onClick={() => { closeForm("startForm") }}>Start</button>
+                <button className='gameButton' onClick={ () =>{ closeForm("startForm");} }>START</button>
+                {githubButton}
             </div>
-
-            {/* <button className='typeButton' onClick={closeForm}>CLOSE</button>
-            <button className='typeButton' onClick={openForm}>OPEN</button> */}
         </>
     )
 }
