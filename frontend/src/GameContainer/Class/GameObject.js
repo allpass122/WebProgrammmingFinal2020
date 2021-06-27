@@ -235,7 +235,7 @@ export class platform {
         this.perspective = true;
     }
     collision(target) {
-        if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.7 * w, 0.7 * w) }, target)) return 'platform';
+        if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.8 * w, 0.8 * w) }, target)) return 'platform';
         return 'none';
     }
     draw(ctx, layer = -1) {
@@ -3318,7 +3318,7 @@ export class brokenPlatform {
         return { type: 'none' };
     }
     collision(target) {
-        if (this.stage < 4 && isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.7 * w, 0.7 * w) }, target)) return 'brokenPlatform';
+        if (this.stage < 4 && isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.99 * w, 0.99 * w) }, target)) return 'brokenPlatform';
         return 'none';
     }
     break() {
