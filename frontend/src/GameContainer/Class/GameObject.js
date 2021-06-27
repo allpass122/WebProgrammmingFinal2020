@@ -943,9 +943,11 @@ export class cymbal {
         let pivot = 0.96 + parameters[this.detail.RoF] * 0.0000025;
         let r = (this.lifeCycle < pivot) ? 0.05 + 0.4 * this.lifeCycle / pivot : 0.05 + 0.4 * (1 - this.lifeCycle) / (1 - pivot);
 
+        ctx.save();
+        ctx.rotate(this.lifeCycle * 8 * Math.PI);
         ctx.beginPath();
         ctx.arc(0, 0, 0.48 * w, 0, 2 * Math.PI);
-        var grd = ctx.createRadialGradient(0, 0, 0, 0, 0, 0.48 * w);
+        var grd = ctx.createRadialGradient(-0.13 * w, -0.13 * w, 0, 0, 0, 0.48 * w);
         grd.addColorStop(0, 'white');
         grd.addColorStop(1, '#D6D6AD');
         ctx.fillStyle = grd;
@@ -953,10 +955,23 @@ export class cymbal {
         ctx.strokeStyle = '#B9B973';
         ctx.stroke();
         ctx.closePath();
+        ctx.restore();
+
+        ctx.save();
+
+        ctx.globalAlpha *= 0.5;
+        ctx.beginPath();
+        ctx.arc(0, 0, 0.4 * w, 0 * Math.PI, 2 * Math.PI);
+        ctx.strokeStyle = '#CDCD9A';
+        ctx.stroke();
+        ctx.closePath();
+
+        ctx.restore();
 
         ctx.beginPath();
+        ctx.globalAlpha *= 0.5;
         ctx.arc(0, 0, r * w, 0, 2 * Math.PI);
-        ctx.lineWidth = 1.6;
+        ctx.lineWidth = 1.3;
         ctx.strokeStyle = 'white';
         ctx.stroke();
         ctx.closePath();
@@ -1841,7 +1856,16 @@ export class missileBase {
         ctx.globalAlpha = (this.perspective) ? 0.8 : 1;
 
         ctx.beginPath();
-        ctx.arc(0, 0, 0.35 * w, 0, 2 * Math.PI);
+        let unit = 0.7 * w / (1 + Math.sqrt(2));
+        ctx.moveTo(-0.5 * unit, -(0.5 + Math.sqrt(0.5)) * unit);
+        ctx.lineTo(0.5 * unit, -(0.5 + Math.sqrt(0.5)) * unit);
+        ctx.lineTo((0.5 + Math.sqrt(0.5)) * unit, -0.5 * unit);
+        ctx.lineTo((0.5 + Math.sqrt(0.5)) * unit, 0.5 * unit);
+        ctx.lineTo(0.5 * unit, (0.5 + Math.sqrt(0.5)) * unit);
+        ctx.lineTo(-0.5 * unit, (0.5 + Math.sqrt(0.5)) * unit);
+        ctx.lineTo(-(0.5 + Math.sqrt(0.5)) * unit, 0.5 * unit);
+        ctx.lineTo(-(0.5 + Math.sqrt(0.5)) * unit, -0.5 * unit);
+        ctx.lineTo(-0.5 * unit, -(0.5 + Math.sqrt(0.5)) * unit);
         let grd = ctx.createRadialGradient(-0.1 * w, -0.1 * w, 1, 0, 0, 0.35 * w);
         grd.addColorStop(0, 'white');
         grd.addColorStop(1, '#AAAAFF');
@@ -3060,6 +3084,7 @@ export class magnet {
         this.perspective = false;
 
         this.lastRecord = 0;
+        this.moveCycle = -1;
 
         this.layer = new Layer(4);
     }
@@ -3106,6 +3131,7 @@ export class magnet {
     }
     update(objects, map) {
         if (Date.now() - this.lastRecord > 1000) this.lastRecord = Date.now();
+        this.moveCycle = (Date.now() - this.lastRecord) / 1000;
         return { type: 'none' };
     }
     collision(target) {
@@ -3174,14 +3200,14 @@ export class magnet {
         ctx.stroke();
         ctx.closePath();
 
-        if (this.active) {
+        if (this.active && this.moveCycle >= 0) {
             ctx.beginPath();
             ctx.rect(-0.5 * w, -0.5 * w - w * this.detail.distance, w, w * this.detail.distance);
             ctx.clip();
             ctx.closePath();
 
             ctx.globalAlpha = 0.3;
-            ctx.translate(0, w * (Date.now() - this.lastRecord) / 1000 * ((this.detail.magneticField == 'repulsion') ? -1 : 1));
+            ctx.translate(0, w * this.moveCycle * ((this.detail.magneticField == 'repulsion') ? -1 : 1));
 
             ctx.beginPath();
             ctx.moveTo(-0.3 * w, 0.5 * w);
@@ -3212,6 +3238,8 @@ export class magnet {
     }
     place(map, objects = null) {
         this.active = true;
+        this.moveCycle = -1;
+        this.lastRecord = Date.now();
         this.gridPos = this.pos.sub(constant.mapStart).toGrid(w);
         let gridPos = this.gridPos;
         if (constant.typeLayerPairs[map[gridPos.y][gridPos.x].type].isOverlap(this.layer)) return false;
@@ -3246,7 +3274,7 @@ export class brokenPlatform {
         this.lastRecord = 0;
         this.stage = 0;
         this.count = 0;
-        this.stageCount = 200;
+        this.stageCount = 64;
 
         this.layer = new Layer(1, 2);
     }
@@ -3327,9 +3355,10 @@ export class brokenPlatform {
         ctx.stroke();
         ctx.closePath();
 
-        if (this.stage > 0) {
+        if (this.stage >= 0) {
+            ctx.save();
             ctx.strokeStyle = '#ADADAD';
-            ctx.lineWidth = 2;
+            ctx.globalAlpha *= (this.stage > 0) ? 1: (this.count) / this.stageCount;
 
             ctx.beginPath();
             ctx.moveTo(0.1 * w, -0.45 * w);
@@ -3353,10 +3382,13 @@ export class brokenPlatform {
             ctx.lineTo(0.35 * w, 0.1 * w);
             ctx.stroke();
             ctx.closePath();
+            ctx.restore();
         }
 
-        if (this.stage > 1) {
+        if (this.stage >= 1) {
+            ctx.save();
             ctx.strokeStyle = '#ADADAD';
+            ctx.globalAlpha *= (this.stage > 1) ? 1 : (this.count) / this.stageCount;
 
             ctx.beginPath();
             ctx.moveTo(-0.15 * w, 0.45 * w);
@@ -3379,10 +3411,13 @@ export class brokenPlatform {
             ctx.lineTo(-0.2 * w, -0.3 * w);
             ctx.stroke();
             ctx.closePath();
+            ctx.restore();
         }
 
-        if (this.stage > 2) {
+        if (this.stage >= 2) {
+            ctx.save();
             ctx.strokeStyle = '#ADADAD';
+            ctx.globalAlpha *= (this.stage > 2) ? 1 : (this.count) / this.stageCount;
 
             ctx.beginPath();
             ctx.moveTo(-0.45 * w, 0.37 * w);
@@ -3428,6 +3463,7 @@ export class brokenPlatform {
             ctx.lineTo(0.2 * w, 0.03 * w);
             ctx.stroke();
             ctx.closePath();
+            ctx.restore();
         }
 
         ctx.restore();

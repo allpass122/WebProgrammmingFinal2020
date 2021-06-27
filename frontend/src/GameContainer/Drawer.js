@@ -58,40 +58,88 @@ export function drawMap(ctx, map, playMode = false) {
 			ctx.closePath();
 		}
 	}
-	for (let y = 0; y < mapSize.y; y++) {
-		for (let x = 0; x < mapSize.x; x++) {
+	for (let y = 0; y <= mapSize.y; y++) {
+		for (let x = 0; x <= mapSize.x; x++) {
 			ctx.save();
-			if (map[y][x].type === 'block') {
-				ctx.beginPath();
-				ctx.rect(x * w, y * w, w, w);
-				ctx.fillStyle = blockColor;
-				ctx.fill();
-				ctx.closePath();
-			}
-
-			/* 繪製橫向格線 */
-			if (y !== 0) {
-				let r = relation(new Vec2(x, y - 1), new Vec2(x, y));
-				if (r === 'n_b') {
+			if (x >= 0 && x < mapSize.x && y >= 0 && y < mapSize.y) {
+				if (map[y][x].type === 'block') {
 					ctx.beginPath();
-					ctx.moveTo(x * w, y * w);
-					ctx.lineTo((x + 1) * w, y * w);
-					ctx.strokeStyle = boundaryColor;
-					ctx.stroke();
+					ctx.rect(x * w, y * w, w, w);
+					ctx.fillStyle = blockColor;
+					ctx.fill();
 					ctx.closePath();
 				}
 			}
 
-			/* 繪製縱向格線 */
-			if (x !== 0) {
-				let r = relation(new Vec2(x - 1, y), new Vec2(x, y));
-				if (r === 'n_b') {
-					ctx.beginPath();
-					ctx.moveTo(x * w, y * w);
-					ctx.lineTo(x * w, (y + 1) * w);
-					ctx.strokeStyle = boundaryColor;
-					ctx.stroke();
-					ctx.closePath();
+		/* 繪製橫向格線 */
+			if (x !== mapSize.x) {
+				if (y > 0 && y < mapSize.y) {
+					let r = relation(new Vec2(x, y - 1), new Vec2(x, y));
+					if (r === 'n_b') {
+						ctx.beginPath();
+						ctx.moveTo(x * w, y * w);
+						ctx.lineTo((x + 1) * w, y * w);
+						ctx.strokeStyle = boundaryColor;
+						ctx.stroke();
+						ctx.closePath();
+					}
+				} else {
+					if (y === 0) {
+						if (map[y][x].type !== 'block') {
+							ctx.beginPath();
+							ctx.moveTo(x * w, y * w);
+							ctx.lineTo((x + 1) * w, y * w);
+							ctx.strokeStyle = boundaryColor;
+							ctx.stroke();
+							ctx.closePath();
+						}
+					}
+					if (y === mapSize.y) {
+						if (map[y - 1][x].type !== 'block') {
+							ctx.beginPath();
+							ctx.moveTo(x * w, y * w);
+							ctx.lineTo((x + 1) * w, y * w);
+							ctx.strokeStyle = boundaryColor;
+							ctx.stroke();
+							ctx.closePath();
+						}
+					}
+				}
+			}
+
+		/* 繪製縱向格線 */
+			if (y !== mapSize.y) {
+				if (x > 0 && x < mapSize.x) {
+					let r = relation(new Vec2(x - 1, y), new Vec2(x, y));
+					if (r === 'n_b') {
+						ctx.beginPath();
+						ctx.moveTo(x * w, y * w);
+						ctx.lineTo(x * w, (y + 1) * w);
+						ctx.strokeStyle = boundaryColor;
+						ctx.stroke();
+						ctx.closePath();
+					}
+				} else {
+					if (x === 0) {
+						if (map[y][x].type !== 'block') {
+							ctx.beginPath();
+							ctx.moveTo(x * w, y * w);
+							ctx.lineTo(x * w, (y + 1) * w);
+							ctx.strokeStyle = boundaryColor;
+							ctx.stroke();
+							ctx.closePath();
+						}
+					}
+					if (x === mapSize.x) {
+						if (map[y][x - 1].type !== 'block') {
+							ctx.beginPath();
+							ctx.moveTo(x * w, y * w);
+							ctx.lineTo(x * w, (y + 1) * w);
+							ctx.strokeStyle = boundaryColor;
+							ctx.stroke();
+							ctx.closePath();
+						}
+					}
 				}
 			}
 			ctx.restore();
