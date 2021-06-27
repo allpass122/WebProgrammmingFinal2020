@@ -154,11 +154,15 @@ export default class Player {
   updateLastLoc() {
     this.lastLoc = this.loc
   }
-
+  // manipulate by key: left, up, right, down 
   push(vec) {
     this.force = vec.mul(PUSH_FORCE)
   }
 
+  // pull(vec) {
+  //   console.log(vec)
+  //   this.force = this.force.add(vec)
+  // }
 
   serializeForUpdate() {
     return {

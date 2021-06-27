@@ -68,6 +68,9 @@
 	font-size: 1rem;
 	border-radius: 5px;
 }
+.githubButton:hover {
+	background:linear-gradient(to bottom, #d4d4d4 5%, #e0e0e0 100%);
+}
 .githubButton img{
   	justify-content: center;
 

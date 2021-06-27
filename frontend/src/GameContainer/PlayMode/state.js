@@ -129,13 +129,17 @@ function checkEncounter(status, setting, setStatus) {
       if (result.includes('none')) continue
       me.resetFriction()
       console.log('result', result)
-      if ( (result === 'block' || result === 'lockedWall' || result === 'cymbal' || result === 'missileBase') && !beBlocked ){
+      if ( (result === 'block' || result === 'lockedWall' || result === 'cymbal' 
+      || result === 'missileBase' || result === 'woodenBox') && !beBlocked ) {
+        if (result === 'woodenBox') objects[i].push(objects, map, me.pos);
         beBlocked = true
+        me.returnLastLoc()
         me.squareRebound(objects[i].pos)
       }
       // me.loc.length( objects[i].pos) < platformDistance: find the closest platform to transport
       else if (result === 'platform' || result === 'movingPlatform' || result === 'brokenPlatform' 
-            || me.loc.length( objects[i].pos) < platformDistance ) {
+                || me.loc.length( objects[i].pos) < platformDistance ) {
+        if (result === 'brokenPlatform') objects[i].break();
         onPlatform = true
         platformDistance =  me.loc.length( objects[i].pos)
         platformID = i
@@ -148,10 +152,9 @@ function checkEncounter(status, setting, setStatus) {
         touchConveyor++
       } else if (result === 'missileRay') objects[i].fire(me);
       else if (result === 'trap') me.setLastFriction()
-      else if (result === 'magneticField') me.loc = me.loc.add(objects[i].getDisplacement())
-      else if (result === 'brokenPlatform') objects[i].break();
-      else if (result === 'woodenBox') objects[i].push(objects, map, me.pos);
-      
+      else if (result === 'magneticField') 
+      // me.pull(objects[i].getDisplacement().mul(1000)) BUG
+      me.loc = me.loc.add(objects[i].getDisplacement())
       else if ( result === 'spike' || result === 'arrow' ||  result === 'cymbalWave' || result === 'missile' || result === 'deathTotem' ){
         setStatus( () => ({...status, gameState: CONSTANT.GameOver, msg: `${Msg[result]}`,endTime: Date.now(), playTime:Date.now()-status.startTime})) 
       }
