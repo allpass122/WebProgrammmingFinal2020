@@ -122,20 +122,20 @@ function checkEncounter(status, setting, setStatus) {
   let platformDistance = Math.MAX_SAFE_INTEGER
   let beBlocked = false
   let touchConveyor = 0
-  // console.log('checkEncounter')
   
   for (let i = 0; i < objects.length; i++) {
     if (objects[i].collision) {
       const result = objects[i].collision({ type: 'sphere', pos: me.loc, r: CONSTANT.PlayerR });
       if (result.includes('none')) continue
       me.resetFriction()
-      // console.log('result', result)
-      if (result === 'block' || result === 'lockedWall'){
+      console.log('result', result)
+      if ( (result === 'block' || result === 'lockedWall' || result === 'cymbal' || result === 'missileBase') && !beBlocked ){
         beBlocked = true
-        me.returnLastLoc() 
         me.squareRebound(objects[i].pos)
       }
-      else if (result === 'platform' || result === 'movingPlatform' || me.loc.length( objects[i].pos) < platformDistance ) {
+      // me.loc.length( objects[i].pos) < platformDistance: find the closest platform to transport
+      else if (result === 'platform' || result === 'movingPlatform' || result === 'brokenPlatform' 
+            || me.loc.length( objects[i].pos) < platformDistance ) {
         onPlatform = true
         platformDistance =  me.loc.length( objects[i].pos)
         platformID = i
