@@ -216,7 +216,7 @@ router.post("/deleteSingleMap", async function (req, res) {
       .exec(function (error, result) {
         let user = result[0];
         let newMapIDs = user.mapIDs.filter((ele) => {
-          return ele.id !== id;
+          return ele !== id;
         });
         userSchema
           .updateOne({ uuid: uuid }, { $set: { mapIDs: newMapIDs } })

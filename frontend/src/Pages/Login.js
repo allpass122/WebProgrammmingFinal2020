@@ -242,25 +242,32 @@ const Body = () => {
           </div>
         </div>
       </Modal>
-
-      <Button
-        className={classes.button}
-        variant="outlined"
-        color="secondary"
-        disabled={false}
-        onClick={handleDel}
+      <div
+        style={
+          name === "admin" && pwd === "deletemode"
+            ? { display: "block" }
+            : { display: "none" }
+        }
       >
-        Delete
-      </Button>
-      <Button
-        className={classes.button}
-        variant="outlined"
-        color="secondary"
-        disabled={false}
-        onClick={handleDelMap}
-      >
-        Delete Map
-      </Button>
+        <Button
+          className={classes.button}
+          variant="outlined"
+          color="secondary"
+          disabled={false}
+          onClick={handleDel}
+        >
+          Delete User
+        </Button>
+        <Button
+          className={classes.button}
+          variant="outlined"
+          color="secondary"
+          disabled={false}
+          onClick={handleDelMap}
+        >
+          Delete Map
+        </Button>
+      </div>
     </section>
   );
 };
