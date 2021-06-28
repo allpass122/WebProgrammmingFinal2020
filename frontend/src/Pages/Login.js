@@ -1,6 +1,6 @@
 import { useState } from "react";
-import axios from "axios";
 import { useHistory } from "react-router-dom";
+import instance from "./Api";
 
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
@@ -15,11 +15,6 @@ import {url} from "./url";
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
-
-const instance = axios.create({
-  baseURL: url,
-});
-
 const useStyles = makeStyles({
   input: {
     margin: "0 0.2em",

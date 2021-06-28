@@ -4,7 +4,13 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import Login from "./Pages/Login";
-import { NavLink, Switch, Route, BrowserRouter as Router} from "react-router-dom";
+import {
+  NavLink,
+  Switch,
+  Route,
+  BrowserRouter,
+  HashRouter as Router,
+} from "react-router-dom";
 import SelectPage from "./Pages/SelectPage";
 import PopularMap from "./Pages/PopularMap";
 import EditMode from "./Pages/EditMode";
@@ -12,7 +18,7 @@ import PlayMode from "./Pages/PlayMode";
 
 ReactDOM.render(
   <React.StrictMode>
-    <Router>
+    <BrowserRouter basename={process.env.PUBLIC_URL}>
       <Switch>
         <Route exact path="/" component={Login} />
         <Route exact path="/users/selectPage" component={SelectPage} />
@@ -20,7 +26,7 @@ ReactDOM.render(
         <Route exact path="/EditMode" component={EditMode} />
         <Route exact path="/PlayMode" component={PlayMode} />
       </Switch>
-    </Router>
+    </BrowserRouter>
   </React.StrictMode>,
   document.getElementById("root")
 );

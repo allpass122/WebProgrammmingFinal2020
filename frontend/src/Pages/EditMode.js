@@ -1,11 +1,11 @@
 import React from "react";
-import axios from "axios";
 import { useState, useRef } from "react";
 import EditMode from "../GameContainer/EditMode/Main";
 import Vec2 from "../GameContainer/Class/Vec2";
 import { useHistory } from "react-router-dom";
 import ErrorPage from "./ErrorPage";
 import LoadingPage from "./LoadingPage";
+import instance from "./Api";
 
 // import util from "util";
 import init from "../GameContainer/Setting/example_0";
@@ -28,10 +28,6 @@ import {url} from "./url";
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
-
-const instance = axios.create({
-  baseURL: url,
-});
 
 const useStyles = makeStyles((theme) => ({
   margin: {

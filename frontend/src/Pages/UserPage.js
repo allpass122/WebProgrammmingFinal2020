@@ -1,11 +1,10 @@
 // from https://github.com/mui-org/material-ui/edit/master/docs/src/pages/getting-started/templates/album/Album.js
 import React from "react";
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { useHistory } from "react-router-dom";
 import { enpackage, unpackage, show } from "../GameContainer/DataPackager";
 import LoadingPage from "./LoadingPage";
-import {url} from "./url";
+import instance from "./Api";
 
 import AppBar from "@material-ui/core/AppBar";
 import Button from "@material-ui/core/Button";
@@ -96,10 +95,6 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(6),
   },
 }));
-
-const instance = axios.create({
-  baseURL: url,
-});
 
 export default function Album(props) {
   const classes = useStyles();
