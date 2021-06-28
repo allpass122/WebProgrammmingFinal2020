@@ -649,7 +649,7 @@ export class arrow {
         for (let i = 0; i < objects.length; i++) {
             if (objects[i].id !== this.id && objects[i].collision) {
                 let result = objects[i].collision({ type: 'sphere', pos: this.pos, r: 0.1 });
-                console.log(result);
+                // console.log(result);
                 if (result === 'ice') this.speed *= 1.03;
                 // else if (result === 'conveyor') this.detail.direction = objects[i].detail.direction;
                 else if (result === 'portal') this.pos = objects[i].teleport(objects);
