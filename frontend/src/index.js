@@ -18,7 +18,7 @@ import PlayMode from "./Pages/PlayMode";
 
 ReactDOM.render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={process.env.PUBLIC_URL}>
       <Switch>
         <Route exact path="/" component={Login} />
         <Route exact path="/users/selectPage" component={SelectPage} />

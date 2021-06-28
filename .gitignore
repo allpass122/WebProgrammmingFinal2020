@@ -2,7 +2,7 @@
 node_modules/
 # frontend
 frontend/node_modules
-frondend/build
+frontend/build
 
 # dependencies
 /node_modules

@@ -1,7 +1,7 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import instance from "../Api";
 
 import Link from "@material-ui/core/Link";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
@@ -40,9 +40,9 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(3),
   },
 }));
-const instance = axios.create({
-  baseURL: `http://localhost:4000/`,
-});
+// const instance = axios.create({
+//   baseURL: `http://localhost:4000/`,
+// });
 export default function Orders(props) {
   const history = useHistory();
   const classes = useStyles();
@@ -205,8 +205,16 @@ export default function Orders(props) {
               <TableCell>{map.description}</TableCell>
               <TableCell>{map.statistic.playTime}</TableCell>
               <TableCell>{map.statistic.passTime}</TableCell>
-              <TableCell>{map.statistic.fastestPass===999.9?"-":map.statistic.fastestPass}</TableCell>
-              <TableCell align="right">{map.statistic.fastestMan==="None"?"-":map.statistic.fastestMan}</TableCell>
+              <TableCell>
+                {map.statistic.fastestPass === 999.9
+                  ? "-"
+                  : map.statistic.fastestPass}
+              </TableCell>
+              <TableCell align="right">
+                {map.statistic.fastestMan === "None"
+                  ? "-"
+                  : map.statistic.fastestMan}
+              </TableCell>
 
               {`${computeScore(map.rateRec)[2].toFixed(2)}(${
                 computeScore(map.rateRec)[1]
