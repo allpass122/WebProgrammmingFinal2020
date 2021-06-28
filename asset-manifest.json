@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/WebProgrammmingFinal2020/static/css/main.ef329f15.chunk.css",
-    "main.js": "/WebProgrammmingFinal2020/static/js/main.ef934681.chunk.js",
-    "main.js.map": "/WebProgrammmingFinal2020/static/js/main.ef934681.chunk.js.map",
+    "main.js": "/WebProgrammmingFinal2020/static/js/main.e555fabe.chunk.js",
+    "main.js.map": "/WebProgrammmingFinal2020/static/js/main.e555fabe.chunk.js.map",
     "runtime-main.js": "/WebProgrammmingFinal2020/static/js/runtime-main.310bf3fc.js",
     "runtime-main.js.map": "/WebProgrammmingFinal2020/static/js/runtime-main.310bf3fc.js.map",
     "static/js/2.a2049886.chunk.js": "/WebProgrammmingFinal2020/static/js/2.a2049886.chunk.js",
@@ -21,6 +21,6 @@
     "static/js/runtime-main.310bf3fc.js",
     "static/js/2.a2049886.chunk.js",
     "static/css/main.ef329f15.chunk.css",
-    "static/js/main.ef934681.chunk.js"
+    "static/js/main.e555fabe.chunk.js"
   ]
 }
