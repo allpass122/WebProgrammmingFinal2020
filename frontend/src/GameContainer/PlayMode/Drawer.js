@@ -15,12 +15,14 @@ function Drawer(ctx, setting, status) {
 	/* �M�ŵe�� */
 	clear(ctx);
 
-	// draw background
-	ctx.fillStyle = constant.blockColor
-	ctx.fillRect(0, 0, constant.mapSize.x*w*2, constant.mapSize.y*w*2);
-
+	
 	ctx.restore()
 	ctx.save()
+
+	// draw background
+	ctx.fillStyle = constant.blockColor
+	ctx.fillRect(0, -100, constant.mapSize.x*w*2, constant.mapSize.y*w*2);
+
 	if (status.FOCUS_PLAYER) {
 		ctx.scale(CONSTANT.scale.w, CONSTANT.scale.h);
 		ctx.translate(CONSTANT.translate.x, CONSTANT.translate.y);        

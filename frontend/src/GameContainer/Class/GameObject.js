@@ -235,7 +235,7 @@ export class platform {
         this.perspective = true;
     }
     collision(target) {
-        if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.7 * w, 0.7 * w) }, target)) return 'platform';
+        if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.9 * w, 0.9 * w) }, target)) return 'platform';
         return 'none';
     }
     draw(ctx, layer = -1) {
@@ -363,7 +363,7 @@ export class movingPlatform {
         return { type: 'none' };
     }
     collision(target) {
-        if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.7 * w, 0.7 * w) }, target)) return 'movingPlatform';
+        if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.9 * w, 0.9 * w) }, target)) return 'movingPlatform';
         return 'none';
     }
     draw(ctx, layer = -1) {
@@ -1630,7 +1630,7 @@ export class trapPlatform {
     }
     collision(target) {
         if (this.open && isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.6 * w * this.openCycle, 0.7 * w) }, target)) return 'trap';
-        if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.7 * w, 0.7 * w) }, target)) return 'platform';
+        if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.9 * w, 0.9 * w) }, target)) return 'platform';
         return 'none';
     }
     draw(ctx, layer = -1) {
@@ -2522,7 +2522,7 @@ export class movingPlatform_oblique {
         return { type: 'none' };
     }
     collision(target) {
-        if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.7 * w, 0.7 * w) }, target)) return 'movingPlatform';
+        if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.9 * w, 0.9 * w) }, target)) return 'movingPlatform';
         return 'none';
     }
     draw(ctx, layer = -1) {
@@ -2717,7 +2717,7 @@ export class movingPlatform_rect {
         return { type: 'none' };
     }
     collision(target) {
-        if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.7 * w, 0.7 * w) }, target)) return 'movingPlatform';
+        if (isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.9 * w, 0.9 * w) }, target)) return 'movingPlatform';
         return 'none';
     }
     draw(ctx, layer = -1) {
@@ -3290,7 +3290,7 @@ export class brokenPlatform {
         return { type: 'none' };
     }
     collision(target) {
-        if (this.stage < 4 && isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.7 * w, 0.7 * w) }, target)) return 'brokenPlatform';
+        if (this.stage < 4 && isCollision({ type: 'cube', pos: this.pos, size: new Vec2(0.9 * w, 0.9 * w) }, target)) return 'brokenPlatform';
         return 'none';
     }
     break() {

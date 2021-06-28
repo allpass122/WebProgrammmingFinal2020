@@ -104,13 +104,13 @@ export default class Player {
     const Theta = Math.atan2(vector.y, vector.x)
     // bound lower, left, upper, right in order
     if (-3 / 4 * Math.PI < Theta && Theta < -1 / 4 * Math.PI)
-      this.rebound(new Vec2(this.loc.x, 999))
+      this.rebound(new Vec2(this.loc.x, 9999))
     else if (-1 / 4 * Math.PI < Theta && Theta < 1 / 4 * Math.PI)
       this.rebound(new Vec2(0, this.loc.y))
     else if (1 / 4 * Math.PI < Theta && Theta < 3 / 4 * Math.PI)
       this.rebound(new Vec2(this.loc.x, 0))
     else if (3 / 4 * Math.PI < Theta || (-3 / 4 * Math.PI > Theta && Theta < 0))
-      this.rebound(new Vec2(999, this.loc.y))
+      this.rebound(new Vec2(9999, this.loc.y))
     else
       console.log("why? no bound")
   }

@@ -73,7 +73,7 @@ function checkLocation(status, map, setStatus) {
     else if (y < UpperBound)
       status.me.rebound(new Vec2(x, UpperBound - w))
     else if (y > LowerBound)
-      status.me.rebound(new Vec2(x, 999))
+      status.me.rebound(new Vec2(x, 9999))
   }
 
   // block 4 sides rebound
@@ -166,9 +166,11 @@ function checkEncounter(status, setting, setStatus) {
         status.me.setFriction(0.4)
     }
   }
-  if (onPlatform && !beBlocked){
+  // platForm logic
+  if (onPlatform && !beBlocked)
     me.moveOnPlatform(platformID , platformPos)
-  }else me.leavePlatform()
+  if ( !onPlatform )
+    me.leavePlatform()
 }
 
 
