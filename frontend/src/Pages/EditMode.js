@@ -23,13 +23,14 @@ import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
+import {url} from "./url";
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
 const instance = axios.create({
-  baseURL: `http://localhost:4000/`,
+  baseURL: url,
 });
 
 const useStyles = makeStyles((theme) => ({

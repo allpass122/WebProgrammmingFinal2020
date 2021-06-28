@@ -2,6 +2,7 @@ import React from "react";
 import { useHistory } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import {url} from "../url";
 
 import Link from "@material-ui/core/Link";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
@@ -41,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 const instance = axios.create({
-  baseURL: `http://localhost:4000/`,
+  baseURL: url,
 });
 export default function Orders(props) {
   const history = useHistory();

@@ -5,6 +5,7 @@ import axios from "axios";
 import { useHistory } from "react-router-dom";
 import { enpackage, unpackage, show } from "../GameContainer/DataPackager";
 import LoadingPage from "./LoadingPage";
+import {url} from "./url";
 
 import AppBar from "@material-ui/core/AppBar";
 import Button from "@material-ui/core/Button";
@@ -97,7 +98,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const instance = axios.create({
-  baseURL: `http://localhost:4000/`,
+  baseURL: url,
 });
 
 export default function Album(props) {

@@ -1,4 +1,6 @@
 import ErrorPage from "./ErrorPage";
+import {url} from "./url";
+
 import React from "react";
 import { useState, useEffect } from "react";
 import axios from "axios";
@@ -73,7 +75,7 @@ function Copyright() {
 }
 
 const instance = axios.create({
-  baseURL: `http://localhost:4000/`,
+  baseURL: url,
 });
 
 const drawerWidth = 240;

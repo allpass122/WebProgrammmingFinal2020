@@ -5,6 +5,7 @@ import { enpackage, unpackage, show } from "../GameContainer/DataPackager";
 import { useHistory } from "react-router-dom";
 import ErrorPage from "./ErrorPage";
 import LoadingPage from "./LoadingPage";
+import {url} from "./url";
 
 import PlayMode from "../GameContainer/PlayMode/PlayMapCreater";
 import init from "../GameContainer/Setting/example_0";
@@ -27,7 +28,7 @@ function checkLogin(props) {
   return true;
 }
 const instance = axios.create({
-  baseURL: `http://localhost:4000/`,
+  baseURL: url,
 });
 
 const useStyles = makeStyles((theme) => ({
