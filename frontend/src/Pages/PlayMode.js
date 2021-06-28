@@ -1,10 +1,10 @@
 import React from "react";
-import axios from "axios";
 import { useState, useRef, useEffect } from "react";
 import { enpackage, unpackage, show } from "../GameContainer/DataPackager";
 import { useHistory } from "react-router-dom";
 import ErrorPage from "./ErrorPage";
 import LoadingPage from "./LoadingPage";
+import instance from "./Api";
 
 import PlayMode from "../GameContainer/PlayMode/PlayMapCreater";
 import init from "../GameContainer/Setting/example_0";
@@ -26,9 +26,6 @@ function checkLogin(props) {
   else if (!props.location.state.login) return false;
   return true;
 }
-const instance = axios.create({
-  baseURL: `http://localhost:4000/`,
-});
 
 const useStyles = makeStyles((theme) => ({
   margin: {

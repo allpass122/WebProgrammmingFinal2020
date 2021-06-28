@@ -1,9 +1,10 @@
 import ErrorPage from "./ErrorPage";
 import React from "react";
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { useHistory } from "react-router-dom";
 import clsx from "clsx";
+import instance from "./Api";
+
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Drawer from "@material-ui/core/Drawer";
@@ -71,10 +72,6 @@ function Copyright() {
     </Typography>
   );
 }
-
-const instance = axios.create({
-  baseURL: `http://localhost:4000/`,
-});
 
 const drawerWidth = 240;
 

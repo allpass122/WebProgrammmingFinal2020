@@ -4,7 +4,13 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import Login from "./Pages/Login";
-import { NavLink, Switch, Route, BrowserRouter } from "react-router-dom";
+import {
+  NavLink,
+  Switch,
+  Route,
+  BrowserRouter,
+  HashRouter as Router,
+} from "react-router-dom";
 import SelectPage from "./Pages/SelectPage";
 import PopularMap from "./Pages/PopularMap";
 import EditMode from "./Pages/EditMode";
