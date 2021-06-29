@@ -1,70 +1,113 @@
-# Getting Started with Create React App
+# [109-2] Web Programming Final
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Introduce
 
-## Available Scripts
+- (Group 19) 名字自己想 地圖自己做
+- Member:
+  - 黃文彥 資工四 B06902122
+  - 柯柏丞 資工四 B06902113
+  - 詹也影 土木碩二 R08521224
 
-In the project directory, you can run:
+## Demo 影片連結: https://youtu.be/sZteu6MB8JE
 
-### `yarn start`
+## 描述這個服務在做什麼
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+一個可以自由編輯地圖並上傳地圖讓他人挑戰的遊戲。
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Deployed 連結: https://allpass122.github.io/WebProgrammmingFinal2020/
 
-### `yarn test`
+## 使用/操作方式
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- 地圖/上傳/統計
+  - 地圖有公開、私人兩種屬性。
+  - 公開的地圖才有統計數據且公開後不可修改。
+  - 在 local 的遊玩不計入統計，可以進行測試。
+  - 作者從 local 刪掉公開屬性地圖才能從網路上刪除它。
+  - 提醒：公開地圖不能編輯, 所以建議公開前存一份私人的地圖。
+- 格子屬性
+  - 場外(block)格子：玩家無法移動到的地方
+  - 空地(none)格子：玩家可以正常移動
+  - 起點(start)格子：玩家可以正常移動且從此出生
+  - 終點(end)格子：玩家一旦到達此區域視為通關
+  - 毒面(dead)格子：玩家一旦到達此區域即死
+  - 冰面(ice)格子：玩家會在此區域快速移動
+  - 泥面(muddy)格子：玩家會在此區域減速移動
+- 物件種類
+  - 平台類(大部分狀況下可以無視原本底下的格子屬性)
+    - 普通平台(platform)：可供玩家行走
+    - 移動平台(movingPlatform)：可供玩家行走，並帶走上方的覆蓋物和玩家
+    - 陷阱平台(trapPlatform)：關閉狀態時為普通平台可供玩家行走，一旦變成開啟狀態時將以底下格子屬性為主，底下為毒面將造成玩家死亡，此平台上方無法放置覆蓋類
+    - 破碎平台(brokenPlatform)：可供玩家行走，但會隨著玩家經過次數導致此平台更加破碎，最後破碎至完全消失
+  - 覆蓋類(可以覆蓋在大部分平台上多帶有特殊效果)
+    - 黏液(mucus)：可以黏走在上面的障礙物、使玩家減速
+    - 冰面(ice)：箭和導彈穿過將加速並且使玩家加速
+    - 傳輸帶(conveyor)：使玩家往某個特定方向加速
+    - 死亡圖騰(deathTotem)：玩家碰觸即死
+  - 障礙類(將造成玩家發生各式各樣的事件)
+    - 尖刺方塊(spikedBlock & block)：玩家碰觸尖刺即死，但碰觸方塊本體為普通碰撞，此方塊幾乎無法被任何東西穿透
+    - 弓箭組(bow & arrow)：定時釋放箭矢，玩家碰觸箭端即死
+    - 音鈸(cymbal & cymbalWave)：定時釋放出音波，玩家碰觸音波即死
+    - 追蹤導彈發射台(missileBase & missile)：展開扇形的掃瞄範圍，一旦玩家進入掃瞄範圍將觸發警報幾秒後射出追蹤導彈進行追擊，直到導彈被弓箭、音波、方塊破壞
+    - 木箱(woodenBox)：基本上和方塊類似，但可以被玩家推動，並且被黏液給黏走或是被傳輸帶送走
+  - 特殊類(可以放置在任何地方且輔助性質居多)
+    - 傳送門(portal)：必須成雙存在，玩家、箭矢、導彈穿過時將傳送到對應的傳送門，並且設有冷卻時間，冷卻時間結束才可以進行下一次傳送
+    - 牆鎖(lockedWall)：玩家無法通過的牆壁，此牆壁無法被和黏液結合，也就是說無法移動
+    - 鑰匙(unlocker)：玩家碰觸可以解開對應的牆鎖
+    - 磁鐵(magnet)：可以將玩家、箭矢、導彈、木箱吸引/排斥往某一方向
+- 放置允許性
+  - 基本上每個格子都可以放置平台、覆蓋、障礙或特殊其一
+  - 特例：起點和終點格子無法放置平台、覆蓋和障礙類；陷阱平台無法再放置覆蓋類；牆鎖無法再放置覆蓋類
+- 遊戲模式
+  - 一開始腳色隨機出現在綠色起點上，碰到紅色終點即闖關成功
+  - 以上下左右鍵控制腳色
+  - 不同的地板上會有不同摩擦係數，影響腳色最終速度以及減速過程
+  - 碰到牆壁、障礙物會反彈
+  - 碰到致死物件會挑戰失敗，並顯示死亡原因
 
-### `yarn build`
+## Github link: https://github.com/allpass122/WebProgrammmingFinal2020
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Technique
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- Frontend: react, javascripts, Material-UI, Css, html5
+- Backend: nodeJS, express
+- DB: mongoDB
+- other: babel
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 專題製作心得
 
-### `yarn eject`
+- 黃文彥：這次專題對我來說是這堂課的綜合練習，也練習了去使用別人的套件、練習看文件，練習自己找資料 debug，受益良多。然後深深體會到不管是前端、後端還是資料庫處理都是博大精深的學問，全端工程師根本不是人吧？？
+- 詹也影：這次專題讓我複習了前半學期的 react、以前學的 OO、學習部署的流程，還獲得與兩位大神一起快速開發專案的經驗，是一次很棒的合作經驗。
+- 柯柏丞：本身熱愛遊戲製作，也感謝組員們願意採納我的這個瘋狂的遊戲點子，也讓我可以致力於整體遊戲物件的製作，並且也學習到和前後端的組員進行協調與溝通，也試著將自己以前學過的遊戲學經驗提供給其他組員參考和學習。
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+---
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 每位組員之負責項目 (請詳述):
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+黃文彥 資工四 B06902122:
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+- 前端（網頁）、後端、資料庫，以及三者之間的串接。
+- 遊戲與前端的串接，然後把地圖資料傳到後端再存進去資料庫。
 
-## Learn More
+柯柏丞 資工四 B06902113:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- 前端（編輯模式）底下所有的物件設計和物件之間彼此的關係，整體編輯界面的外觀和排版
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+詹也影 土木碩二 R08521224:
 
-### Code Splitting
+- 前端（遊戲模式）、遊戲開始結束、玩家控制、玩家與物體碰撞行為、server 部署
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## 此專題不是之前作品！！
 
-### Analyzing the Bundle Size
+## 本地安裝教學
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+1. `cd frontend/ && yarn install`
+2. `cd backend/ && yarn install`
+3. 在 project 根目錄：
+   - 開 frontend `yarn start`
+   - 開 backend `yarn server`
 
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- 如果不能跑 `yarn install`, 就`yarn add yarn` 試試看，或`npm install --global yarn`
+- 如果 yarn 不行改成 `npm install`
+- 預設為前端開啟後會自動連我們的 server（也就是說不用開後端），如果要用自己的 db 測試要改 `frontend/src/Pages/Api.js` 的 baseURL 並且 backend 底下要自己新增 `.env` 內容為 `MONGO_URL=mongodb+srv://<account>:<password>@cluster0.1scw3.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`
+  - `<account>` 為 mongoDB 帳號
+  - `<password>` 為 mongoDB 密碼
