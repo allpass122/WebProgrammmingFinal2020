@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import DrawMap from './Drawer';
-import Engine from '../EditMode/Engine';
+import Engine from './Engine';
 import Controller from './Controller';
 import { initState, updateState } from './state'
 import { getAsset, getAssetNames, downloadAssets } from './assets';
@@ -30,7 +30,7 @@ const PlayMapCreater = (props) => {
         playTime: 0,
         gameState: 'start',
         head: 'seal.svg',
-        msg: "Happy",
+        msg: ["Happy"],
         FOCUS_PLAYER: false,
         pressDown: false,
         pressRight: false,
@@ -64,7 +64,7 @@ const PlayMapCreater = (props) => {
     }
 
     function startPlay(){
-        setStatus(() => ({ ...defaultState, head: status.head , gameState: 'playing', FOCUS_PLAYER: true }))
+        setStatus(() => ({ ...defaultState, head: status.head , gameState: CONSTANT.PLAYING, FOCUS_PLAYER: true }))
     }
 
     function openForm(form) {
@@ -93,7 +93,7 @@ const PlayMapCreater = (props) => {
             elapsed = now - then;
             if (elapsed > fpsInterval) {
                 then = now - (elapsed % fpsInterval);
-                Engine(setting.objects, setting.map);
+                Engine(setting.objects, setting.map, status);
                 DrawMap(ctx, setting, status);
             }
         };
@@ -113,7 +113,7 @@ const PlayMapCreater = (props) => {
         if (status.gameState === 'start')
             openForm("startForm")
 
-        if ( !(status.gameState === 'start' || status.gameState === 'playing'))
+        if ( !(status.gameState === 'start' || status.gameState === CONSTANT.PLAYING))
             cancelAnimationFrame(requestId);
 
         return () => {
@@ -153,7 +153,7 @@ const PlayMapCreater = (props) => {
             {/* Game Over form */}
             <div className="form-popup" id="gameForm">
                 <span>{status.gameState}</span>
-                <p>{status.msg}</p>
+                {status.msg.map( (m)=> (<p>{m}</p>) )}
                 <span>{toTimeFormate(status.playTime)}</span>
                 <button className='gameButton' onClick={() => { closeForm("gameForm") }}>Try Again</button>
                 {githubButton}

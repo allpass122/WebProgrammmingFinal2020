@@ -1,7 +1,7 @@
 // import ObjectClass from './object';
 import Vec2 from '../../Class/Vec2';
 const PUSH_FORCE = 800
-const FRICTION = 0.08
+const FRICTION = 0.09
 const MAX_VELOCITY = 160
 
 export default class Player {
@@ -131,7 +131,7 @@ export default class Player {
     const vec = normal.mul(-1).unit()
     const newVelocityX = Math.cos(2 * reflectLineTheta) * vec.x + Math.sin(2 * reflectLineTheta) * vec.y
     const newVelocityY = Math.sin(2 * reflectLineTheta) * vec.x - Math.cos(2 * reflectLineTheta) * vec.y
-    this.velocity = new Vec2(newVelocityX, newVelocityY).mul(50)
+    this.velocity = new Vec2(newVelocityX, newVelocityY).mul(40)
     this.checkVelocity()
   }
 
