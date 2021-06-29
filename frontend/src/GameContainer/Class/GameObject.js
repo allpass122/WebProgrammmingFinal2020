@@ -647,6 +647,7 @@ export class arrow {
     update(objects, map) {
         if (!this.pos.between(constant.mapStart, constant.mapStart.add(constant.mapSize.mul(w)))) return { type: 'destory' };
         for (let i = 0; i < objects.length; i++) {
+            if (objects[i].type !== 'ice' && objects[i].type !== 'portal' && objects[i].type !== 'woodenBox' && objects[i].type !== 'magnet' && objects[i].type !== 'block' && objects[i].type !== 'lockedWall') continue;
             if (objects[i].id !== this.id && objects[i].collision) {
                 let result = objects[i].collision({ type: 'sphere', pos: this.pos, r: 0.1 });
                 // console.log(result);
@@ -2917,6 +2918,7 @@ export class woodenBox {
         } else {
             let gridPos = this.pos.sub(constant.mapStart).toGrid(w);
             for (let i = 0; i < objects.length; i++) {
+                if (objects[i].type !== 'brokenPlatform' && objects[i].type !== 'magnet' && objects[i].type !== 'conveyor' && objects[i].type !== 'mucus') continue;
                 if (objects[i].id !== this.id && objects[i].collision) {
                     let result = objects[i].collision({ type: 'sphere', pos: this.pos, r: 0.1 });
                     if (result === 'brokenPlatform') objects[i].break();

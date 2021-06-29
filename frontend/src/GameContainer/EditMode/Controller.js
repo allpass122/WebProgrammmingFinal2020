@@ -6,7 +6,9 @@ export default function Controller(scene, status, setStatus, setting, reset) {
 	const mapStart = constant.mapStart;
 	const mapEnd = constant.mapStart.add(constant.mapSize.mul(constant.gridWidth));
 	const w = constant.gridWidth;
-	const copyable = (e, object) => (e.ctrlKey && object.type !== 'portal' && object.type !== 'lockedWall' && object.type !== 'unlocker');
+	const copyable = (e, object) => {
+		return (e.ctrlKey && object.type !== 'portal' && object.type !== 'lockedWall' && object.type !== 'unlocker' && object.type !== 'woodenBox')
+	};
 
 	const mouseMoveHandler = (e) => {
 		const mousePos = new Vec2(e.offsetX, e.offsetY);
@@ -272,10 +274,19 @@ export default function Controller(scene, status, setStatus, setting, reset) {
 							newStatus.holdObject.setPerspective(true);
 							break;
 						case 'woodenBox':
-							newStatus.holding = true;
-							newStatus.holdObject = new GameObject.woodenBox(new Vec2(e.offsetX, e.offsetY));
-							newStatus.holdDetail = newStatus.holdObject.detailFunction();
-							newStatus.holdObject.setPerspective(true);
+							count = 0;
+							for (let i = 0; i < setting.objects.length; i++) {
+								if (setting.objects[i].type === 'woodenBox') count++;
+							}
+							if (count < 16) {
+								newStatus.holding = true;
+								newStatus.holdObject = new GameObject.woodenBox(new Vec2(e.offsetX, e.offsetY));
+								newStatus.holdDetail = newStatus.holdObject.detailFunction();
+								newStatus.holdObject.setPerspective(true);
+							} else {
+								newStatus.holding = false;
+								newStatus.message = { text: '木箱最多只能放置 16 個', lastPost: Date.now() };
+							}
 							break;
 						case 'magnet':
 							newStatus.holding = true;
