@@ -104,10 +104,10 @@ function checkLocation(status, map, setStatus) {
   else if (floorType.includes('ice'))
     status.me.setFriction(0.5)
   else if (floorType.includes('dead')) 
-    setStatus( () => ({...status, gameState: CONSTANT.GameOver,msg:`${Msg["dead"]}`, endTime: Date.now(), playTime:Date.now()-status.startTime })) 
+    setStatus( () => ({...status, gameState: CONSTANT.GameOver,msg: Msg["dead"], endTime: Date.now(), playTime:Date.now()-status.startTime })) 
 
   if (floorType.includes('end'))
-    setStatus( () => ({...status, gameState: CONSTANT.WIN, msg:`${Msg["end"]}`, endTime: Date.now(), playTime:Date.now()-status.startTime })) 
+    setStatus( () => ({...status, gameState: CONSTANT.WIN, msg: Msg["end"], endTime: Date.now(), playTime:Date.now()-status.startTime })) 
 
   status.me.updateLastLoc()
 }
@@ -128,7 +128,7 @@ function checkEncounter(status, setting, setStatus) {
       const result = objects[i].collision({ type: 'sphere', pos: me.loc, r: CONSTANT.PlayerR });
       if (result.includes('none')) continue
       me.resetFriction()
-      console.log('result', result)
+      // console.log('result', result)
       if ( (result === 'block' || result === 'lockedWall' || result === 'cymbal' 
       || result === 'missileBase' || result === 'woodenBox') && !beBlocked ) {
         if (result === 'woodenBox') objects[i].push(objects, map, me.pos);
@@ -156,7 +156,7 @@ function checkEncounter(status, setting, setStatus) {
       // me.pull(objects[i].getDisplacement().mul(1000)) BUG
       me.loc = me.loc.add(objects[i].getDisplacement())
       else if ( result === 'spike' || result === 'arrow' ||  result === 'cymbalWave' || result === 'missile' || result === 'deathTotem' ){
-        setStatus( () => ({...status, gameState: CONSTANT.GameOver, msg: `${Msg[result]}`,endTime: Date.now(), playTime:Date.now()-status.startTime})) 
+        setStatus( () => ({...status, gameState: CONSTANT.GameOver, msg: Msg[result],endTime: Date.now(), playTime:Date.now()-status.startTime})) 
       }
 
       // floor 
