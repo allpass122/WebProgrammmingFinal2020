@@ -23,7 +23,7 @@ import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
-import {url} from "./url";
+import { url } from "./url";
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -224,7 +224,10 @@ function Edit(props) {
               defaultValue=""
               value={title}
               onChange={(event) => {
-                setTitle(event.target.value);
+                // console.log(event.target.value);
+                if (event.target.value.length <= 14) {
+                  setTitle(event.target.value);
+                }
               }}
             />
             <TextField
@@ -236,7 +239,9 @@ function Edit(props) {
               defaultValue=""
               value={description}
               onChange={(event) => {
-                setDescription(event.target.value);
+                if (event.target.value.length <= 30) {
+                  setDescription(event.target.value);
+                }
               }}
             />
             <IconButton

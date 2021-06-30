@@ -251,8 +251,39 @@ router.post("/getAllMapsByOrder", async function (req, res) {
 });
 /* Challenge */
 router.post("/challengeSuccess", async function (req, res) {
-  const { mapLocal } = req.body;
+  let { mapLocal } = req.body;
   console.log(`challengeSuccess`);
+  var mapOld;
+  const existing = await mapSchema
+    .find({ id: mapLocal.id })
+    .exec(function (error, result) {
+      // console.log(result);
+
+      if (!result.length) {
+        console.log(`QQQQQ`);
+      } else {
+        mapOld = result[0];
+
+        mapLocal.statistic.playTime = Math.max(
+          mapOld.statistic.playTime,
+          mapLocal.statistic.playTime
+        );
+        mapLocal.statistic.passTime = Math.max(
+          mapOld.statistic.passTime,
+          mapLocal.statistic.passTime
+        );
+        mapOld.passPeople.forEach((ele) => {
+          if (!mapLocal.passPeople.includes(ele)) {
+            mapLocal.passPeople.push(ele);
+          }
+        });
+        if (mapLocal.statistic.fastestPass > mapOld.statistic.fastestPass) {
+          mapOld.statistic.fastestPass = mapOld.statistic.fastestPass;
+          mapOld.statistic.fastestMan = mapOld.statistic.fastestMan;
+        }
+      }
+    });
+
   mapSchema
     .updateOne(
       { id: mapLocal.id },
