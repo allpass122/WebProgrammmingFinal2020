@@ -4,7 +4,7 @@ import { CONSTANT } from './PlayModeConstant';
 export default function Engine(objects, map, status) {
     const {me} = status
     const needEngin = ['movingPlatform','movingPlatform_oblique', 'movingPlatform_rect', 
-                'bow', 'arrow', 'missile', 'missileBase', 'cymbal','cymbalWave', 'woodenBox', 'mucus' ]
+                'bow', 'arrow', 'missile', 'missileBase', 'cymbal','cymbalWave', 'woodenBox', 'mucus', 'magnet' ]
 
     for (let i = 0; i < constant.maxLayer; i++) {
         for (let j = 0; j < objects.length; j++) {
