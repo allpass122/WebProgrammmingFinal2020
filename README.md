@@ -104,7 +104,7 @@
 2. `cd backend/ && yarn install`
 3. 在 project 根目錄：
    - 開 frontend `yarn start`
-   - 開 backend `yarn server`
+   - 開 backend `yarn server` (如果要用自己的 DB 才需要，記得改以下說明的設定)
 
 - 如果不能跑 `yarn install`, 就`yarn add yarn` 試試看，或`npm install --global yarn`
 - 如果 yarn 不行改成 `npm install`
