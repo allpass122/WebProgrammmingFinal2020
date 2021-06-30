@@ -1,26 +1,26 @@
 {
   "files": {
-    "main.css": "/WebProgrammmingFinal2020/static/css/main.ef329f15.chunk.css",
-    "main.js": "/WebProgrammmingFinal2020/static/js/main.5c46ea56.chunk.js",
-    "main.js.map": "/WebProgrammmingFinal2020/static/js/main.5c46ea56.chunk.js.map",
-    "runtime-main.js": "/WebProgrammmingFinal2020/static/js/runtime-main.310bf3fc.js",
-    "runtime-main.js.map": "/WebProgrammmingFinal2020/static/js/runtime-main.310bf3fc.js.map",
-    "static/js/2.fce6a36c.chunk.js": "/WebProgrammmingFinal2020/static/js/2.fce6a36c.chunk.js",
-    "static/js/2.fce6a36c.chunk.js.map": "/WebProgrammmingFinal2020/static/js/2.fce6a36c.chunk.js.map",
-    "static/js/3.fb135558.chunk.js": "/WebProgrammmingFinal2020/static/js/3.fb135558.chunk.js",
-    "static/js/3.fb135558.chunk.js.map": "/WebProgrammmingFinal2020/static/js/3.fb135558.chunk.js.map",
+    "main.css": "/WebProgrammmingFinal2020/static/css/main.416bd020.chunk.css",
+    "main.js": "/WebProgrammmingFinal2020/static/js/main.d8a26f3f.chunk.js",
+    "main.js.map": "/WebProgrammmingFinal2020/static/js/main.d8a26f3f.chunk.js.map",
+    "runtime-main.js": "/WebProgrammmingFinal2020/static/js/runtime-main.c5e1474f.js",
+    "runtime-main.js.map": "/WebProgrammmingFinal2020/static/js/runtime-main.c5e1474f.js.map",
+    "static/js/2.2a69aa74.chunk.js": "/WebProgrammmingFinal2020/static/js/2.2a69aa74.chunk.js",
+    "static/js/2.2a69aa74.chunk.js.map": "/WebProgrammmingFinal2020/static/js/2.2a69aa74.chunk.js.map",
+    "static/js/3.67a877e1.chunk.js": "/WebProgrammmingFinal2020/static/js/3.67a877e1.chunk.js",
+    "static/js/3.67a877e1.chunk.js.map": "/WebProgrammmingFinal2020/static/js/3.67a877e1.chunk.js.map",
     "index.html": "/WebProgrammmingFinal2020/index.html",
-    "static/css/main.ef329f15.chunk.css.map": "/WebProgrammmingFinal2020/static/css/main.ef329f15.chunk.css.map",
-    "static/js/2.fce6a36c.chunk.js.LICENSE.txt": "/WebProgrammmingFinal2020/static/js/2.fce6a36c.chunk.js.LICENSE.txt",
-    "static/media/cat.a83e8f86.svg": "/WebProgrammmingFinal2020/static/media/cat.a83e8f86.svg",
-    "static/media/lion.a9dff392.svg": "/WebProgrammmingFinal2020/static/media/lion.a9dff392.svg",
-    "static/media/seal.e6aeaa60.svg": "/WebProgrammmingFinal2020/static/media/seal.e6aeaa60.svg",
-    "static/media/star.d1d61ef5.svg": "/WebProgrammmingFinal2020/static/media/star.d1d61ef5.svg"
+    "static/css/main.416bd020.chunk.css.map": "/WebProgrammmingFinal2020/static/css/main.416bd020.chunk.css.map",
+    "static/js/2.2a69aa74.chunk.js.LICENSE.txt": "/WebProgrammmingFinal2020/static/js/2.2a69aa74.chunk.js.LICENSE.txt",
+    "static/media/cat.79597c16.svg": "/WebProgrammmingFinal2020/static/media/cat.79597c16.svg",
+    "static/media/lion.d23746ff.svg": "/WebProgrammmingFinal2020/static/media/lion.d23746ff.svg",
+    "static/media/seal.def45113.svg": "/WebProgrammmingFinal2020/static/media/seal.def45113.svg",
+    "static/media/star.9ea2b3d5.svg": "/WebProgrammmingFinal2020/static/media/star.9ea2b3d5.svg"
   },
   "entrypoints": [
-    "static/js/runtime-main.310bf3fc.js",
-    "static/js/2.fce6a36c.chunk.js",
-    "static/css/main.ef329f15.chunk.css",
-    "static/js/main.5c46ea56.chunk.js"
+    "static/js/runtime-main.c5e1474f.js",
+    "static/js/2.2a69aa74.chunk.js",
+    "static/css/main.416bd020.chunk.css",
+    "static/js/main.d8a26f3f.chunk.js"
   ]
 }
